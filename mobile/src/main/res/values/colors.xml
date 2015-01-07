@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <!-- ActionBar colour -->
     <color name="MyActionBar">#03A9F4</color>
+
+    <!-- the default text color for all views -->
+    <color name="DefaultTextColor">#111</color>
 
 </resources>
