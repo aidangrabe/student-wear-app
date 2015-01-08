@@ -68,7 +68,7 @@ public class TimeEditText implements View.OnFocusChangeListener, DialogInterface
     }
 
     // extract the hour and minutes from the EditText
-    private void parseTime() {
+    public void parseTime() {
 
         String timeText = mEditText.getText().toString();
         String[] parts = timeText.split(":");
@@ -81,6 +81,14 @@ public class TimeEditText implements View.OnFocusChangeListener, DialogInterface
             mMinutes = cal.get(Calendar.MINUTE);
         }
 
+    }
+
+    public int getHourOfDay() {
+        return mHourOfDay;
+    }
+
+    public int getMinutes() {
+        return mMinutes;
     }
 
     @Override

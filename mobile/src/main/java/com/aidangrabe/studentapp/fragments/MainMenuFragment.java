@@ -12,6 +12,12 @@ import android.widget.TextView;
 
 import com.aidangrabe.studentapp.R;
 import com.aidangrabe.studentapp.activities.NewClassActivity;
+import com.aidangrabe.studentapp.models.Lecture;
+
+import org.json.JSONException;
+
+import java.io.IOException;
+import java.util.List;
 
 
 /**
@@ -26,7 +32,7 @@ public class MainMenuFragment extends ListFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        
+
         mAdapter = new ArrayAdapter<String>(getActivity().getApplicationContext(), android.R.layout.simple_list_item_1) {
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
@@ -39,10 +45,8 @@ public class MainMenuFragment extends ListFragment {
             }
         };
 
-        mAdapter.add(getResources().getString(R.string.menu_add_class));
         setListAdapter(mAdapter);
-
-        mAdapter.notifyDataSetChanged();
+        refreshAdapter();
 
     }
 
@@ -73,4 +77,31 @@ public class MainMenuFragment extends ListFragment {
         Log.d("DEBUG", String.format("ActivityResult: request: %d, resultCode: %d, data: %s", requestCode, resultCode, data.toString()));
 
     }
+
+    // reload the data in the adapter
+    public void refreshAdapter() {
+
+        mAdapter.clear();
+
+        mAdapter.add(getResources().getString(R.string.menu_add_class));
+        getSavedLectures();
+        mAdapter.notifyDataSetChanged();
+
+    }
+
+    // get the saved lectures from disk and load them into the adapter
+    public void getSavedLectures() {
+
+        Log.d("DEBUG", "Getting saved lectures");
+        try {
+            List<Lecture> lectures = Lecture.getSavedLectures(getActivity());
+            for (Lecture lecture : lectures) {
+                mAdapter.add(lecture.getName());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
 }
