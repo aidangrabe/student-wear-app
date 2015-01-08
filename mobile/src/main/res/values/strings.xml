@@ -6,6 +6,9 @@
     <string name="action_settings">Settings</string>
 
     <string name="menu_add_class">+ Add Class</string>
+    <string name="menu_timetable">Timetable</string>
+
+    <string name="new_class_success">New Class Created</string>
 
     <string name="new_class">New Class</string>
     <string name="class_title">Title</string>

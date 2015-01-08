@@ -1,6 +1,7 @@
 package com.aidangrabe.studentapp.fragments;
 
 import android.app.Fragment;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +16,8 @@ import com.aidangrabe.studentapp.ui.TimeEditText;
 
 import java.util.List;
 
+import cn.pedant.SweetAlert.SweetAlertDialog;
+
 /**
  * Created by aidan on 07/01/15.
  * Class to handle adding a New Class/Lecture
@@ -24,6 +27,13 @@ public class NewClassFragment extends Fragment {
     private EditText mNameEditText, mLocationEditText;
     private TimeEditText mFromEditText, mToEditText;
     private Button mSaveButton, mCancelButton;
+
+    private final DialogInterface.OnDismissListener mOnSuccessDismissListener = new DialogInterface.OnDismissListener() {
+        @Override
+        public void onDismiss(DialogInterface dialog) {
+            getActivity().finish();
+        }
+    };
 
     private final View.OnClickListener mSaveCancelClickListener = new View.OnClickListener() {
         @Override
@@ -81,7 +91,13 @@ public class NewClassFragment extends Fragment {
         } catch (Exception e) {
             e.printStackTrace();
             Toast.makeText(getActivity(), "An error occurred while saving", Toast.LENGTH_SHORT).show();
+            return;
         }
+
+        SweetAlertDialog dialog = new SweetAlertDialog(getActivity(), SweetAlertDialog.SUCCESS_TYPE);
+        dialog.setContentText(getResources().getString(R.string.new_class_success));
+        dialog.setOnDismissListener(mOnSuccessDismissListener);
+        dialog.show();
 
     }
 

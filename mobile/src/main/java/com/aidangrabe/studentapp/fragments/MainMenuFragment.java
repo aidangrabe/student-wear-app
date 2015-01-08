@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import com.aidangrabe.studentapp.R;
 import com.aidangrabe.studentapp.activities.NewClassActivity;
+import com.aidangrabe.studentapp.activities.TimeTableActivity;
 import com.aidangrabe.studentapp.models.Lecture;
 
 import org.json.JSONException;
@@ -59,14 +60,21 @@ public class MainMenuFragment extends ListFragment {
     public void onListItemClick(ListView l, View v, int position, long id) {
         super.onListItemClick(l, v, position, id);
 
-        if (position == 0) {
-            createClass();
+        String item = mAdapter.getItem(position);
+
+        // Add class
+        if (item.equals(getResources().getString(R.string.menu_add_class))) {
+            startActivity(NewClassActivity.class);
+        }
+        // Timetable
+        else if (item.equals(getResources().getString(R.string.menu_timetable))) {
+            startActivity(TimeTableActivity.class);
         }
 
     }
 
-    public void createClass() {
-        Intent intent = new Intent(getActivity(), NewClassActivity.class);
+    public void startActivity(Class c) {
+        Intent intent = new Intent(getActivity(), c);
         startActivity(intent);
     }
 
@@ -84,23 +92,9 @@ public class MainMenuFragment extends ListFragment {
         mAdapter.clear();
 
         mAdapter.add(getResources().getString(R.string.menu_add_class));
-        getSavedLectures();
+        mAdapter.add(getResources().getString(R.string.menu_timetable));
+
         mAdapter.notifyDataSetChanged();
-
-    }
-
-    // get the saved lectures from disk and load them into the adapter
-    public void getSavedLectures() {
-
-        Log.d("DEBUG", "Getting saved lectures");
-        try {
-            List<Lecture> lectures = Lecture.getSavedLectures(getActivity());
-            for (Lecture lecture : lectures) {
-                mAdapter.add(lecture.getName());
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
 
     }
 
