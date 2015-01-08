@@ -8,12 +8,14 @@
         android:id="@+id/class_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:imeOptions="actionNext"
         android:hint="@string/class_title" />
 
     <EditText
         android:id="@+id/class_room"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:imeOptions="actionNext"
         android:hint="@string/class_room" />
 
     <LinearLayout
@@ -28,8 +30,11 @@
             android:gravity="center_vertical"/>
 
         <EditText
+            android:id="@+id/time_from"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
+            android:textIsSelectable="true"
+            android:focusable="false"
             android:text="9:00"
             android:gravity="center_vertical"
             android:padding="10dp"/>
@@ -41,8 +46,11 @@
             android:gravity="center_vertical"/>
 
         <EditText
+            android:id="@+id/time_to"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
+            android:textIsSelectable="true"
+            android:focusable="false"
             android:text="10:00"
             android:gravity="center_vertical"
             android:padding="10dp"/>
