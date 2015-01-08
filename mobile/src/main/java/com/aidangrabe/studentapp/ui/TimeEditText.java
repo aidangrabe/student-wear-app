@@ -4,12 +4,10 @@ import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TimePicker;
 
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 /**
@@ -57,8 +55,6 @@ public class TimeEditText implements View.OnFocusChangeListener, DialogInterface
     }
 
     public void showTimePicker() {
-
-        Calendar cal = Calendar.getInstance();
 
         parseTime();
         mTimePickerDialog = new TimePickerDialog(mContext, mTimeSetListener, mHourOfDay,

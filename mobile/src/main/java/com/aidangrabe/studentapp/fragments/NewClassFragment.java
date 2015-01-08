@@ -8,7 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TimePicker;
-import android.widget.Toast;
 
 import com.aidangrabe.studentapp.R;
 import com.aidangrabe.studentapp.ui.TimeEditText;
