@@ -2,13 +2,15 @@ package com.aidangrabe.studentapp.fragments;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.provider.CalendarContract;
 import android.support.v4.app.ListFragment;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 
+import com.aidangrabe.studentapp.R;
 import com.aidangrabe.studentapp.activities.NewClassActivity;
 
 
@@ -18,14 +20,26 @@ import com.aidangrabe.studentapp.activities.NewClassActivity;
  */
 public class MainMenuFragment extends ListFragment {
 
+    // the list's adapter
     private ArrayAdapter<String> mAdapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
+        mAdapter = new ArrayAdapter<String>(getActivity().getApplicationContext(), android.R.layout.simple_list_item_1) {
+            @Override
+            public View getView(int position, View convertView, ViewGroup parent) {
+                View view = super.getView(position, convertView, parent);
 
-        mAdapter = new ArrayAdapter<String>(getActivity().getApplicationContext(), android.R.layout.simple_list_item_1);
-        mAdapter.add("+ Add Class");
+                TextView tv = (TextView) view.findViewById(android.R.id.text1);
+                tv.setTextColor(getResources().getColor(R.color.DefaultTextColor));
+
+                return view;
+            }
+        };
+
+        mAdapter.add(getResources().getString(R.string.menu_add_class));
         setListAdapter(mAdapter);
 
         mAdapter.notifyDataSetChanged();

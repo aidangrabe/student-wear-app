@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TimePicker;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 /**
@@ -21,11 +22,13 @@ public class TimeEditText implements View.OnFocusChangeListener, DialogInterface
     private EditText mEditText;
     private Context mContext;
     private TimePickerDialog mTimePickerDialog;
+    private int mHourOfDay, mMinutes;
 
     private TimePickerDialog.OnTimeSetListener mTimeSetListener = new TimePickerDialog.OnTimeSetListener() {
+
         @Override
         public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-            mEditText.setText(String.format("%d:%d", hourOfDay, minute));
+            mEditText.setText(String.format("%d:%02d", hourOfDay, minute));
         }
     };
 
@@ -57,13 +60,30 @@ public class TimeEditText implements View.OnFocusChangeListener, DialogInterface
 
         Calendar cal = Calendar.getInstance();
 
-        mTimePickerDialog = new TimePickerDialog(mContext, mTimeSetListener,
-                cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), false);
+        parseTime();
+        mTimePickerDialog = new TimePickerDialog(mContext, mTimeSetListener, mHourOfDay,
+                mMinutes, false);
         mTimePickerDialog.setTitle("Pick Time");
         mTimePickerDialog.setOnDismissListener(this);
         mTimePickerDialog.show();
 
         mPickerShowing = true;
+
+    }
+
+    // extract the hour and minutes from the EditText
+    private void parseTime() {
+
+        String timeText = mEditText.getText().toString();
+        String[] parts = timeText.split(":");
+        try {
+            mHourOfDay = Integer.parseInt(parts[0]);
+            mMinutes = Integer.parseInt(parts[1]);
+        } catch (Exception e) {
+            Calendar cal = Calendar.getInstance();
+            mHourOfDay = cal.get(Calendar.HOUR_OF_DAY);
+            mMinutes = cal.get(Calendar.MINUTE);
+        }
 
     }
 
