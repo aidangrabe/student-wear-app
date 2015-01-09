@@ -5,6 +5,7 @@ import java.util.Date;
 /**
  * Created by aidan on 09/01/15.
  * A class representing a single item of a ToDoList
+ * A ToDoItem is considered complete when it's completionDate is not 'null'
  */
 public class ToDoItem {
 
@@ -28,6 +29,17 @@ public class ToDoItem {
         this.creationDate = creationDate;
         this.completionDate = completionDate;
 
+    }
+
+    /**
+     * Complete the ToDoItem and set it's completion date to the current time
+     */
+    public void complete() {
+        setCompletionDate(new Date());
+    }
+
+    public boolean isCompleted() {
+        return completionDate != null;
     }
 
     // getters + setters

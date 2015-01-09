@@ -2,21 +2,20 @@ package com.aidangrabe.studentapp.fragments;
 
 import android.app.ListFragment;
 import android.database.Cursor;
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.aidangrabe.studentapp.R;
 import com.aidangrabe.studentapp.models.todolist.ToDoItem;
 import com.aidangrabe.studentapp.models.todolist.ToDoItemManager;
 import com.melnykov.fab.FloatingActionButton;
-
-import java.util.ArrayList;
 
 /**
  * Created by aidan on 09/01/15.
@@ -24,8 +23,7 @@ import java.util.ArrayList;
  */
 public class ToDoListFragment extends ListFragment {
 
-    private ArrayAdapter<String> mAdapter;
-    private ArrayList<ToDoItem> mItems;
+    private ArrayAdapter<ToDoItem> mAdapter;
     private NewToDoItemFragment mNewItemFragment;
 
     private final View.OnClickListener mSaveClickListener = new View.OnClickListener() {
@@ -46,20 +44,30 @@ public class ToDoListFragment extends ListFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1) {
+        mAdapter = new ArrayAdapter<ToDoItem>(getActivity(), android.R.layout.simple_list_item_1) {
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
                 View view = super.getView(position, convertView, parent);
 
+                ToDoItem item = getItem(position);
+
                 TextView tv = (TextView) view.findViewById(android.R.id.text1);
                 tv.setTextColor(getResources().getColor(R.color.text_color));
+                tv.setText(item.getTitle());
+
+                // toggle strike through
+                if (item.isCompleted()) {
+                    tv.setPaintFlags(tv.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+                } else {
+                    tv.setPaintFlags(tv.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
+                }
+
                 return view;
 
             }
         };
 
         setListAdapter(mAdapter);
-        mItems = new ArrayList<>();
         getToDoList();
 
     }
@@ -83,17 +91,36 @@ public class ToDoListFragment extends ListFragment {
         Log.d("DEBUG", "Getting todolist items");
         ToDoItemManager manager = new ToDoItemManager(getActivity());
         Cursor cursor = manager.getAll();
-        mItems.clear();
         mAdapter.clear();
 
         while (cursor.moveToNext()) {
             ToDoItem item = ToDoItemManager.instanceFromCursor(cursor);
-            mItems.add(item);
-            mAdapter.add(item.getTitle());
+
+//            if (!item.isCompleted()) {
+                mAdapter.add(item);
+//            }
         }
 
         cursor.close();
         mAdapter.notifyDataSetChanged();
+
+    }
+
+    @Override
+    public void onListItemClick(ListView l, View v, int position, long id) {
+        super.onListItemClick(l, v, position, id);
+
+        ToDoItemManager manager = new ToDoItemManager(getActivity());
+        ToDoItem item = mAdapter.getItem(position);
+
+        TextView tv = (TextView) v.findViewById(android.R.id.text1);
+
+        // toggle strike through
+        item.complete();
+        manager.update(item);
+
+        tv.setPaintFlags(tv.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+
 
     }
 
