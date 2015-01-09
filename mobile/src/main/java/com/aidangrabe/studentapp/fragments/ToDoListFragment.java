@@ -4,14 +4,20 @@ import android.app.ListFragment;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.aidangrabe.studentapp.R;
 import com.aidangrabe.studentapp.models.todolist.ToDoItem;
 import com.aidangrabe.studentapp.models.todolist.ToDoItemManager;
+import com.melnykov.fab.FloatingActionButton;
 
 import java.util.ArrayList;
 
@@ -23,6 +29,12 @@ public class ToDoListFragment extends ListFragment {
 
     private ArrayAdapter<String> mAdapter;
     private ArrayList<ToDoItem> mItems;
+    private View.OnClickListener mNewToDoItemClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Toast.makeText(getActivity(), "New Todo item?", Toast.LENGTH_SHORT).show();
+        }
+    };
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -43,6 +55,20 @@ public class ToDoListFragment extends ListFragment {
         setListAdapter(mAdapter);
         mItems = new ArrayList<>();
         getToDoList();
+
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        LayoutInflater inflater = LayoutInflater.from(getActivity());
+        View v = inflater.inflate(R.layout.fab_new_layout, (ViewGroup) view);
+
+        FloatingActionButton fab = (FloatingActionButton) v.findViewById(R.id.fab);
+        fab.setOnClickListener(mNewToDoItemClickListener);
+
+        fab.attachToListView(getListView());
 
     }
 
