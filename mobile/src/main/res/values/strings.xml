@@ -1,13 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <!-- Misc -->
     <string name="app_name">Student App</string>
-    <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
 
+    <!-- Main Menu -->
     <string name="menu_add_class">+ Add Class</string>
+    <string name="menu_todo_list">ToDo List</string>
     <string name="menu_timetable">Timetable</string>
 
+
+    <!-- New Class -->
     <string name="new_class_success">New Class Created</string>
 
     <string name="new_class">New Class</string>

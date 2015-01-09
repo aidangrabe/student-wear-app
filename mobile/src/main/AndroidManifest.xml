@@ -7,6 +7,8 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
+
+        <!-- activities -->
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name" >
@@ -16,9 +18,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".activities.NewClassActivity" >
-        </activity>
+        <activity android:name=".activities.NewClassActivity" />
+        <activity android:name=".activities.TimeTableActivity" />
+        <activity android:name=".activities.ToDoListActivity" />
     </application>
 
 </manifest>

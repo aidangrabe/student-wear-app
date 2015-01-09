@@ -13,12 +13,10 @@ import android.widget.TextView;
 import com.aidangrabe.studentapp.R;
 import com.aidangrabe.studentapp.activities.NewClassActivity;
 import com.aidangrabe.studentapp.activities.TimeTableActivity;
-import com.aidangrabe.studentapp.models.Lecture;
+import com.aidangrabe.studentapp.activities.ToDoListActivity;
 
-import org.json.JSONException;
-
-import java.io.IOException;
-import java.util.List;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 
 /**
@@ -29,6 +27,7 @@ public class MainMenuFragment extends ListFragment {
 
     // the list's adapter
     private ArrayAdapter<String> mAdapter;
+    private Map<String, Class> mMenuMap;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -46,6 +45,7 @@ public class MainMenuFragment extends ListFragment {
             }
         };
 
+        createMenu();
         setListAdapter(mAdapter);
         refreshAdapter();
 
@@ -62,13 +62,8 @@ public class MainMenuFragment extends ListFragment {
 
         String item = mAdapter.getItem(position);
 
-        // Add class
-        if (item.equals(getResources().getString(R.string.menu_add_class))) {
-            startActivity(NewClassActivity.class);
-        }
-        // Timetable
-        else if (item.equals(getResources().getString(R.string.menu_timetable))) {
-            startActivity(TimeTableActivity.class);
+        if (mMenuMap.containsKey(item)) {
+            startActivity(mMenuMap.get(item));
         }
 
     }
@@ -78,11 +73,12 @@ public class MainMenuFragment extends ListFragment {
         startActivity(intent);
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
+    private void createMenu() {
 
-        Log.d("DEBUG", String.format("ActivityResult: request: %d, resultCode: %d, data: %s", requestCode, resultCode, data.toString()));
+        mMenuMap = new LinkedHashMap<>();
+        mMenuMap.put(getResources().getString(R.string.menu_add_class), NewClassActivity.class);
+        mMenuMap.put(getResources().getString(R.string.menu_todo_list), ToDoListActivity.class);
+        mMenuMap.put(getResources().getString(R.string.menu_timetable), TimeTableActivity.class);
 
     }
 
@@ -90,10 +86,7 @@ public class MainMenuFragment extends ListFragment {
     public void refreshAdapter() {
 
         mAdapter.clear();
-
-        mAdapter.add(getResources().getString(R.string.menu_add_class));
-        mAdapter.add(getResources().getString(R.string.menu_timetable));
-
+        mAdapter.addAll(mMenuMap.keySet());
         mAdapter.notifyDataSetChanged();
 
     }
