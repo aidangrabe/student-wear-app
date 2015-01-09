@@ -5,4 +5,10 @@
     <string name="hello_round">Hello Round World!</string>
     <string name="hello_square">Hello Square World!</string>
 
+    <string-array name="main_menu_options">
+        <item name="todo_list">ToDo List</item>
+        <item name="timetable">Timetable</item>
+        <item name="games">Games</item>
+    </string-array>
+
 </resources>
