@@ -31,7 +31,7 @@ public class ToDoListFragment extends ListFragment {
     private final View.OnClickListener mSaveClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            Toast.makeText(getActivity(), "Save button clicked", Toast.LENGTH_SHORT).show();
+            onSaveNewItem();
         }
     };
 
@@ -94,6 +94,19 @@ public class ToDoListFragment extends ListFragment {
 
         cursor.close();
         mAdapter.notifyDataSetChanged();
+
+    }
+
+    /**
+     * Called when the save button has been pressed on the NewToDoItemFragment
+     */
+    private void onSaveNewItem() {
+
+        ToDoItem newItem = new ToDoItem(mNewItemFragment.getTitle());
+        ToDoItemManager manager = new ToDoItemManager(getActivity());
+        manager.save(newItem);
+        mNewItemFragment.dismiss();
+        getToDoList();
 
     }
 

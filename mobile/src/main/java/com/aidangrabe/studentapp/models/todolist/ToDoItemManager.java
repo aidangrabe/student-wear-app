@@ -73,10 +73,13 @@ public class ToDoItemManager extends SQLiteOpenHelper {
      * @return A ContentValues with the ToDoItem values inside
      */
     private ContentValues makeContentValues(ToDoItem item) {
+        // set the complete time to 0 if it is null
+        long completeTime = item.getCompletionDate() == null ? 0 : item.getCompletionDate().getTime();
+
         ContentValues cv = new ContentValues();
         cv.put(ToDoEntry.COL_TITLE, item.getTitle());
         cv.put(ToDoEntry.COL_CREATE_DATE, item.getCreationDate().getTime());
-        cv.put(ToDoEntry.COL_COMPLETE_DATE, item.getCompletionDate().getTime());
+        cv.put(ToDoEntry.COL_COMPLETE_DATE, completeTime);
         return cv;
     }
 
@@ -124,8 +127,10 @@ public class ToDoItemManager extends SQLiteOpenHelper {
         String createDateString  = c.getString(c.getColumnIndexOrThrow(ToDoEntry.COL_CREATE_DATE));
         String completeDateString = c.getString(c.getColumnIndexOrThrow(ToDoEntry.COL_COMPLETE_DATE));
 
+        long completeTime = Long.parseLong(completeDateString);
+
         Date createDate = new Date(Long.parseLong(createDateString));
-        Date completeDate = new Date(Long.parseLong(completeDateString));
+        Date completeDate = completeTime == 0 ? null : new Date(completeTime);
 
         ToDoItem item = new ToDoItem(title, createDate, completeDate);
         item.setId(id);

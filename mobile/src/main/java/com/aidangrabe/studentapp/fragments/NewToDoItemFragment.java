@@ -38,6 +38,10 @@ public class NewToDoItemFragment extends DialogFragment {
 
     }
 
+    public String getTitle() {
+        return mTitleEditText.getText().toString();
+    }
+
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
