@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/text_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/new_todo_title"
+        android:labelFor="@+id/new_todo_item"
+        android:textSize="16sp"/>
+
+    <EditText
+        android:id="@+id/new_todo_item"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:singleLine="true"
+        android:layout_below="@id/text_view"/>
+
+    <Button
+        android:id="@+id/new_todo_save_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/save"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/new_todo_item"/>
+
+</RelativeLayout>

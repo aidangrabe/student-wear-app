@@ -10,6 +10,9 @@
     <string name="menu_todo_list">ToDo List</string>
     <string name="menu_timetable">Timetable</string>
 
+    <!-- Creating a ToDoItem -->
+    <string name="new_todo_item">New ToDo Item</string>
+    <string name="new_todo_title">Title:</string>
 
     <!-- New Class -->
     <string name="new_class_success">New Class Created</string>

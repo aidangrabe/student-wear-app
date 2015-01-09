@@ -4,13 +4,10 @@ import android.app.ListFragment;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,10 +26,19 @@ public class ToDoListFragment extends ListFragment {
 
     private ArrayAdapter<String> mAdapter;
     private ArrayList<ToDoItem> mItems;
-    private View.OnClickListener mNewToDoItemClickListener = new View.OnClickListener() {
+    private NewToDoItemFragment mNewItemFragment;
+
+    private final View.OnClickListener mSaveClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            Toast.makeText(getActivity(), "New Todo item?", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), "Save button clicked", Toast.LENGTH_SHORT).show();
+        }
+    };
+
+    private final View.OnClickListener mNewToDoItemClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            showNewItemDialog();
         }
     };
 
@@ -88,6 +94,14 @@ public class ToDoListFragment extends ListFragment {
 
         cursor.close();
         mAdapter.notifyDataSetChanged();
+
+    }
+
+    private void showNewItemDialog() {
+
+        mNewItemFragment = new NewToDoItemFragment();
+        mNewItemFragment.setSaveListener(mSaveClickListener);
+        mNewItemFragment.show(getFragmentManager(), "dialog");
 
     }
 
