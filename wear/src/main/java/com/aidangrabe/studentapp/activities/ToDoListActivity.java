@@ -1,10 +1,12 @@
 package com.aidangrabe.studentapp.activities;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.speech.RecognizerIntent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -35,7 +37,7 @@ import java.util.List;
  */
 public class ToDoListActivity extends Activity implements GoogleApiClient.ConnectionCallbacks, DataApi.DataListener, AdapterView.OnItemClickListener{
 
-    private static final String MESSAGE_REQUEST_TODO_ITEMS = "/request-todo-items";
+    private static final int SPEECH_REQUEST_CODE = 0;
 
     private ListView mListView;
     private WearUtil mWearUtil;
@@ -89,11 +91,15 @@ public class ToDoListActivity extends Activity implements GoogleApiClient.Connec
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-
+    protected void onStart() {
+        super.onStart();
         mWearUtil.connect();
+    }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        mWearUtil.connect();
     }
 
     @Override
@@ -106,7 +112,13 @@ public class ToDoListActivity extends Activity implements GoogleApiClient.Connec
 
     public void getToDoItems() {
 
-        mWearUtil.sendMessage(MESSAGE_REQUEST_TODO_ITEMS, "");
+        mAdapter.clear();
+        mItems.clear();
+
+        // add a new item row
+        mAdapter.add(new ToDoItem(getResources().getString(R.string.todo_new_item)));
+
+        mWearUtil.sendMessage(SharedConstants.Wearable.MESSAGE_REQUEST_TODO_ITEMS, "");
 
         Wearable.DataApi.getDataItems(mWearUtil.getGoogleApiClient());
 
@@ -150,10 +162,51 @@ public class ToDoListActivity extends Activity implements GoogleApiClient.Connec
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-        ToDoItem item = mAdapter.getItem(position);
-        item.complete();
-        mWearUtil.sendMessage(SharedConstants.Wearable.MESSAGE_UPDATE_TODO_ITEM, Integer.toString(item.getId()));
-        mAdapter.notifyDataSetChanged();
+        if (position == 0) {
+            // new item
+            displaySpeechRecognizer();
+        } else {
+            ToDoItem item = mAdapter.getItem(position);
+            item.complete();
+            mWearUtil.sendMessage(SharedConstants.Wearable.MESSAGE_UPDATE_TODO_ITEM, Integer.toString(item.getId()));
+            mAdapter.notifyDataSetChanged();
+        }
 
     }
+
+    // Create an intent that can start the Speech Recognizer activity
+    private void displaySpeechRecognizer() {
+        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+                RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        // Start the activity, the intent will be populated with the speech text
+        startActivityForResult(intent, SPEECH_REQUEST_CODE);
+    }
+
+    // This callback is invoked when the Speech Recognizer returns.
+    // This is where you process the intent and extract the speech text from the intent.
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode,
+                                    Intent data) {
+        if (requestCode == SPEECH_REQUEST_CODE && resultCode == RESULT_OK) {
+            List<String> results = data.getStringArrayListExtra(
+                    RecognizerIntent.EXTRA_RESULTS);
+            String spokenText = results.get(0);
+
+            if (spokenText.length() > 0) {
+                ToDoItem item = new ToDoItem(spokenText);
+                createToDoItem(spokenText);
+                mItems.add(item);
+                mAdapter.insert(item, 1);
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    private void createToDoItem(String title) {
+
+        mWearUtil.sendMessage(SharedConstants.Wearable.MESSAGE_CREATE_TODO_ITEM, title);
+
+    }
+
 }

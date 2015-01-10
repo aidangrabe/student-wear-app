@@ -56,8 +56,14 @@ public class DataLayerListenerService extends WearableListenerService {
         }
         // update a todoitem
         else if (path.equals(SharedConstants.Wearable.MESSAGE_UPDATE_TODO_ITEM)) {
-            int id = new Integer(new String(messageEvent.getData()));
+            int id = Integer.valueOf(new String(messageEvent.getData()));
             updateToDoItem(id);
+        }
+        // create new todoitem
+        else if (path.equals(SharedConstants.Wearable.MESSAGE_CREATE_TODO_ITEM)) {
+            ToDoItem item = new ToDoItem(new String(messageEvent.getData()));
+            ToDoItemManager manager = new ToDoItemManager(this);
+            manager.save(item);
         }
 
     }
