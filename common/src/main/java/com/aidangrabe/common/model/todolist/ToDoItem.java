@@ -1,4 +1,4 @@
-package com.aidangrabe.studentapp.models.todolist;
+package com.aidangrabe.common.model.todolist;
 
 import java.util.Date;
 

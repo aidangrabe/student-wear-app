@@ -1,6 +1,7 @@
-package com.aidangrabe.studentapp.util.wearable;
+package com.aidangrabe.common.wearable;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.util.Log;
 
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -9,6 +10,7 @@ import com.google.android.gms.wearable.DataApi;
 import com.google.android.gms.wearable.DataEventBuffer;
 import com.google.android.gms.wearable.DataMap;
 import com.google.android.gms.wearable.MessageApi;
+import com.google.android.gms.wearable.MessageEvent;
 import com.google.android.gms.wearable.Node;
 import com.google.android.gms.wearable.NodeApi;
 import com.google.android.gms.wearable.Wearable;
@@ -17,14 +19,18 @@ import com.google.android.gms.wearable.Wearable;
  * Created by aidan on 10/01/15.
  *
  */
-public class WearUtil implements DataApi.DataListener {
+public class WearUtil implements DataApi.DataListener, MessageApi.MessageListener, GoogleApiClient.ConnectionCallbacks {
 
     private GoogleApiClient mGoogleApiClient;
+    private GoogleApiClient.ConnectionCallbacks mConnectionCallbacks;
+    private DataApi.DataListener mDataListener;
 
     public WearUtil(Context context) {
 
-        mGoogleApiClient = new GoogleApiClient.Builder(context).addApi(Wearable.API).build();
-        Wearable.DataApi.addListener(mGoogleApiClient, this);
+        mGoogleApiClient = new GoogleApiClient.Builder(context)
+                .addApi(Wearable.API)
+                .addConnectionCallbacks(this)
+                .build();
 
     }
 
@@ -33,6 +39,8 @@ public class WearUtil implements DataApi.DataListener {
     }
 
     public void disconnect() {
+        Wearable.DataApi.removeListener(mGoogleApiClient, this);
+        Wearable.MessageApi.removeListener(mGoogleApiClient, this);
         mGoogleApiClient.disconnect();
     }
 
@@ -77,6 +85,45 @@ public class WearUtil implements DataApi.DataListener {
 
     @Override
     public void onDataChanged(DataEventBuffer dataEvents) {
-        Log.d("DEBUG", "WE HAVE LIFTOFF");
+        if (mDataListener != null) {
+            mDataListener.onDataChanged(dataEvents);
+        }
     }
+
+    @Override
+    public void onMessageReceived(MessageEvent messageEvent) {
+        Log.d("DEBUG", "onMessageReceive" + messageEvent.getPath());
+    }
+
+    @Override
+    public void onConnected(Bundle bundle) {
+        Log.d("DEBUG", "GoogleApiClient connected");
+        Wearable.DataApi.addListener(mGoogleApiClient, this);
+        Wearable.MessageApi.addListener(mGoogleApiClient, this);
+        if (mConnectionCallbacks != null) {
+            mConnectionCallbacks.onConnected(bundle);
+        }
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+        if (mConnectionCallbacks != null) {
+            mConnectionCallbacks.onConnectionSuspended(i);
+        }
+    }
+
+    public WearUtil setConnectionCallbacks(GoogleApiClient.ConnectionCallbacks callbacks) {
+        mConnectionCallbacks = callbacks;
+        return this;
+    }
+
+    public WearUtil setDataListener(DataApi.DataListener dataListener) {
+        mDataListener = dataListener;
+        return this;
+    }
+
+    public GoogleApiClient getGoogleApiClient() {
+        return mGoogleApiClient;
+    }
+
 }

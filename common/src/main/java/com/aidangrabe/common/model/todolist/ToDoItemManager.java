@@ -1,4 +1,4 @@
-package com.aidangrabe.studentapp.models.todolist;
+package com.aidangrabe.common.model.todolist;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -155,6 +155,22 @@ public class ToDoItemManager extends SQLiteOpenHelper {
         dataMap.putLong("createDate", item.getCreationDate().getTime());
         dataMap.putLong("completeDate", item.getCompletionDate() == null ? 0 : item.getCompletionDate().getTime());
         return putDataMapRequest;
+    }
+
+    /**
+     * Create a ToDoItem from a DataMap
+     * @param dataMap the DataMap to create an item from
+     * @return the new ToDoItem
+     */
+    public static ToDoItem fromDataMap(DataMap dataMap) {
+        ToDoItem item = new ToDoItem(dataMap.getString("title"));
+        item.setId(dataMap.getInt("id"));
+        item.setCreationDate(new Date(dataMap.getLong("createDate")));
+        long completeDate = dataMap.getLong("completeDate");
+        if (completeDate > 0) {
+            item.setCompletionDate(new Date(completeDate));
+        }
+        return item;
     }
 
 

@@ -13,8 +13,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.aidangrabe.studentapp.R;
-import com.aidangrabe.studentapp.models.todolist.ToDoItem;
-import com.aidangrabe.studentapp.models.todolist.ToDoItemManager;
+import com.aidangrabe.common.model.todolist.ToDoItem;
+import com.aidangrabe.common.model.todolist.ToDoItemManager;
 import com.melnykov.fab.FloatingActionButton;
 
 /**
