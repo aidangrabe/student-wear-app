@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <color name="default_text_color">#111</color>
     <color name="highlight_color">#90CAF9</color>
 
 </resources>
