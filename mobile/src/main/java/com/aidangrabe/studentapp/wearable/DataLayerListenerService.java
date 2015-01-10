@@ -48,9 +48,16 @@ public class DataLayerListenerService extends WearableListenerService {
     @Override
     public void onMessageReceived(MessageEvent messageEvent) {
 
-        Log.d("DEBUG", "Message Received: " + messageEvent.getPath());
-        if (messageEvent.getPath().endsWith(SharedConstants.Wearable.MESSAGE_REQUEST_TODO_ITEMS)) {
+        String path = messageEvent.getPath();
+
+        // request todoitems
+        if (path.endsWith(SharedConstants.Wearable.MESSAGE_REQUEST_TODO_ITEMS)) {
             sendToDoItems();
+        }
+        // update a todoitem
+        else if (path.equals(SharedConstants.Wearable.MESSAGE_UPDATE_TODO_ITEM)) {
+            int id = new Integer(new String(messageEvent.getData()));
+            updateToDoItem(id);
         }
 
     }
@@ -78,7 +85,6 @@ public class DataLayerListenerService extends WearableListenerService {
 
     private void sendToDoItems() {
 
-//        mGoogleApiClient.blockingConnect(100, TimeUnit.MILLISECONDS);
         Log.d("DEBUG", "Retrieving TodoItems");
 
         if (!mGoogleApiClient.isConnected()) {
@@ -116,6 +122,22 @@ public class DataLayerListenerService extends WearableListenerService {
         }
         cursor.close();
         return items;
+
+    }
+
+    /**
+     * Complete a given ToDoItem by it's id
+     * @param id the id of the ToDoItem to complete
+     */
+    private void updateToDoItem(int id) {
+
+        ToDoItemManager manager = new ToDoItemManager(this);
+
+        ToDoItem item = manager.get(id);
+        if (item != null) {
+            item.complete();
+        }
+        manager.update(item);
 
     }
 

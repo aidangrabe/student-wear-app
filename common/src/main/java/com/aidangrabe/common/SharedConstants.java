@@ -7,6 +7,7 @@ package com.aidangrabe.common;
 public class SharedConstants {
 
     public static final class Wearable {
+        public static final String MESSAGE_UPDATE_TODO_ITEM = "/todo/update";
         public static final String MESSAGE_REQUEST_TODO_ITEMS = "/request-todo-items";
     }
 

@@ -51,6 +51,37 @@ public class ToDoItemManager extends SQLiteOpenHelper {
     }
 
     /**
+     * Get a single ToDoItem from the database by it's id
+     * @param id the id of the ToDoItem
+     * @return the ToDoItem or null
+     */
+    public ToDoItem get(int id) {
+
+        ToDoItem item = null;
+        SQLiteDatabase db = getReadableDatabase();
+
+        String[] projection = new String[] {
+                ToDoEntry.COL_ID,
+                ToDoEntry.COL_TITLE,
+                ToDoEntry.COL_CREATE_DATE,
+                ToDoEntry.COL_COMPLETE_DATE
+        };
+        String orderBy = ToDoEntry.COL_CREATE_DATE + " DESC";
+
+        Cursor cursor = db.query(ToDoEntry.TABLE_NAME, projection, ToDoEntry.COL_ID + " = ?", new String[] {Integer.toString(id)}, null, null, orderBy);
+
+        // create the ToDoItem from the cursor
+        if (cursor.getCount() > 0) {
+            cursor.moveToFirst();
+            item = instanceFromCursor(cursor);
+        }
+        cursor.close();
+
+        return item;
+
+    }
+
+    /**
      * Get all the ToDoList items
      * @return a Cursor containing the results of all the ToDoList items
      */

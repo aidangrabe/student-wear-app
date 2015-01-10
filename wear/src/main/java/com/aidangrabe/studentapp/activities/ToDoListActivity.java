@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -32,7 +33,7 @@ import java.util.List;
  * Created by aidan on 10/01/15.
  * Activity to show the current ToDoItems
  */
-public class ToDoListActivity extends Activity implements GoogleApiClient.ConnectionCallbacks, DataApi.DataListener {
+public class ToDoListActivity extends Activity implements GoogleApiClient.ConnectionCallbacks, DataApi.DataListener, AdapterView.OnItemClickListener{
 
     private static final String MESSAGE_REQUEST_TODO_ITEMS = "/request-todo-items";
 
@@ -83,6 +84,7 @@ public class ToDoListActivity extends Activity implements GoogleApiClient.Connec
             }
         };
         mListView.setAdapter(mAdapter);
+        mListView.setOnItemClickListener(this);
 
     }
 
@@ -142,6 +144,16 @@ public class ToDoListActivity extends Activity implements GoogleApiClient.Connec
                 }
             }
         }
+
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+        ToDoItem item = mAdapter.getItem(position);
+        item.complete();
+        mWearUtil.sendMessage(SharedConstants.Wearable.MESSAGE_UPDATE_TODO_ITEM, Integer.toString(item.getId()));
+        mAdapter.notifyDataSetChanged();
 
     }
 }
