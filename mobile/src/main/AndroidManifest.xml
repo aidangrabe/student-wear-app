@@ -21,6 +21,15 @@
         <activity android:name=".activities.NewClassActivity" />
         <activity android:name=".activities.TimeTableActivity" />
         <activity android:name=".activities.ToDoListActivity" />
+
+        <!-- services -->
+        <service android:name=".wearable.DataLayerListenerService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.android.gms.wearable.BIND_LISTENER" />
+            </intent-filter>
+        </service>
+
     </application>
 
 </manifest>

@@ -2,6 +2,7 @@ package com.aidangrabe.studentapp;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.wearable.view.WatchViewStub;
 import android.support.wearable.view.WearableListView;
@@ -10,6 +11,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import com.aidangrabe.studentapp.activities.ToDoListActivity;
 
 public class MainWearActivity extends Activity implements WearableListView.ClickListener {
 
@@ -31,7 +34,11 @@ public class MainWearActivity extends Activity implements WearableListView.Click
 
     @Override
     public void onClick(WearableListView.ViewHolder viewHolder) {
-        Log.d("DEBUG", "onClick!");
+
+        // TODO: not all options should start the todo list activity! :P
+        Intent intent = new Intent(this, ToDoListActivity.class);
+        startActivity(intent);
+
     }
 
     @Override

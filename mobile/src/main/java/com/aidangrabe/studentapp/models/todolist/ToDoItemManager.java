@@ -6,6 +6,9 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import com.google.android.gms.wearable.DataMap;
+import com.google.android.gms.wearable.PutDataMapRequest;
+
 import java.util.Date;
 
 /**
@@ -96,7 +99,7 @@ public class ToDoItemManager extends SQLiteOpenHelper {
             return;
         }
         SQLiteDatabase db = getWritableDatabase();
-        db.update(ToDoEntry.TABLE_NAME, makeContentValues(item), ToDoEntry.COL_ID + " = ?", new String[] {Integer.toString(item.getId())});
+        db.update(ToDoEntry.TABLE_NAME, makeContentValues(item), ToDoEntry.COL_ID + " = ?", new String[]{Integer.toString(item.getId())});
     }
 
     public void save(ToDoItem item) {
@@ -137,6 +140,21 @@ public class ToDoItemManager extends SQLiteOpenHelper {
 
         return item;
 
+    }
+
+    /**
+     * Convert the given ToDoItem to a PutDataMapRequest
+     * @param item the ToDoItem to convert
+     * @return the new PutDataMapRequest object
+     */
+    public static PutDataMapRequest toPutDataMapRequest(ToDoItem item, String path) {
+        PutDataMapRequest putDataMapRequest = PutDataMapRequest.create(path);
+        DataMap dataMap = putDataMapRequest.getDataMap();
+        dataMap.putInt("id", item.getId());
+        dataMap.putString("title", item.getTitle());
+        dataMap.putLong("createDate", item.getCreationDate().getTime());
+        dataMap.putLong("completeDate", item.getCompletionDate() == null ? 0 : item.getCompletionDate().getTime());
+        return putDataMapRequest;
     }
 
 

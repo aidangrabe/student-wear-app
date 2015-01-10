@@ -1,11 +1,13 @@
 package com.aidangrabe.studentapp;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.aidangrabe.studentapp.fragments.MainMenuFragment;
+import com.aidangrabe.studentapp.wearable.DataLayerListenerService;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -16,6 +18,10 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
+
+
+        Intent intent = new Intent(this, DataLayerListenerService.class);
+        startService(intent);
 
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
