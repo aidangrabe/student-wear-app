@@ -27,20 +27,22 @@ public class Lecture {
     public static final String KEY_CLASSES = "classes";
 
     private String name, location;
-    private int startHour, startMinute, endHour, endMinute;
+    private int dayOfWeek, startHour, startMinute, endHour, endMinute;
 
     /**
      * @param name the name of the class
      * @param location the location of the class
+     * @param dayOfWeek the number of the day of the week starting at 0
      * @param startHour the 24-hour start time
      * @param startMinute the start minutes
      * @param endHour the 24-hour end time
      * @param endMinute the end minutes
      */
-    public Lecture(String name, String location, int startHour, int startMinute, int endHour, int endMinute) {
+    public Lecture(String name, String location, int dayOfWeek, int startHour, int startMinute, int endHour, int endMinute) {
 
         this.name = name;
         this.location = location;
+        this.dayOfWeek = dayOfWeek;
         this.startHour = startHour;
         this.startMinute = startMinute;
         this.endHour = endHour;
@@ -125,6 +127,14 @@ public class Lecture {
     }
 
     // getters and setters
+
+    public int getDayOfWeek() {
+        return dayOfWeek;
+    }
+
+    public void setDayOfWeek(int dayOfWeek) {
+        this.dayOfWeek = dayOfWeek;
+    }
 
     public int getEndMinute() {
         return endMinute;

@@ -6,8 +6,12 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
 import android.widget.Toast;
 
 import com.aidangrabe.studentapp.R;
@@ -24,6 +28,8 @@ import cn.pedant.SweetAlert.SweetAlertDialog;
  */
 public class NewClassFragment extends Fragment {
 
+    private int mDayOfWeek;
+    private ArrayAdapter<String> mDaySpinnerAdapter;
     private EditText mNameEditText, mLocationEditText;
     private TimeEditText mFromEditText, mToEditText;
     private Button mSaveButton, mCancelButton;
@@ -59,6 +65,30 @@ public class NewClassFragment extends Fragment {
         mNameEditText = (EditText) view.findViewById(R.id.class_title);
         mLocationEditText = (EditText) view.findViewById(R.id.class_room);
 
+        mDaySpinnerAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item);
+        mDaySpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        Spinner spinner = (Spinner) view.findViewById(R.id.day_spinner);
+        spinner.setAdapter(mDaySpinnerAdapter);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                mDayOfWeek = position;
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                // do nothing
+            }
+        });
+        mDaySpinnerAdapter.add("Monday");
+        mDaySpinnerAdapter.add("Tuesday");
+        mDaySpinnerAdapter.add("Wednesday");
+        mDaySpinnerAdapter.add("Thursday");
+        mDaySpinnerAdapter.add("Friday");
+        mDaySpinnerAdapter.add("Saturday");
+        mDaySpinnerAdapter.add("Sunday");
+        mDaySpinnerAdapter.notifyDataSetChanged();
+
         mCancelButton = (Button) view.findViewById(R.id.cancel_button);
         mSaveButton = (Button) view.findViewById(R.id.save_button);
 
@@ -80,7 +110,7 @@ public class NewClassFragment extends Fragment {
         mToEditText.parseTime();
 
         // create a new Lecture
-        Lecture lecture = new Lecture(mNameEditText.getText().toString(), mLocationEditText.getText().toString(),
+        Lecture lecture = new Lecture(mNameEditText.getText().toString(), mLocationEditText.getText().toString(), mDayOfWeek,
                 mFromEditText.getHourOfDay(), mFromEditText.getMinutes(), mToEditText.getHourOfDay(), mToEditText.getMinutes());
 
         try {
