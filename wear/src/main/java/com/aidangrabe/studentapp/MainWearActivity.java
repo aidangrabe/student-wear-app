@@ -13,10 +13,12 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.aidangrabe.studentapp.activities.ToDoListActivity;
+import com.aidangrabe.studentapp.activities.games.MineSweeperActivity;
 
 public class MainWearActivity extends Activity implements WearableListView.ClickListener {
 
     private WearableListView mListView;
+    private String[] mMenuOptions;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,20 +26,47 @@ public class MainWearActivity extends Activity implements WearableListView.Click
 
         setContentView(R.layout.activity_main_menu);
 
-        String[] menuOptions = getResources().getStringArray(R.array.main_menu_options);
+        mMenuOptions = getMenuOptions();
 
         mListView = (WearableListView) findViewById(R.id.wearable_list);
-        mListView.setAdapter(new Adapter(this, menuOptions));
+        mListView.setAdapter(new Adapter(this, mMenuOptions));
         mListView.setClickListener(this);
 
     }
 
+    private String[] getMenuOptions() {
+        return new String[] {
+                getResources().getString(R.string.menu_todo_list),
+                getResources().getString(R.string.menu_timetable),
+                getResources().getString(R.string.menu_games),
+        };
+    }
+
+
+
     @Override
     public void onClick(WearableListView.ViewHolder viewHolder) {
 
-        // TODO: not all options should start the todo list activity! :P
-        Intent intent = new Intent(this, ToDoListActivity.class);
-        startActivity(intent);
+        Class newActivityClass = null;
+        int tag = (int) viewHolder.itemView.getTag();
+
+        // ToDoList
+        if (mMenuOptions[tag].equals(getResources().getString(R.string.menu_todo_list))) {
+            newActivityClass = ToDoListActivity.class;
+        }
+        // Timetable
+        else if (mMenuOptions[tag].equals(getResources().getString(R.string.menu_timetable))) {
+
+        }
+        // Games
+        else if (mMenuOptions[tag].equals(getResources().getString(R.string.menu_games))) {
+            newActivityClass = MineSweeperActivity.class;
+        }
+
+        if (newActivityClass != null) {
+            Intent intent = new Intent(this, newActivityClass);
+            startActivity(intent);
+        }
 
     }
 

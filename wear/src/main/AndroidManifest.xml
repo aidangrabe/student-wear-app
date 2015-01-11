@@ -21,6 +21,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".activities.ToDoListActivity" />
+        <activity android:name=".activities.games.MineSweeperActivity" />
 
     </application>
 
