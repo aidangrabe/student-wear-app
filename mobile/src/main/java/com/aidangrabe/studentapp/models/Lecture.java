@@ -1,6 +1,7 @@
 package com.aidangrabe.studentapp.models;
 
 import android.content.Context;
+import android.os.Bundle;
 
 import com.aidangrabe.studentapp.util.FileUtils;
 import com.google.gson.Gson;
@@ -124,6 +125,33 @@ public class Lecture {
         }
 
         return file.getAbsolutePath();
+    }
+
+    public Bundle toBundle() {
+
+        Bundle bundle = new Bundle();
+
+        bundle.putString("name", name);
+        bundle.putString("location", location);
+        bundle.putInt("dayOfWeek", dayOfWeek);
+        bundle.putInt("startHour", startHour);
+        bundle.putInt("startMinute", startMinute);
+        bundle.putInt("endHour", endHour);
+        bundle.putInt("endMinute", endMinute);
+
+        return bundle;
+
+    }
+
+    public static Lecture instanceFromBundle(Bundle bundle) {
+        return new Lecture(bundle.getString("name"),
+                bundle.getString("location"),
+                bundle.getInt("dayOfWeek"),
+                bundle.getInt("startHour"),
+                bundle.getInt("startMinute"),
+                bundle.getInt("endHour"),
+                bundle.getInt("endMinute")
+                );
     }
 
     // getters and setters

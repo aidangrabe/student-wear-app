@@ -12,8 +12,14 @@ import android.view.View;
 import com.aidangrabe.common.SharedConstants;
 import com.aidangrabe.studentapp.R;
 import com.aidangrabe.studentapp.fragments.TimeTableFragment;
+import com.aidangrabe.studentapp.models.Lecture;
 
+import org.json.JSONException;
+
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -25,12 +31,20 @@ public class TimeTableActivity extends ActionBarActivity {
     private FragmentPagerAdapter mPagerAdapter;
     private ViewPager mViewPager;
     private Map<Integer, String> mDayNames;
+    private List<Lecture> mLectures;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_timetable);
+
+        try {
+            mLectures = Lecture.getSavedLectures(this);
+        } catch (Exception e) {
+            // error
+            mLectures = new ArrayList<>();
+        }
 
         mViewPager = (ViewPager) findViewById(R.id.view_pager);
         mPagerAdapter = new TimeTablePagerAdapter(getSupportFragmentManager());
@@ -46,15 +60,6 @@ public class TimeTableActivity extends ActionBarActivity {
         mDayNames.put(SharedConstants.Day.SATURDAY, "Saturday");
         mDayNames.put(SharedConstants.Day.SUNDAY, "Sunday");
 
-        setupTabs();
-
-    }
-
-    private void setupTabs() {
-
-//        ActionBar actionBar = getActionBar();
-//        actionBar.setNavigationMode();
-
     }
 
     public class TimeTablePagerAdapter extends FragmentPagerAdapter {
@@ -65,7 +70,7 @@ public class TimeTableActivity extends ActionBarActivity {
 
         @Override
         public Fragment getItem(int position) {
-            return TimeTableFragment.makeInstance(position);
+            return TimeTableFragment.makeInstance(mLectures, position);
         }
 
         @Override
