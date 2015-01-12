@@ -18,6 +18,8 @@ import org.json.JSONException;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,6 +35,9 @@ public class TimeTableActivity extends ActionBarActivity {
     private Map<Integer, String> mDayNames;
     private List<Lecture> mLectures;
 
+    // the index of the days to show in the tab view
+    private List<Integer> mDaysToShow;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,6 +50,20 @@ public class TimeTableActivity extends ActionBarActivity {
             // error
             mLectures = new ArrayList<>();
         }
+
+        mDaysToShow = new ArrayList<>();
+        for (Lecture lecture : mLectures) {
+            if (!mDaysToShow.contains(lecture.getDayOfWeek())) {
+                mDaysToShow.add(lecture.getDayOfWeek());
+            }
+        }
+
+        Collections.sort(mDaysToShow, new Comparator<Integer>() {
+            @Override
+            public int compare(Integer lhs, Integer rhs) {
+                return lhs - rhs;
+            }
+        });
 
         mViewPager = (ViewPager) findViewById(R.id.view_pager);
         mPagerAdapter = new TimeTablePagerAdapter(getSupportFragmentManager());
@@ -70,17 +89,17 @@ public class TimeTableActivity extends ActionBarActivity {
 
         @Override
         public Fragment getItem(int position) {
-            return TimeTableFragment.makeInstance(mLectures, position);
+            return TimeTableFragment.makeInstance(mLectures, mDaysToShow.get(position));
         }
 
         @Override
         public int getCount() {
-            return 7;
+            return mDaysToShow.size();
         }
 
         @Override
         public CharSequence getPageTitle(int position) {
-            return mDayNames.get(position);
+            return mDayNames.get(mDaysToShow.get(position));
         }
     }
 
