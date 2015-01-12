@@ -10,6 +10,7 @@ public class SharedConstants {
         public static final String MESSAGE_CREATE_TODO_ITEM = "/todo/create";
         public static final String MESSAGE_UPDATE_TODO_ITEM = "/todo/update";
         public static final String MESSAGE_REQUEST_TODO_ITEMS = "/request-todo-items";
+        public static final String MESSAGE_FIND_MY_PHONE = "/find-my-phone";
     }
 
     public static final class Day {

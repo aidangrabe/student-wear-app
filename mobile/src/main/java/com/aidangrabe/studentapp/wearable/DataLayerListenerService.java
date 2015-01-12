@@ -1,6 +1,10 @@
 package com.aidangrabe.studentapp.wearable;
 
 import android.database.Cursor;
+import android.media.AudioManager;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.util.Log;
 
 import com.aidangrabe.common.SharedConstants;
@@ -64,6 +68,10 @@ public class DataLayerListenerService extends WearableListenerService {
             ToDoItem item = new ToDoItem(new String(messageEvent.getData()));
             ToDoItemManager manager = new ToDoItemManager(this);
             manager.save(item);
+        }
+        // find my phone
+        else if (path.equals(SharedConstants.Wearable.MESSAGE_FIND_MY_PHONE)) {
+            findMyPhone();
         }
 
     }
@@ -144,6 +152,25 @@ public class DataLayerListenerService extends WearableListenerService {
             item.complete();
         }
         manager.update(item);
+
+    }
+
+    // plays a noise so the user can find their phone
+    private void findMyPhone() {
+
+        AudioManager manager = (AudioManager) getSystemService(AUDIO_SERVICE);
+        int currentVolume = manager.getStreamVolume(AudioManager.STREAM_RING);
+
+        // set max volume
+        manager.setStreamVolume(AudioManager.STREAM_RING, manager.getStreamMaxVolume(AudioManager.STREAM_RING), 0);
+
+        try {
+            Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+            Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
+            r.play();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
     }
 

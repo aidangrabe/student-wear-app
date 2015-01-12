@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.aidangrabe.studentapp.activities.FindMyPhoneActivity;
 import com.aidangrabe.studentapp.activities.ToDoListActivity;
 import com.aidangrabe.studentapp.activities.games.MineSweeperActivity;
 
@@ -39,6 +40,7 @@ public class MainWearActivity extends Activity implements WearableListView.Click
                 getResources().getString(R.string.menu_todo_list),
                 getResources().getString(R.string.menu_timetable),
                 getResources().getString(R.string.menu_games),
+                getResources().getString(R.string.find_my_phone)
         };
     }
 
@@ -61,6 +63,10 @@ public class MainWearActivity extends Activity implements WearableListView.Click
         // Games
         else if (mMenuOptions[tag].equals(getResources().getString(R.string.menu_games))) {
             newActivityClass = MineSweeperActivity.class;
+        }
+        // Find My Phone
+        else if (mMenuOptions[tag].equals(getResources().getString(R.string.find_my_phone))) {
+            newActivityClass = FindMyPhoneActivity.class;
         }
 
         if (newActivityClass != null) {
