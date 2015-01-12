@@ -99,6 +99,7 @@ public class TimeTableFragment extends Fragment {
                 ((TextView) view.findViewById(R.id.title)).setText(lecture.getName());
                 ((TextView) view.findViewById(R.id.time)).setText(String.format("%d:%02d", lecture.getStartHour(), lecture.getStartMinute()));
                 ((TextView) view.findViewById(R.id.duration)).setText(getDuration(lecture));
+                ((TextView) view.findViewById(R.id.location)).setText(lecture.getLocation());
 
                 return view;
             }
