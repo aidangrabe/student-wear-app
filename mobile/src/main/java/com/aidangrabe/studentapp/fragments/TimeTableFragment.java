@@ -88,7 +88,11 @@ public class TimeTableFragment extends Fragment {
             public View getView(int position, View convertView, ViewGroup parent) {
 
                 LayoutInflater inflater = getActivity().getLayoutInflater();
-                View view = inflater.inflate(R.layout.list_item_timetable_lecture, parent, false);
+
+                View view = convertView;
+                if (view == null) {
+                    view = inflater.inflate(R.layout.list_item_timetable_lecture, parent, false);
+                }
 
                 Lecture lecture = getItem(position);
 
