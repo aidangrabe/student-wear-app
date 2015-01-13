@@ -54,6 +54,12 @@ public class SnakeController {
         return mSnakes;
     }
 
+    public void move(int player, Snake.Dir dir) {
+        if (player > 0 && player < mSnakes.length) {
+            mSnakes[player].move(dir);
+        }
+    }
+
     public void setGameListener(GameListener listener) {
         mListener = listener;
     }
