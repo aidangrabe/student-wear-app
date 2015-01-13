@@ -21,6 +21,7 @@
         <activity android:name=".activities.NewClassActivity" />
         <activity android:name=".activities.TimeTableActivity" />
         <activity android:name=".activities.ToDoListActivity" />
+        <activity android:name=".activities.games.SnakeActivity" />
 
         <!-- services -->
         <service android:name=".wearable.DataLayerListenerService"
