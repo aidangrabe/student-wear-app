@@ -9,6 +9,7 @@
     <string name="menu_add_class">+ Add Class</string>
     <string name="menu_todo_list">ToDo List</string>
     <string name="menu_timetable">Timetable</string>
+    <string name="menu_games">Games</string>
 
     <!-- Creating a ToDoItem -->
     <string name="new_todo_item">New ToDo Item</string>

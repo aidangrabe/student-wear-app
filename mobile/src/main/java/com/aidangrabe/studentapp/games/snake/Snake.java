@@ -19,6 +19,7 @@ public class Snake {
 
     private SnakeListener mListener;
     private ArrayList<BodyPart> mBodyParts;
+    private Dir mCurrentDir;
 
     // array used to buffer parts to remove so they can be removed in bulk
     private ArrayList<BodyPart> mPartsToRemove;
@@ -54,11 +55,12 @@ public class Snake {
 
     public Snake() {
 
-        mPosition = new Point(0, 0);
-        mLength = 3;
+        mPosition = new Point(10, 10);
+        mLength = 10;
         mBodySize = 16;
         mBodyParts = new ArrayList<>();
         mPartsToRemove = new ArrayList<>();
+        mCurrentDir = Dir.RIGHT;
 
         mListener = new SnakeListener() {
             @Override
@@ -85,12 +87,20 @@ public class Snake {
         return mBodyParts;
     }
 
+    public Point getPosition() {
+        return mPosition;
+    }
+
     public void grow() {
         grow(2);
     }
 
     public void grow(int amount) {
         mLength += amount;
+    }
+
+    public void move() {
+        move(mCurrentDir);
     }
 
     public void move(Dir direction) {
@@ -110,6 +120,8 @@ public class Snake {
                 break;
         }
 
+        mCurrentDir = direction;
+
     }
 
     private void makeBodyPart() {
@@ -121,9 +133,7 @@ public class Snake {
 
     private void move(int x, int y) {
 
-        makeBodyPart();
         mPosition.offset(x, y);
-
         removeDeadBodyParts();
 
         if (collision()) {
@@ -131,6 +141,8 @@ public class Snake {
         } else {
             mListener.onMove(this);
         }
+
+        makeBodyPart();
 
     }
 
@@ -145,6 +157,10 @@ public class Snake {
         }
         mBodyParts.removeAll(mPartsToRemove);
 
+    }
+
+    public void setPosition(Point position) {
+        mPosition = position;
     }
 
     public void setSnakeListener(SnakeListener listener) {

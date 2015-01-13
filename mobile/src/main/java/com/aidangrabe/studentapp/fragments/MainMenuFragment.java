@@ -14,6 +14,7 @@ import com.aidangrabe.studentapp.R;
 import com.aidangrabe.studentapp.activities.NewClassActivity;
 import com.aidangrabe.studentapp.activities.TimeTableActivity;
 import com.aidangrabe.studentapp.activities.ToDoListActivity;
+import com.aidangrabe.studentapp.activities.games.SnakeActivity;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -79,6 +80,7 @@ public class MainMenuFragment extends ListFragment {
         mMenuMap.put(getResources().getString(R.string.menu_add_class), NewClassActivity.class);
         mMenuMap.put(getResources().getString(R.string.menu_todo_list), ToDoListActivity.class);
         mMenuMap.put(getResources().getString(R.string.menu_timetable), TimeTableActivity.class);
+        mMenuMap.put(getResources().getString(R.string.menu_games), SnakeActivity.class);
 
     }
 
