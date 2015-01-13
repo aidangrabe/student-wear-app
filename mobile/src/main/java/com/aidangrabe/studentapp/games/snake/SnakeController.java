@@ -60,7 +60,7 @@ public class SnakeController {
 
     public void start() {
 
-        mTimer.schedule(mTimerTask, TimeUnit.SECONDS.toMillis(1));
+        mTimer.schedule(mTimerTask, TimeUnit.SECONDS.toMillis(1), TimeUnit.SECONDS.toMillis(1));
 
     }
 
