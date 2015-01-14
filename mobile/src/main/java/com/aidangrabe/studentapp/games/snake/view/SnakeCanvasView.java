@@ -42,8 +42,10 @@ public class SnakeCanvasView extends View implements SnakeController.GameListene
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
+        // clear the canvas
         canvas.drawColor(Color.WHITE);
 
+        // draw the snakes
         for (Snake snake : mSnakes) {
 
             drawPart(canvas, snake.getPosition());
@@ -55,6 +57,7 @@ public class SnakeCanvasView extends View implements SnakeController.GameListene
 
     }
 
+    // draw a part of the snake's body at the given Point
     public void drawPart(Canvas canvas, Point point) {
 
         mSnakeRect.offsetTo(point.x, point.y);
@@ -62,6 +65,11 @@ public class SnakeCanvasView extends View implements SnakeController.GameListene
 
     }
 
+    public Snake[] getSnakes() {
+        return mSnakes;
+    }
+
+    // called every time the game logic is updated.
     @Override
     public void onGameTick(Snake[] snakes) {
 

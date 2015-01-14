@@ -4,6 +4,7 @@
     android:layout_height="match_parent">
 
     <com.aidangrabe.studentapp.games.snake.view.SnakeCanvasView
+        android:id="@+id/snake_canvas_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
