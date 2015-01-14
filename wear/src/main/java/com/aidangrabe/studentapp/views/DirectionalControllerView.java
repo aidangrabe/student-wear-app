@@ -17,11 +17,11 @@ public class DirectionalControllerView extends View {
     private Paint mLinePaint;
     private int mWidth, mHeight;
     private DirectionalControllerListener mListener;
-    private final OnTouchListener mOnClickListener = new OnTouchListener() {
+    private final OnTouchListener mOnTouchListener = new OnTouchListener() {
         @Override
         public boolean onTouch(View v, MotionEvent event) {
             Dir dir = getDirection(event.getX(), event.getY());
-            if (mListener != null) {
+            if (event.getAction() == MotionEvent.ACTION_DOWN && mListener != null) {
                 mListener.onDirectionPressed(dir);
             }
             return true;
@@ -41,6 +41,7 @@ public class DirectionalControllerView extends View {
 
         mLinePaint = new Paint();
         mLinePaint.setColor(Color.WHITE);
+        setOnTouchListener(mOnTouchListener);
 
     }
 
@@ -67,8 +68,10 @@ public class DirectionalControllerView extends View {
 
     private Dir getDirection(float x, float y) {
 
-        float deltaX = mWidth / 2 - x;
-        float deltaY = mHeight / 2 - y;
+        float deltaX, deltaY;
+
+        deltaX = x > mWidth / 2 ? mWidth - x : - x;
+        deltaY = y > mHeight / 2 ? mHeight - y : - y;
 
         if (Math.abs(deltaX) < Math.abs(deltaY)) {
             // horizontal
