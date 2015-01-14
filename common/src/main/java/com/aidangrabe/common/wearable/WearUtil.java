@@ -24,6 +24,7 @@ public class WearUtil implements DataApi.DataListener, MessageApi.MessageListene
     private GoogleApiClient mGoogleApiClient;
     private GoogleApiClient.ConnectionCallbacks mConnectionCallbacks;
     private DataApi.DataListener mDataListener;
+    private MessageApi.MessageListener mMessageListener;
 
     public WearUtil(Context context) {
 
@@ -60,16 +61,16 @@ public class WearUtil implements DataApi.DataListener, MessageApi.MessageListene
         Log.d("DEBUG", "WearUtils: Sending message");
         Wearable.NodeApi.getConnectedNodes(mGoogleApiClient)
                 .setResultCallback(new ResultCallback<NodeApi.GetConnectedNodesResult>() {
-                    @Override
-                    public void onResult(NodeApi.GetConnectedNodesResult getConnectedNodesResult) {
-                        Log.d("DEBUG", "First callback");
-                        for (Node node : getConnectedNodesResult.getNodes()) {
-                            Wearable.MessageApi.sendMessage(mGoogleApiClient, node.getId(), path,
-                                    data).setResultCallback(getSendMessageResultCallback());
-                        }
-                    }
-                }
-        );
+                                       @Override
+                                       public void onResult(NodeApi.GetConnectedNodesResult getConnectedNodesResult) {
+                                           Log.d("DEBUG", "First callback");
+                                           for (Node node : getConnectedNodesResult.getNodes()) {
+                                               Wearable.MessageApi.sendMessage(mGoogleApiClient, node.getId(), path,
+                                                       data).setResultCallback(getSendMessageResultCallback());
+                                           }
+                                       }
+                                   }
+                );
 
     }
 
@@ -93,6 +94,11 @@ public class WearUtil implements DataApi.DataListener, MessageApi.MessageListene
     @Override
     public void onMessageReceived(MessageEvent messageEvent) {
         Log.d("DEBUG", "onMessageReceive" + messageEvent.getPath());
+
+        if (mMessageListener != null) {
+            mMessageListener.onMessageReceived(messageEvent);
+        }
+
     }
 
     @Override
@@ -119,6 +125,11 @@ public class WearUtil implements DataApi.DataListener, MessageApi.MessageListene
 
     public WearUtil setDataListener(DataApi.DataListener dataListener) {
         mDataListener = dataListener;
+        return this;
+    }
+
+    public WearUtil setMessageListener(MessageApi.MessageListener messageListener) {
+        mMessageListener = messageListener;
         return this;
     }
 
