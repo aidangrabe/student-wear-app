@@ -13,6 +13,7 @@ public class SnakeController {
     private Timer mTimer;
     private Snake[] mSnakes;
     private GameListener mListener;
+    private Food mFood;
 
     private final TimerTask mTimerTask = new TimerTask() {
         @Override
@@ -23,11 +24,13 @@ public class SnakeController {
 
     public interface GameListener {
         public void onGameTick(Snake[] snakes);
+        public void onSnakeFeed(Snake snake, Food food);
     }
 
     public SnakeController(int numPlayers) {
 
         mTimer = new Timer();
+        mFood = new Food();
 
         mSnakes = new Snake[numPlayers];
         for (int i = 0; i < numPlayers; i++) {
@@ -40,7 +43,17 @@ public class SnakeController {
 
         // move the snakes
         for (int i = 0; i < mSnakes.length; i++) {
-            mSnakes[i].move();
+            Snake snake = mSnakes[i];
+            snake.move();
+
+            // check for snake feeding
+            if (snake.getPosition().x == mFood.position.x && snake.getPosition().y == mFood.position.y) {
+                // TODO: handle multiple players
+                mSnakes[0].grow();
+
+                mListener.onSnakeFeed(snake, mFood);
+            }
+
         }
 
         // notify the listener of the event
@@ -48,6 +61,10 @@ public class SnakeController {
             mListener.onGameTick(mSnakes);
         }
 
+    }
+
+    public Food getFood() {
+        return mFood;
     }
 
     public Snake[] getSnakes() {
@@ -66,7 +83,7 @@ public class SnakeController {
 
     public void start() {
 
-        mTimer.schedule(mTimerTask, TimeUnit.SECONDS.toMillis(1), TimeUnit.SECONDS.toMillis(1));
+        mTimer.schedule(mTimerTask, TimeUnit.SECONDS.toMillis(1), 250);
 
     }
 

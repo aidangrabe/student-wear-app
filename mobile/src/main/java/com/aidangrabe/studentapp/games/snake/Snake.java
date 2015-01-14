@@ -55,7 +55,7 @@ public class Snake {
 
     public Snake() {
 
-        mPosition = new Point(10, 10);
+        mPosition = new Point(16, 16);
         mLength = 10;
         mBodySize = 16;
         mBodyParts = new ArrayList<>();

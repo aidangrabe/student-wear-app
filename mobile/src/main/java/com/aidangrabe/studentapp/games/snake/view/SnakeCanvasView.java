@@ -11,6 +11,7 @@ import android.os.Looper;
 import android.util.AttributeSet;
 import android.view.View;
 
+import com.aidangrabe.studentapp.games.snake.Food;
 import com.aidangrabe.studentapp.games.snake.Snake;
 import com.aidangrabe.studentapp.games.snake.SnakeController;
 
@@ -20,10 +21,14 @@ import com.aidangrabe.studentapp.games.snake.SnakeController;
  */
 public class SnakeCanvasView extends View implements SnakeController.GameListener {
 
+    private static final int COLOR_FOOD = Color.RED;
+
     private SnakeController mGame;
     private Snake[] mSnakes;
     private Rect mSnakeRect;
     private Paint mSnakePaint;
+    private int mWidth, mHeight;
+    private boolean mSizedAndReady;
 
     public SnakeCanvasView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -35,6 +40,7 @@ public class SnakeCanvasView extends View implements SnakeController.GameListene
         mSnakeRect = new Rect(0, 0, 16, 16);
         mSnakePaint = new Paint();
         mSnakePaint.setColor(Color.BLACK);
+        mSizedAndReady = false;
 
     }
 
@@ -55,13 +61,42 @@ public class SnakeCanvasView extends View implements SnakeController.GameListene
 
         }
 
+        drawPart(canvas, mGame.getFood().position, COLOR_FOOD);
+
     }
 
     // draw a part of the snake's body at the given Point
     public void drawPart(Canvas canvas, Point point) {
 
+        drawPart(canvas, point, mSnakePaint.getColor());
+
+    }
+
+    // draw a part of the snake's body at the given Point
+    public void drawPart(Canvas canvas, Point point, int color) {
+
+        int oldColor = mSnakePaint.getColor();
+        mSnakePaint.setColor(color);
+
         mSnakeRect.offsetTo(point.x, point.y);
         canvas.drawRect(mSnakeRect, mSnakePaint);
+
+        // reset the paint color
+        mSnakePaint.setColor(oldColor);
+
+    }
+
+    @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        super.onSizeChanged(w, h, oldw, oldh);
+
+        mWidth = w;
+        mHeight = h;
+
+        if (!mSizedAndReady) {
+            mSizedAndReady = true;
+            mGame.getFood().jumpRandomly(w, h);
+        }
 
     }
 
@@ -82,4 +117,10 @@ public class SnakeCanvasView extends View implements SnakeController.GameListene
 
     }
 
+    @Override
+    public void onSnakeFeed(Snake snake, Food food) {
+
+        food.jumpRandomly(mWidth, mHeight);
+
+    }
 }
