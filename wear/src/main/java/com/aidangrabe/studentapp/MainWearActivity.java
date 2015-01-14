@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import com.aidangrabe.studentapp.activities.FindMyPhoneActivity;
 import com.aidangrabe.studentapp.activities.ToDoListActivity;
+import com.aidangrabe.studentapp.activities.games.GameMenuActivity;
 import com.aidangrabe.studentapp.activities.games.MineSweeperActivity;
 
 public class MainWearActivity extends Activity implements WearableListView.ClickListener {
@@ -62,7 +63,7 @@ public class MainWearActivity extends Activity implements WearableListView.Click
         }
         // Games
         else if (mMenuOptions[tag].equals(getResources().getString(R.string.menu_games))) {
-            newActivityClass = MineSweeperActivity.class;
+            newActivityClass = GameMenuActivity.class;
         }
         // Find My Phone
         else if (mMenuOptions[tag].equals(getResources().getString(R.string.find_my_phone))) {

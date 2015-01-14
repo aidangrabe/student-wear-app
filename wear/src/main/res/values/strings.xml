@@ -8,6 +8,11 @@
     <!-- ToDoList -->
     <string name="todo_new_item">+ New Item</string>
 
+    <!-- Game menu -->
+    <string name="game_menu_controller">Game Controller</string>
+    <string name="game_menu_minesweeper">Mine Sweeper</string>
+
+    <!-- Main Menu -->
     <string name="menu_todo_list">ToDo List</string>
     <string name="menu_timetable">Timetable</string>
     <string name="menu_games">Games</string>
