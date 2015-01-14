@@ -11,6 +11,13 @@ public class SharedConstants {
         public static final String MESSAGE_UPDATE_TODO_ITEM = "/todo/update";
         public static final String MESSAGE_REQUEST_TODO_ITEMS = "/request-todo-items";
         public static final String MESSAGE_FIND_MY_PHONE = "/find-my-phone";
+
+        // game controller
+        public static final String MESSAGE_GAME_CONTROLLER = "/game-controller";
+        public static final String MESSAGE_GAME_CONTROLLER_LEFT = "left";
+        public static final String MESSAGE_GAME_CONTROLLER_RIGHT = "right";
+        public static final String MESSAGE_GAME_CONTROLLER_UP = "up";
+        public static final String MESSAGE_GAME_CONTROLLER_DOWN = "down";
     }
 
     public static final class Day {

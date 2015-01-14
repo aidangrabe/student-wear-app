@@ -4,8 +4,12 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.aidangrabe.common.SharedConstants;
+import com.aidangrabe.common.wearable.WearUtil;
 import com.aidangrabe.studentapp.R;
 import com.aidangrabe.studentapp.views.DirectionalControllerView;
+import com.google.android.gms.wearable.MessageApi;
+import com.google.android.gms.wearable.MessageEvent;
 
 /**
  * Created by aidan on 13/01/15.
@@ -13,11 +17,15 @@ import com.aidangrabe.studentapp.views.DirectionalControllerView;
  */
 public class DirectionalControllerActivity extends Activity implements DirectionalControllerView.DirectionalControllerListener {
 
+    private WearUtil mWearUtil;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_directional_controller);
+
+        mWearUtil = new WearUtil(this);
 
         DirectionalControllerView view = (DirectionalControllerView) findViewById(R.id.directional_controller_view);
         view.setDirectionalControllerListener(this);
@@ -25,22 +33,39 @@ public class DirectionalControllerActivity extends Activity implements Direction
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+
+        mWearUtil.connect();
+
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        mWearUtil.disconnect();
+
+    }
+
+    @Override
     public void onDirectionPressed(DirectionalControllerView.Dir direction) {
-        String dir = "";
+
         switch (direction) {
             case UP:
-                dir = "UP";
+                mWearUtil.sendMessage(SharedConstants.Wearable.MESSAGE_GAME_CONTROLLER, SharedConstants.Wearable.MESSAGE_GAME_CONTROLLER_UP);
                 break;
             case DOWN:
-                dir = "DOWN";
+                mWearUtil.sendMessage(SharedConstants.Wearable.MESSAGE_GAME_CONTROLLER, SharedConstants.Wearable.MESSAGE_GAME_CONTROLLER_DOWN);
                 break;
             case RIGHT:
-                dir = "RIGHT";
+                mWearUtil.sendMessage(SharedConstants.Wearable.MESSAGE_GAME_CONTROLLER, SharedConstants.Wearable.MESSAGE_GAME_CONTROLLER_RIGHT);
                 break;
             case LEFT:
-                dir = "LEFT";
+                mWearUtil.sendMessage(SharedConstants.Wearable.MESSAGE_GAME_CONTROLLER, SharedConstants.Wearable.MESSAGE_GAME_CONTROLLER_LEFT);
                 break;
         }
-        Log.d("DIR", dir);
+
     }
+
 }
