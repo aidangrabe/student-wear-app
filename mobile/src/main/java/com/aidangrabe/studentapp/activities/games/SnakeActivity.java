@@ -2,6 +2,7 @@ package com.aidangrabe.studentapp.activities.games;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
 
@@ -9,9 +10,13 @@ import com.aidangrabe.common.SharedConstants;
 import com.aidangrabe.common.wearable.WearUtil;
 import com.aidangrabe.studentapp.R;
 import com.aidangrabe.studentapp.games.snake.Snake;
+import com.aidangrabe.studentapp.games.snake.SnakeController;
 import com.aidangrabe.studentapp.games.snake.view.SnakeCanvasView;
 import com.google.android.gms.wearable.MessageApi;
 import com.google.android.gms.wearable.MessageEvent;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by aidan on 13/01/15.
@@ -21,6 +26,8 @@ public class SnakeActivity extends Activity implements MessageApi.MessageListene
 
     private WearUtil mWearUtil;
     private SnakeCanvasView mView;
+    private Map<String, Integer> mPlayerMap;
+    private int mNumPlayers;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +40,8 @@ public class SnakeActivity extends Activity implements MessageApi.MessageListene
         setContentView(R.layout.activity_snake);
 
         mView = (SnakeCanvasView) findViewById(R.id.snake_canvas_view);
+        mPlayerMap = new HashMap<>();
+        mNumPlayers = 0;
 
         mWearUtil = new WearUtil(this);
         mWearUtil.setMessageListener(this);
@@ -62,33 +71,49 @@ public class SnakeActivity extends Activity implements MessageApi.MessageListene
     @Override
     public void onMessageReceived(MessageEvent messageEvent) {
 
-        // get first snake, TODO: support multiple players/snakes
-        Snake snake = mView.getSnakes()[0];
-
-        if (messageEvent.getPath().equals(SharedConstants.Wearable.MESSAGE_GAME_CONTROLLER)) {
-
-            String dir = new String(messageEvent.getData());
-            switch (dir) {
-                // LEFT
-                case SharedConstants.Wearable.MESSAGE_GAME_CONTROLLER_LEFT:
-                    snake.move(Snake.Dir.LEFT);
-                    break;
-                // RIGHT
-                case SharedConstants.Wearable.MESSAGE_GAME_CONTROLLER_RIGHT:
-                    snake.move(Snake.Dir.RIGHT);
-                    break;
-                // UP
-                case SharedConstants.Wearable.MESSAGE_GAME_CONTROLLER_UP:
-                    snake.move(Snake.Dir.UP);
-                    break;
-                // DOWN
-                case SharedConstants.Wearable.MESSAGE_GAME_CONTROLLER_DOWN:
-                    snake.move(Snake.Dir.DOWN);
-                    break;
-            }
-
+        // only handle messages from the GameController
+        if (!messageEvent.getPath().equals(SharedConstants.Wearable.MESSAGE_GAME_CONTROLLER)) {
+            return;
         }
 
+        if (!mPlayerMap.containsKey(messageEvent.getSourceNodeId())) {
+            addPlayer(messageEvent.getSourceNodeId());
+        }
+
+        SnakeController game = mView.getSnakeController();
+        int player = mPlayerMap.get(messageEvent.getSourceNodeId());
+        Snake snake = game.getSnake(player);
+
+        if (snake == null) {
+            return;
+        }
+
+        String dir = new String(messageEvent.getData());
+        switch (dir) {
+            // LEFT
+            case SharedConstants.Wearable.MESSAGE_GAME_CONTROLLER_LEFT:
+                snake.move(Snake.Dir.LEFT);
+                break;
+            // RIGHT
+            case SharedConstants.Wearable.MESSAGE_GAME_CONTROLLER_RIGHT:
+                snake.move(Snake.Dir.RIGHT);
+                break;
+            // UP
+            case SharedConstants.Wearable.MESSAGE_GAME_CONTROLLER_UP:
+                snake.move(Snake.Dir.UP);
+                break;
+            // DOWN
+            case SharedConstants.Wearable.MESSAGE_GAME_CONTROLLER_DOWN:
+                snake.move(Snake.Dir.DOWN);
+                break;
+        }
 
     }
+
+    private void addPlayer(String nodeId) {
+        mPlayerMap.put(nodeId, mNumPlayers++);
+        mView.setNumPlayers(mNumPlayers);
+        Log.d("DEBUG", "Add Player: " + mNumPlayers);
+    }
+
 }

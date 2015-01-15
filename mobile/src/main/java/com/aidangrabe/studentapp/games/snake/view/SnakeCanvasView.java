@@ -9,6 +9,7 @@ import android.graphics.Rect;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.view.View;
 
 import com.aidangrabe.studentapp.games.snake.Food;
@@ -24,23 +25,42 @@ public class SnakeCanvasView extends View implements SnakeController.GameListene
     private static final int COLOR_FOOD = Color.RED;
 
     private SnakeController mGame;
-    private Snake[] mSnakes;
     private Rect mSnakeRect;
-    private Paint mSnakePaint;
-    private int mWidth, mHeight;
+    private Paint mSnakePaint, mTextPaint;
+    private int mWidth, mHeight, mNumPlayers;
     private boolean mSizedAndReady;
+    private boolean mGameStarted;
+
+    private final OnTouchListener mOnTouchListener = new OnTouchListener() {
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+            if (mNumPlayers > 0) {
+                mGame.start(mNumPlayers);
+                mGameStarted = true;
+            }
+
+            return false;
+        }
+    };
 
     public SnakeCanvasView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
-        mGame = new SnakeController(1);
+        mGame = new SnakeController();
         mGame.setGameListener(this);
-        mGame.start();
-        mSnakes = mGame.getSnakes();
         mSnakeRect = new Rect(0, 0, 16, 16);
         mSnakePaint = new Paint();
         mSnakePaint.setColor(Color.BLACK);
         mSizedAndReady = false;
+        mGameStarted = false;
+        mNumPlayers = 0;
+        setOnTouchListener(mOnTouchListener);
+
+        mTextPaint = new Paint();
+        mTextPaint.setColor(Color.BLACK);
+        mTextPaint.setTextAlign(Paint.Align.CENTER);
+        mTextPaint.setTextSize(16);
+        mTextPaint.setAntiAlias(true);
 
     }
 
@@ -51,17 +71,27 @@ public class SnakeCanvasView extends View implements SnakeController.GameListene
         // clear the canvas
         canvas.drawColor(Color.WHITE);
 
-        // draw the snakes
-        for (Snake snake : mSnakes) {
+        if (mGameStarted) {
+            // draw the snakes
+            for (Snake snake : mGame.getSnakes()) {
 
-            drawPart(canvas, snake.getPosition());
-            for (Snake.BodyPart part : snake.getBodyParts()) {
-                drawPart(canvas, part.position);
+                drawPart(canvas, snake.getPosition());
+                for (Snake.BodyPart part : snake.getBodyParts()) {
+                    drawPart(canvas, part.position);
+                }
+
             }
 
+            drawPart(canvas, mGame.getFood().position, COLOR_FOOD);
         }
-
-        drawPart(canvas, mGame.getFood().position, COLOR_FOOD);
+        // show waiting for players message
+        else {
+            canvas.drawText("Waiting for players...", mWidth / 2, mHeight / 2, mTextPaint);
+            canvas.drawText(String.format("Num Players: %d", mNumPlayers), mWidth / 2, mHeight / 2 + 30, mTextPaint);
+            if (mNumPlayers > 0) {
+                canvas.drawText("TOUCH TO START", mWidth / 2, mHeight / 2 + 70, mTextPaint);
+            }
+        }
 
     }
 
@@ -101,7 +131,7 @@ public class SnakeCanvasView extends View implements SnakeController.GameListene
     }
 
     public Snake[] getSnakes() {
-        return mSnakes;
+        return mGame.getSnakes();
     }
 
     // called every time the game logic is updated.
@@ -123,4 +153,20 @@ public class SnakeCanvasView extends View implements SnakeController.GameListene
         food.jumpRandomly(mWidth, mHeight);
 
     }
+
+    public void setNumPlayers(int numPlayers) {
+        mNumPlayers = numPlayers;
+
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+                invalidate();
+            }
+        });
+    }
+
+    public SnakeController getSnakeController() {
+        return mGame;
+    }
+
 }

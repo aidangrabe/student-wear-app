@@ -27,15 +27,11 @@ public class SnakeController {
         public void onSnakeFeed(Snake snake, Food food);
     }
 
-    public SnakeController(int numPlayers) {
+    public SnakeController() {
 
         mTimer = new Timer();
         mFood = new Food();
-
-        mSnakes = new Snake[numPlayers];
-        for (int i = 0; i < numPlayers; i++) {
-            mSnakes[i] = new Snake();
-        }
+        mSnakes = new Snake[0];
 
     }
 
@@ -71,6 +67,13 @@ public class SnakeController {
         return mSnakes;
     }
 
+    public Snake getSnake(int player) {
+        if (player >= 0 && player < mSnakes.length) {
+            return mSnakes[player];
+        }
+        return null;
+    }
+
     public void move(int player, Snake.Dir dir) {
         if (player > 0 && player < mSnakes.length) {
             mSnakes[player].move(dir);
@@ -81,9 +84,14 @@ public class SnakeController {
         mListener = listener;
     }
 
-    public void start() {
+    public void start(int numPlayers) {
 
         mTimer.schedule(mTimerTask, TimeUnit.SECONDS.toMillis(1), 250);
+
+        mSnakes = new Snake[numPlayers];
+        for (int i = 0; i < numPlayers; i++) {
+            mSnakes[i] = new Snake();
+        }
 
     }
 
