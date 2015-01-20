@@ -9,6 +9,7 @@ import android.view.WindowManager;
 import com.aidangrabe.common.SharedConstants;
 import com.aidangrabe.common.wearable.WearUtil;
 import com.aidangrabe.studentapp.R;
+import com.aidangrabe.studentapp.bluetooth.BluetoothServer;
 import com.aidangrabe.studentapp.games.snake.Snake;
 import com.aidangrabe.studentapp.games.snake.SnakeController;
 import com.aidangrabe.studentapp.games.snake.view.SnakeCanvasView;
@@ -22,12 +23,12 @@ import java.util.Map;
  * Created by aidan on 13/01/15.
  *
  */
-public class SnakeActivity extends Activity implements MessageApi.MessageListener {
+public class SnakeActivity extends Activity implements BluetoothServer.BluetoothListener {
 
-    private WearUtil mWearUtil;
     private SnakeCanvasView mView;
     private Map<String, Integer> mPlayerMap;
     private int mNumPlayers;
+    private BluetoothServer mServer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,70 +44,25 @@ public class SnakeActivity extends Activity implements MessageApi.MessageListene
         mPlayerMap = new HashMap<>();
         mNumPlayers = 0;
 
-        mWearUtil = new WearUtil(this);
-        mWearUtil.setMessageListener(this);
+        mServer = new BluetoothServer();
 
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
+    protected void onResume() {
+        super.onResume();
 
-        mWearUtil.connect();
+        mServer.addBluetoothListener(this);
+        mServer.start();
 
     }
 
     @Override
-    protected void onStop() {
-        super.onStop();
+    protected void onPause() {
+        super.onPause();
 
-        mWearUtil.disconnect();
-
-    }
-
-    /**
-     * Receive messages sent from the controllers and pass on the control to the snakes
-     * @param messageEvent the messageEvent sent by the controllers. Should contain a direction
-     */
-    @Override
-    public void onMessageReceived(MessageEvent messageEvent) {
-
-        // only handle messages from the GameController
-        if (!messageEvent.getPath().equals(SharedConstants.Wearable.MESSAGE_GAME_CONTROLLER)) {
-            return;
-        }
-
-        if (!mPlayerMap.containsKey(messageEvent.getSourceNodeId())) {
-            addPlayer(messageEvent.getSourceNodeId());
-        }
-
-        SnakeController game = mView.getSnakeController();
-        int player = mPlayerMap.get(messageEvent.getSourceNodeId());
-        Snake snake = game.getSnake(player);
-
-        if (snake == null) {
-            return;
-        }
-
-        String dir = new String(messageEvent.getData());
-        switch (dir) {
-            // LEFT
-            case SharedConstants.Wearable.MESSAGE_GAME_CONTROLLER_LEFT:
-                snake.move(Snake.Dir.LEFT);
-                break;
-            // RIGHT
-            case SharedConstants.Wearable.MESSAGE_GAME_CONTROLLER_RIGHT:
-                snake.move(Snake.Dir.RIGHT);
-                break;
-            // UP
-            case SharedConstants.Wearable.MESSAGE_GAME_CONTROLLER_UP:
-                snake.move(Snake.Dir.UP);
-                break;
-            // DOWN
-            case SharedConstants.Wearable.MESSAGE_GAME_CONTROLLER_DOWN:
-                snake.move(Snake.Dir.DOWN);
-                break;
-        }
+        mServer.stop();
+        mServer.removeBluetoothListener(this);
 
     }
 
@@ -116,4 +72,54 @@ public class SnakeActivity extends Activity implements MessageApi.MessageListene
         Log.d("DEBUG", "Add Player: " + mNumPlayers);
     }
 
+    @Override
+    public void onMessageReceived(BluetoothServer.ClientHandler client, String message) {
+
+        SnakeController game = mView.getSnakeController();
+//        Snake snake = game.getSnake(player);
+
+//        if (snake == null) {
+//            return;
+//        }
+
+        Log.d("D", "onMessageReceived: " + message);
+
+//        if (message) {
+//
+//        }
+
+//        String dir = new String();
+//        switch (dir) {
+//            // LEFT
+//            case SharedConstants.Wearable.MESSAGE_GAME_CONTROLLER_LEFT:
+//                snake.move(Snake.Dir.LEFT);
+//                break;
+//            // RIGHT
+//            case SharedConstants.Wearable.MESSAGE_GAME_CONTROLLER_RIGHT:
+//                snake.move(Snake.Dir.RIGHT);
+//                break;
+//            // UP
+//            case SharedConstants.Wearable.MESSAGE_GAME_CONTROLLER_UP:
+//                snake.move(Snake.Dir.UP);
+//                break;
+//            // DOWN
+//            case SharedConstants.Wearable.MESSAGE_GAME_CONTROLLER_DOWN:
+//                snake.move(Snake.Dir.DOWN);
+//                break;
+//        }
+    }
+
+    @Override
+    public void onClientConnected(BluetoothServer.ClientHandler client) {
+
+        Log.d("D", "Client connected: " + client.getId());
+
+    }
+
+    @Override
+    public void onClientDisconnected(BluetoothServer.ClientHandler client) {
+
+        Log.d("D", "Client disconnected: " + client.getId());
+
+    }
 }

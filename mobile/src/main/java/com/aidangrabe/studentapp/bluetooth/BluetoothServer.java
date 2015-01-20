@@ -34,8 +34,8 @@ public class BluetoothServer {
 
     public interface BluetoothListener {
         public void onMessageReceived(ClientHandler client, String message);
-        public void onClientConnected(int clientId);
-        public void onClientDisconnected(int clientId);
+        public void onClientConnected(ClientHandler client);
+        public void onClientDisconnected(ClientHandler client);
     }
 
     public BluetoothServer() {
@@ -61,13 +61,17 @@ public class BluetoothServer {
     public void start() {
 
         mServerHandler = new ServerHandler();
-        new Thread(mServerHandler).start();
+        Thread serverThread = new Thread(mServerHandler);
+        serverThread.start();
 
     }
 
     public void stop() {
 
         mServerHandler.stop();
+
+
+
         try {
             mServerSocket.close();
         } catch (IOException e) {
@@ -105,10 +109,14 @@ public class BluetoothServer {
         public void run() {
             Log.d("D", "Server running");
             while(running) {
-                Log.d("D", "run loop");
+
                 try {
                     BluetoothSocket client = mServerSocket.accept();
-                    new Thread(new ClientHandler(client)).start();
+
+                    // create a new thread to handle the connection
+                    Thread clientThread = new Thread(new ClientHandler(client));
+                    clientThread.start();
+
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -121,7 +129,7 @@ public class BluetoothServer {
 
     }
 
-    private class ClientHandler implements Runnable {
+    public class ClientHandler implements Runnable {
 
         private int id;
         private BluetoothSocket mSocket;
@@ -136,7 +144,7 @@ public class BluetoothServer {
             id = clientId++;
 
             for (BluetoothListener listener : mListeners) {
-                listener.onClientConnected(id);
+                listener.onClientConnected(this);
             }
 
             try {
@@ -164,7 +172,7 @@ public class BluetoothServer {
                     }
                 } catch (IOException e) {
                     for (BluetoothListener listener : mListeners) {
-                        listener.onClientDisconnected(id);
+                        listener.onClientDisconnected(this);
                     }
                     Log.d("D", "Client disconnected");
                     running = false;
@@ -196,6 +204,10 @@ public class BluetoothServer {
         public void write(String msg) {
             mOutWriter.println(msg);
             mOutWriter.flush();
+        }
+
+        public int getId() {
+            return id;
         }
 
     }
