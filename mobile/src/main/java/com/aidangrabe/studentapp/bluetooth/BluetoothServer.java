@@ -11,6 +11,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -32,6 +33,7 @@ public class BluetoothServer {
     private List<BluetoothDevice> mDevices;
     private ServerHandler mServerHandler;
     private List<BluetoothListener> mListeners;
+    private List<Thread> mThreads;
 
     public interface BluetoothListener {
         public void onMessageReceived(ClientHandler client, String message);
@@ -43,6 +45,7 @@ public class BluetoothServer {
 
         mDevices = new ArrayList<>();
         mListeners = new ArrayList<>();
+        mThreads = new ArrayList<>();
 
         mBtAdapter = BluetoothAdapter.getDefaultAdapter();
 
@@ -61,9 +64,13 @@ public class BluetoothServer {
 
     public void start() {
 
+        clientId = 0;
+        mThreads.clear();
+
         mServerHandler = new ServerHandler();
         Thread serverThread = new Thread(mServerHandler);
         serverThread.start();
+        mThreads.add(serverThread);
 
     }
 
@@ -71,13 +78,21 @@ public class BluetoothServer {
 
         mServerHandler.stop();
 
-
-
         try {
             mServerSocket.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        Log.d("D", "Waiting for all threads to complete");
+        for (Thread thread : mThreads) {
+            try {
+                thread.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        Log.d("D", "All threads complete");
 
     }
 
@@ -117,10 +132,14 @@ public class BluetoothServer {
                     // create a new thread to handle the connection
                     Thread clientThread = new Thread(new ClientHandler(client));
                     clientThread.start();
+                    mThreads.add(clientThread);
 
+                } catch (SocketException e) {
+                    Log.d("D", "Killing server");
+                    running = false;
                 } catch (IOException e) {
-                    // TODO
-//                    e.printStackTrace();
+                    Log.d("D", "IOException from server");
+//                    running = false;
                 }
             }
         }
