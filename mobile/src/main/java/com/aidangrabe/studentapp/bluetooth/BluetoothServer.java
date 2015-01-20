@@ -119,7 +119,8 @@ public class BluetoothServer {
                     clientThread.start();
 
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    // TODO
+//                    e.printStackTrace();
                 }
             }
         }
