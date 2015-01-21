@@ -7,17 +7,18 @@ import android.view.Window;
 import android.view.WindowManager;
 
 import com.aidangrabe.common.SharedConstants;
-import com.aidangrabe.common.wearable.WearUtil;
 import com.aidangrabe.studentapp.R;
 import com.aidangrabe.studentapp.bluetooth.BluetoothServer;
 import com.aidangrabe.studentapp.games.snake.Snake;
 import com.aidangrabe.studentapp.games.snake.SnakeController;
 import com.aidangrabe.studentapp.games.snake.view.SnakeCanvasView;
-import com.google.android.gms.wearable.MessageApi;
-import com.google.android.gms.wearable.MessageEvent;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Stack;
 
 /**
  * Created by aidan on 13/01/15.
@@ -26,9 +27,9 @@ import java.util.Map;
 public class SnakeActivity extends Activity implements BluetoothServer.BluetoothListener {
 
     private SnakeCanvasView mView;
-//    private Map<String, Integer> mPlayerMap;
-    private int mNumPlayers;
     private BluetoothServer mServer;
+    private Map<Integer, Integer> mClientPlayerMap;
+    private Stack<Integer> mFreeSlots;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,8 +42,8 @@ public class SnakeActivity extends Activity implements BluetoothServer.Bluetooth
         setContentView(R.layout.activity_snake);
 
         mView = (SnakeCanvasView) findViewById(R.id.snake_canvas_view);
-//        mPlayerMap = new HashMap<>();
-        mNumPlayers = 0;
+        mClientPlayerMap = new LinkedHashMap<>();
+        mFreeSlots = new Stack<>();
 
         mServer = new BluetoothServer();
 
@@ -66,17 +67,11 @@ public class SnakeActivity extends Activity implements BluetoothServer.Bluetooth
 
     }
 
-//    private void addPlayer(String nodeId) {
-//        mPlayerMap.put(nodeId, mNumPlayers++);
-//        mView.setNumPlayers(mNumPlayers);
-//        Log.d("DEBUG", "Add Player: " + mNumPlayers);
-//    }
-
     @Override
     public void onMessageReceived(BluetoothServer.ClientHandler client, String message) {
 
         SnakeController game = mView.getSnakeController();
-        Snake snake = game.getSnake(client.getId());
+        Snake snake = game.getSnake(mClientPlayerMap.get(client.getId()));
 
         if (snake == null) {
             return;
@@ -107,7 +102,8 @@ public class SnakeActivity extends Activity implements BluetoothServer.Bluetooth
 
         Log.d("D", "Client connected: " + client.getId());
 
-        mView.setNumPlayers(++mNumPlayers);
+        addPlayer(client);
+        mView.setNumPlayers(mClientPlayerMap.size());
 
     }
 
@@ -116,5 +112,28 @@ public class SnakeActivity extends Activity implements BluetoothServer.Bluetooth
 
         Log.d("D", "Client disconnected: " + client.getId());
 
+        removePlayer(client);
+        mView.setNumPlayers(mClientPlayerMap.size());
+
     }
+
+    private void addPlayer(BluetoothServer.ClientHandler player) {
+
+        int playerNumber = mClientPlayerMap.size();
+
+        if (!mFreeSlots.isEmpty()) {
+            playerNumber = mFreeSlots.pop();
+        }
+
+        mClientPlayerMap.put(player.getId(), playerNumber);
+
+    }
+
+    private void removePlayer(BluetoothServer.ClientHandler player) {
+
+        int playerNumber = mClientPlayerMap.remove(player.getId());
+        mFreeSlots.push(playerNumber);
+
+    }
+
 }
