@@ -10,6 +10,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.SocketException;
 import java.util.Set;
 import java.util.UUID;
 
@@ -64,10 +65,12 @@ public class BluetoothClient {
         try {
             mServer.close();
             mInReader.close();
+            mOutWriter.close();
         } catch (IOException e) {
             e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        mOutWriter.close();
 
     }
 
@@ -77,6 +80,7 @@ public class BluetoothClient {
 
         // query the paired devices
         for (BluetoothDevice device : devices) {
+
             mServerDevice = device;
             Log.d("D", "ServerDevice: " + device.getName());
 
@@ -87,8 +91,10 @@ public class BluetoothClient {
     public void write(String msg) {
 
         Log.d("D", "Writing message: " + msg);
-        mOutWriter.println(msg);
-        mOutWriter.flush();
+        if (mOutWriter != null) {
+            mOutWriter.println(msg);
+            mOutWriter.flush();
+        }
 
     }
 
