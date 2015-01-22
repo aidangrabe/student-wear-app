@@ -159,6 +159,10 @@ public class Snake {
 
     }
 
+    public void setDirection(Dir newDirection) {
+        mCurrentDir = newDirection;
+    }
+
     public void setPosition(Point position) {
         mPosition = position;
     }

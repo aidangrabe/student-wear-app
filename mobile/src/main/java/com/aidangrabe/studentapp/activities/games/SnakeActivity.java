@@ -103,19 +103,19 @@ public class SnakeActivity extends Activity implements BluetoothServer.Bluetooth
         switch (message) {
             // LEFT
             case SharedConstants.Wearable.MESSAGE_GAME_CONTROLLER_LEFT:
-                snake.move(Snake.Dir.LEFT);
+                snake.setDirection(Snake.Dir.LEFT);
                 break;
             // RIGHT
             case SharedConstants.Wearable.MESSAGE_GAME_CONTROLLER_RIGHT:
-                snake.move(Snake.Dir.RIGHT);
+                snake.setDirection(Snake.Dir.RIGHT);
                 break;
             // UP
             case SharedConstants.Wearable.MESSAGE_GAME_CONTROLLER_UP:
-                snake.move(Snake.Dir.UP);
+                snake.setDirection(Snake.Dir.UP);
                 break;
             // DOWN
             case SharedConstants.Wearable.MESSAGE_GAME_CONTROLLER_DOWN:
-                snake.move(Snake.Dir.DOWN);
+                snake.setDirection(Snake.Dir.DOWN);
                 break;
         }
     }

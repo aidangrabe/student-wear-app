@@ -78,7 +78,7 @@ public class SnakeController {
 
     public void move(int player, Snake.Dir dir) {
         if (player > 0 && player < mSnakes.length) {
-            mSnakes[player].move(dir);
+            mSnakes[player].setDirection(dir);
         }
     }
 
