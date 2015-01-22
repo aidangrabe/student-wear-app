@@ -230,4 +230,8 @@ public class Snake {
         this.alive = alive;
     }
 
+    public boolean isAlive() {
+        return alive;
+    }
+
 }

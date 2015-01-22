@@ -9,6 +9,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Toast;
 
 import com.aidangrabe.common.SharedConstants;
 import com.aidangrabe.studentapp.R;
@@ -34,7 +35,11 @@ public class SnakeActivity extends Activity implements BluetoothServer.Bluetooth
     private SnakeController mGame;
     private SnakeCanvasView mView;
     private BluetoothServer mServer;
+
+    // maps client id's to player numbers
     private Map<Integer, Integer> mClientPlayerMap;
+
+    // the player numbers that have been used, but are now free
     private Stack<Integer> mFreeSlots;
 
     private final View.OnTouchListener mOnTouchListener = new View.OnTouchListener() {
@@ -184,6 +189,31 @@ public class SnakeActivity extends Activity implements BluetoothServer.Bluetooth
     public void onCollision(Snake snake) {
 
         snake.setAlive(false);
+
+    }
+
+    @Override
+    public void onGameOver(Snake snake) {
+
+        final Snake s = snake;
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(SnakeActivity.this, "Player " + getPlayerFromSnake(s) + " wins", Toast.LENGTH_LONG).show();
+            }
+        });
+
+    }
+
+    private int getPlayerFromSnake(Snake snake) {
+
+        for (int playerNumber : mClientPlayerMap.keySet()) {
+            if (snake.equals(mGame.getSnake(mClientPlayerMap.get(playerNumber)))) {
+                return playerNumber;
+            }
+        }
+
+        return -1;
 
     }
 

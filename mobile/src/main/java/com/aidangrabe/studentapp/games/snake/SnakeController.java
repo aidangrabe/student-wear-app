@@ -67,6 +67,12 @@ public class SnakeController {
          * @param snake the snake that collided
          */
         public void onCollision(Snake snake);
+
+        /**
+         * Called when the game is over, ie. all Snakes are dead
+         * @param snake the last Snake to die
+         */
+        public void onGameOver(Snake snake);
     }
 
     public SnakeController() {
@@ -100,6 +106,7 @@ public class SnakeController {
             for (Snake otherSnake : mSnakes) {
                 if (snake.collision(otherSnake)) {
                     mListener.onCollision(snake);
+                    checkGameOver();
                 }
             }
 
@@ -185,6 +192,37 @@ public class SnakeController {
     public void setSize(int width, int height) {
         mWidth = width;
         mHeight = height;
+    }
+
+    /**
+     * Check if the game is over. ie.
+     * 1 player:    only Snake is dead
+     * >1 players:  only one Snake alive
+     */
+    public void checkGameOver() {
+
+        int numPlayersAlive = 0;
+        Snake winningSnake = null;
+
+        for (Snake snake : mSnakes) {
+
+            // single player
+            if (mSnakes.length == 1 && !snake.isAlive()) {
+                mListener.onGameOver(snake);
+                return;
+            }
+            // multi-player
+            else if (snake.isAlive()) {
+                winningSnake = snake;
+                numPlayersAlive++;
+            }
+
+        }
+
+        if (numPlayersAlive == 1) {
+            mListener.onGameOver(winningSnake);
+        }
+
     }
 
 }
