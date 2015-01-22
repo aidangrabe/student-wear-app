@@ -3,7 +3,9 @@ package com.aidangrabe.studentapp.games.snake;
 import android.graphics.Point;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by aidan on 13/01/15.
@@ -11,20 +13,29 @@ import java.util.List;
  */
 public class Snake {
 
+    // create a Map for determining the opposite directions
+    private static final Map<Dir, Dir> OPPOSITE_DIRECTIONS = new HashMap<>();
+    static {
+        OPPOSITE_DIRECTIONS.put(Dir.LEFT, Dir.RIGHT);
+        OPPOSITE_DIRECTIONS.put(Dir.RIGHT, Dir.LEFT);
+        OPPOSITE_DIRECTIONS.put(Dir.DOWN, Dir.UP);
+        OPPOSITE_DIRECTIONS.put(Dir.UP, Dir.DOWN);
+    }
+
+    // array used to buffer parts to remove so they can be removed in bulk
+    private ArrayList<BodyPart> mPartsToRemove;
     private Point mPosition;
+
     private int mLength;
 
     // size of the body segments
     private int mBodySize;
-
     private SnakeListener mListener;
     private ArrayList<BodyPart> mBodyParts;
+
     private Dir mCurrentDir;
 
     private int mColor;
-
-    // array used to buffer parts to remove so they can be removed in bulk
-    private ArrayList<BodyPart> mPartsToRemove;
 
     public static enum Dir {
         LEFT, RIGHT, UP, DOWN
@@ -202,7 +213,13 @@ public class Snake {
     }
 
     public void setDirection(Dir newDirection) {
-        mCurrentDir = newDirection;
+
+        // don't allow the Snake to move in the opposite direction
+        Dir wrongDirection = OPPOSITE_DIRECTIONS.get(mCurrentDir);
+        if (newDirection != wrongDirection) {
+            mCurrentDir = newDirection;
+        }
+        
     }
 
     public void setColor(int color) {
