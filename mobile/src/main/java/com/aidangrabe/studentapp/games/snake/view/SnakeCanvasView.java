@@ -68,9 +68,9 @@ public class SnakeCanvasView extends View {
             // draw the snakes
             for (Snake snake : mGame.getSnakes()) {
 
-                drawPart(canvas, snake.getPosition());
+                drawPart(canvas, snake.getPosition(), snake.getColor());
                 for (Snake.BodyPart part : snake.getBodyParts()) {
-                    drawPart(canvas, part.position);
+                    drawPart(canvas, part.position, snake.getColor());
                 }
 
             }

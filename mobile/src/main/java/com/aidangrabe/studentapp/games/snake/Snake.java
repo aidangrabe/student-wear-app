@@ -21,6 +21,8 @@ public class Snake {
     private ArrayList<BodyPart> mBodyParts;
     private Dir mCurrentDir;
 
+    private int mColor;
+
     // array used to buffer parts to remove so they can be removed in bulk
     private ArrayList<BodyPart> mPartsToRemove;
 
@@ -61,6 +63,7 @@ public class Snake {
         mBodyParts = new ArrayList<>();
         mPartsToRemove = new ArrayList<>();
         mCurrentDir = Dir.RIGHT;
+        mColor = 0;
 
         mListener = new SnakeListener() {
             @Override
@@ -161,6 +164,14 @@ public class Snake {
 
     public void setDirection(Dir newDirection) {
         mCurrentDir = newDirection;
+    }
+
+    public void setColor(int color) {
+        mColor = color;
+    }
+
+    public int getColor() {
+        return mColor;
     }
 
     public void setPosition(Point position) {
