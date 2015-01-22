@@ -98,14 +98,25 @@ public class Snake {
         grow(2);
     }
 
+    /**
+     * Increase the length of the Snake by a given amount
+     * @param amount the amount to increase the Snake's length by
+     */
     public void grow(int amount) {
         mLength += amount;
     }
 
+    /**
+     * Move the Snake in it's current direction
+     */
     public void move() {
         move(mCurrentDir);
     }
 
+    /**
+     * Move the Snake in a given direction
+     * @param direction the direction to move the Snake in
+     */
     public void move(Dir direction) {
 
         switch (direction) {
@@ -134,6 +145,11 @@ public class Snake {
 
     }
 
+    /**
+     * Move the Snake's position by a given offset
+     * @param x amount of pixels to move horizontally
+     * @param y amount of pixels to move vertically
+     */
     private void move(int x, int y) {
 
         mPosition.offset(x, y);
@@ -149,6 +165,9 @@ public class Snake {
 
     }
 
+    /**
+     * Get rid of body parts which have expired
+     */
     private void removeDeadBodyParts() {
 
         mPartsToRemove.clear();
@@ -159,6 +178,26 @@ public class Snake {
             }
         }
         mBodyParts.removeAll(mPartsToRemove);
+
+    }
+
+    /**
+     * Move the Snake to the opposite side of the screen if it is outside the screen
+     * @param width the width of the screen
+     * @param height the height of the screen
+     */
+    public void wrap(int width, int height) {
+
+        // wrap the Snake
+        if (mPosition.x > width - 16) {
+            mPosition.x = 0;
+        } else if (mPosition.x < 0) {
+            mPosition.x = width - 16;
+        } else if (mPosition.y > height) {
+            mPosition.y = 16;
+        } else if (mPosition.y < 16) {
+            mPosition.y = height;
+        }
 
     }
 

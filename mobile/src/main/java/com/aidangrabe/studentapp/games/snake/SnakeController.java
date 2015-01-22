@@ -20,6 +20,9 @@ public class SnakeController {
     private Snake[] mSnakes;
     private GameListener mListener;
 
+    // the dimensions of the playing area. This should be set by the view displaying the game
+    private int mHeight, mWidth;
+
     // the food instance that the Snakes will try to eat
     private Food mFood;
 
@@ -66,6 +69,8 @@ public class SnakeController {
         mFood = new Food();
         mSnakes = new Snake[0];
         mStarted = false;
+        mWidth = 0;
+        mHeight = 0;
 
     }
 
@@ -84,6 +89,9 @@ public class SnakeController {
 
                 mListener.onSnakeFeed(snake, mFood);
             }
+
+            // wrap the snake if it's off the screen
+            snake.wrap(mWidth, mHeight);
 
         }
 
@@ -154,6 +162,16 @@ public class SnakeController {
             mSnakes[i].setColor(mSnakeColors[i]);
         }
 
+    }
+
+    /**
+     * Set the size of the playing area
+     * @param width the width of the playing area
+     * @param height the height of the playing area
+     */
+    public void setSize(int width, int height) {
+        mWidth = width;
+        mHeight = height;
     }
 
 }

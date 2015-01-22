@@ -121,6 +121,8 @@ public class SnakeCanvasView extends View {
             mGame.getFood().jumpRandomly(w, h);
         }
 
+        mGame.setSize(mWidth, mHeight);
+
     }
 
     public Snake[] getSnakes() {
