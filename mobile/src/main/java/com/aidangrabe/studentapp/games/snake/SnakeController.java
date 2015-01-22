@@ -180,6 +180,7 @@ public class SnakeController {
         for (int i = 0; i < numPlayers; i++) {
             mSnakes[i] = new Snake();
             mSnakes[i].setColor(mSnakeColors[i]);
+            mSnakes[i].getPosition().y = 16 + (64 * i);
         }
 
     }
