@@ -61,6 +61,12 @@ public class SnakeController {
          * @param food the Food that was eaten
          */
         public void onSnakeFeed(Snake snake, Food food);
+
+        /**
+         * Called when a Snake collides with itself, or another Snake
+         * @param snake the snake that collided
+         */
+        public void onCollision(Snake snake);
     }
 
     public SnakeController() {
@@ -88,6 +94,13 @@ public class SnakeController {
                 snake.grow();
 
                 mListener.onSnakeFeed(snake, mFood);
+            }
+
+            // check all Snakes, including the current Snake for collisions
+            for (Snake otherSnake : mSnakes) {
+                if (snake.collision(otherSnake)) {
+                    mListener.onCollision(snake);
+                }
             }
 
             // wrap the snake if it's off the screen

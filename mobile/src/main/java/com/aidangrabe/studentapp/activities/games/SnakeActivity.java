@@ -179,4 +179,12 @@ public class SnakeActivity extends Activity implements BluetoothServer.Bluetooth
 
     }
 
+    // called when a Snake collides with itself or another Snake
+    @Override
+    public void onCollision(Snake snake) {
+
+        snake.setAlive(false);
+
+    }
+
 }

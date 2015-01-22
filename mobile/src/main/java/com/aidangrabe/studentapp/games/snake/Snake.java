@@ -25,12 +25,12 @@ public class Snake {
     // array used to buffer parts to remove so they can be removed in bulk
     private ArrayList<BodyPart> mPartsToRemove;
     private Point mPosition;
+    private boolean alive;
 
     private int mLength;
 
     // size of the body segments
     private int mBodySize;
-    private SnakeListener mListener;
     private ArrayList<BodyPart> mBodyParts;
 
     private Dir mCurrentDir;
@@ -61,11 +61,6 @@ public class Snake {
 
     }
 
-    public interface SnakeListener {
-        public void onMove(Snake snake);
-        public void onCollision(Snake snake);
-    }
-
     public Snake() {
 
         mPosition = new Point(16, 16);
@@ -75,19 +70,18 @@ public class Snake {
         mPartsToRemove = new ArrayList<>();
         mCurrentDir = Dir.RIGHT;
         mColor = 0;
-
-        mListener = new SnakeListener() {
-            @Override
-            public void onMove(Snake snake) {}
-            @Override
-            public void onCollision(Snake snake) {}
-        };
+        alive = true;
 
     }
 
-    private boolean collision() {
+    /**
+     * Check if the Snake collides with a given Snake
+     * @param snake the snake to check for a collision with
+     * @return true if a collision has occurred
+     */
+    public boolean collision(Snake snake) {
 
-        for (BodyPart bodyPart : mBodyParts) {
+        for (BodyPart bodyPart : snake.getBodyParts()) {
             if (mPosition.x == bodyPart.position.x
                     && mPosition.y == bodyPart.position.y) {
                 return true;
@@ -163,16 +157,14 @@ public class Snake {
      */
     private void move(int x, int y) {
 
-        mPosition.offset(x, y);
         removeDeadBodyParts();
 
-        if (collision()) {
-            mListener.onCollision(this);
-        } else {
-            mListener.onMove(this);
+        // don't move the Snake if it's dead
+        if (!alive) {
+            return;
         }
-
         makeBodyPart();
+        mPosition.offset(x, y);
 
     }
 
@@ -219,7 +211,7 @@ public class Snake {
         if (newDirection != wrongDirection) {
             mCurrentDir = newDirection;
         }
-        
+
     }
 
     public void setColor(int color) {
@@ -234,10 +226,8 @@ public class Snake {
         mPosition = position;
     }
 
-    public void setSnakeListener(SnakeListener listener) {
-
-        mListener = listener;
-
+    public void setAlive(boolean alive) {
+        this.alive = alive;
     }
 
 }
