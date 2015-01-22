@@ -2,13 +2,18 @@ package com.aidangrabe.studentapp.activities.games;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
+import android.view.MotionEvent;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 
 import com.aidangrabe.common.SharedConstants;
 import com.aidangrabe.studentapp.R;
 import com.aidangrabe.studentapp.bluetooth.BluetoothServer;
+import com.aidangrabe.studentapp.games.snake.Food;
 import com.aidangrabe.studentapp.games.snake.Snake;
 import com.aidangrabe.studentapp.games.snake.SnakeController;
 import com.aidangrabe.studentapp.games.snake.view.SnakeCanvasView;
@@ -24,12 +29,25 @@ import java.util.Stack;
  * Created by aidan on 13/01/15.
  *
  */
-public class SnakeActivity extends Activity implements BluetoothServer.BluetoothListener {
+public class SnakeActivity extends Activity implements BluetoothServer.BluetoothListener, SnakeController.GameListener {
 
+    private SnakeController mGame;
     private SnakeCanvasView mView;
     private BluetoothServer mServer;
     private Map<Integer, Integer> mClientPlayerMap;
     private Stack<Integer> mFreeSlots;
+
+    private final View.OnTouchListener mOnTouchListener = new View.OnTouchListener() {
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+            if (mClientPlayerMap.size() > 0) {
+                mGame.start(mClientPlayerMap.size());
+                mView.setGameStarted(true);
+            }
+
+            return false;
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,7 +59,12 @@ public class SnakeActivity extends Activity implements BluetoothServer.Bluetooth
 
         setContentView(R.layout.activity_snake);
 
+        mGame = new SnakeController();
+        mGame.setGameListener(this);
+
         mView = (SnakeCanvasView) findViewById(R.id.snake_canvas_view);
+        mView.setOnTouchListener(mOnTouchListener);
+        mView.setGameController(mGame);
         mClientPlayerMap = new LinkedHashMap<>();
         mFreeSlots = new Stack<>();
 
@@ -133,6 +156,26 @@ public class SnakeActivity extends Activity implements BluetoothServer.Bluetooth
 
         int playerNumber = mClientPlayerMap.remove(player.getId());
         mFreeSlots.push(playerNumber);
+
+    }
+
+    // called every time the game logic is updated.
+    @Override
+    public void onGameTick(Snake[] snakes) {
+
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+                mView.invalidate();
+            }
+        });
+
+    }
+
+    @Override
+    public void onSnakeFeed(Snake snake, Food food) {
+
+        food.jumpRandomly(mView.getWidth(), mView.getHeight());
 
     }
 

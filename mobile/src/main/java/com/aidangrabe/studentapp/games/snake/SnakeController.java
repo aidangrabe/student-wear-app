@@ -14,6 +14,7 @@ public class SnakeController {
     private Snake[] mSnakes;
     private GameListener mListener;
     private Food mFood;
+    private boolean mStarted;
 
     private final TimerTask mTimerTask = new TimerTask() {
         @Override
@@ -32,6 +33,7 @@ public class SnakeController {
         mTimer = new Timer();
         mFood = new Food();
         mSnakes = new Snake[0];
+        mStarted = false;
 
     }
 
@@ -86,6 +88,11 @@ public class SnakeController {
 
     public void start(int numPlayers) {
 
+        if (mStarted) {
+            return;
+        }
+
+        mStarted = true;
         mTimer.schedule(mTimerTask, TimeUnit.SECONDS.toMillis(1), 250);
 
         mSnakes = new Snake[numPlayers];

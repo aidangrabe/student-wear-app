@@ -20,41 +20,26 @@ import com.aidangrabe.studentapp.games.snake.SnakeController;
  * Created by aidan on 13/01/15.
  *
  */
-public class SnakeCanvasView extends View implements SnakeController.GameListener {
+public class SnakeCanvasView extends View {
 
     private static final int COLOR_FOOD = Color.RED;
 
-    private SnakeController mGame;
     private Rect mSnakeRect;
     private Paint mSnakePaint, mTextPaint;
     private int mWidth, mHeight, mNumPlayers;
     private boolean mSizedAndReady;
     private boolean mGameStarted;
-
-    private final OnTouchListener mOnTouchListener = new OnTouchListener() {
-        @Override
-        public boolean onTouch(View v, MotionEvent event) {
-            if (mNumPlayers > 0) {
-                mGame.start(mNumPlayers);
-                mGameStarted = true;
-            }
-
-            return false;
-        }
-    };
+    private SnakeController mGame;
 
     public SnakeCanvasView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
-        mGame = new SnakeController();
-        mGame.setGameListener(this);
         mSnakeRect = new Rect(0, 0, 16, 16);
         mSnakePaint = new Paint();
         mSnakePaint.setColor(Color.BLACK);
         mSizedAndReady = false;
         mGameStarted = false;
         mNumPlayers = 0;
-        setOnTouchListener(mOnTouchListener);
 
         mTextPaint = new Paint();
         mTextPaint.setColor(Color.BLACK);
@@ -62,6 +47,14 @@ public class SnakeCanvasView extends View implements SnakeController.GameListene
         mTextPaint.setTextSize(16);
         mTextPaint.setAntiAlias(true);
 
+    }
+
+    public void setGameController(SnakeController controller) {
+        mGame = controller;
+    }
+
+    public void setGameStarted(boolean gameStarted) {
+        mGameStarted = gameStarted;
     }
 
     @Override
@@ -132,26 +125,6 @@ public class SnakeCanvasView extends View implements SnakeController.GameListene
 
     public Snake[] getSnakes() {
         return mGame.getSnakes();
-    }
-
-    // called every time the game logic is updated.
-    @Override
-    public void onGameTick(Snake[] snakes) {
-
-        new Handler(Looper.getMainLooper()).post(new Runnable() {
-            @Override
-            public void run() {
-                invalidate();
-            }
-        });
-
-    }
-
-    @Override
-    public void onSnakeFeed(Snake snake, Food food) {
-
-        food.jumpRandomly(mWidth, mHeight);
-
     }
 
     public void setNumPlayers(int numPlayers) {
