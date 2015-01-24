@@ -1,5 +1,8 @@
 package com.aidangrabe.common.model.todolist;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.Date;
 
 /**
@@ -7,7 +10,7 @@ import java.util.Date;
  * A class representing a single item of a ToDoList
  * A ToDoItem is considered complete when it's completionDate is not 'null'
  */
-public class ToDoItem {
+public class ToDoItem implements Parcelable {
 
     private int id;
     private String title;
@@ -23,12 +26,20 @@ public class ToDoItem {
     }
 
     public ToDoItem(String title, Date creationDate, Date completionDate) {
+        this(-1, title, creationDate, completionDate);
+    }
 
-        this.id = -1;
+    public ToDoItem(int id, String title, Date creationDate, Date completionDate) {
+        this.id = id;
         this.title = title;
         this.creationDate = creationDate;
         this.completionDate = completionDate;
+    }
 
+    public ToDoItem(Parcel parcel) {
+        this(parcel.readInt(), parcel.readString(),
+                new Date(parcel.readLong()),
+                new Date(parcel.readLong()));
     }
 
     /**
@@ -75,4 +86,18 @@ public class ToDoItem {
     public void setCompletionDate(Date completionDate) {
         this.completionDate = completionDate;
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(id);
+        dest.writeString(title);
+        dest.writeLong(creationDate.getTime());
+        dest.writeLong(completionDate.getTime());
+    }
+
 }
