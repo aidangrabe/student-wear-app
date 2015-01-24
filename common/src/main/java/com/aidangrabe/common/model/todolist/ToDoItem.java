@@ -2,6 +2,7 @@ package com.aidangrabe.common.model.todolist;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 import java.util.Date;
 
@@ -36,10 +37,21 @@ public class ToDoItem implements Parcelable {
         this.completionDate = completionDate;
     }
 
-    public ToDoItem(Parcel parcel) {
-        this(parcel.readInt(), parcel.readString(),
-                new Date(parcel.readLong()),
-                new Date(parcel.readLong()));
+    public static final Parcelable.Creator<ToDoItem> CREATOR = new Parcelable.Creator<ToDoItem>() {
+        public ToDoItem createFromParcel(Parcel in) {
+            return new ToDoItem(in.readInt(), in.readString(),
+                    new Date(in.readLong()),
+                    createCompletionDate(in.readLong()));
+        }
+
+        public ToDoItem[] newArray(int size) {
+            return new ToDoItem[size];
+        }
+    };
+
+    private static Date createCompletionDate(long time) {
+//        Log.d("D", "creating completion time: " + time);
+        return time == -1 ? null : new Date(time);
     }
 
     /**
@@ -97,7 +109,7 @@ public class ToDoItem implements Parcelable {
         dest.writeInt(id);
         dest.writeString(title);
         dest.writeLong(creationDate.getTime());
-        dest.writeLong(completionDate.getTime());
+        dest.writeLong(completionDate == null ? -1 : completionDate.getTime());
     }
 
 }

@@ -6,7 +6,9 @@ import android.graphics.Paint;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.Parcel;
 import android.speech.RecognizerIntent;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -17,30 +19,43 @@ import android.widget.TextView;
 import com.aidangrabe.common.SharedConstants;
 import com.aidangrabe.common.model.todolist.ToDoItem;
 import com.aidangrabe.common.model.todolist.ToDoItemManager;
-import com.aidangrabe.common.wearable.WearUtil;
 import com.aidangrabe.studentapp.R;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.data.FreezableUtils;
+import com.google.android.gms.tagmanager.DataLayer;
 import com.google.android.gms.wearable.DataApi;
 import com.google.android.gms.wearable.DataEvent;
 import com.google.android.gms.wearable.DataEventBuffer;
 import com.google.android.gms.wearable.DataItem;
+import com.google.android.gms.wearable.DataItemBuffer;
 import com.google.android.gms.wearable.DataMap;
+import com.google.android.gms.wearable.MessageApi;
+import com.google.android.gms.wearable.MessageEvent;
+import com.google.android.gms.wearable.Node;
+import com.google.android.gms.wearable.NodeApi;
+import com.google.android.gms.wearable.PutDataMapRequest;
 import com.google.android.gms.wearable.Wearable;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 
 /**
  * Created by aidan on 10/01/15.
  * Activity to show the current ToDoItems
  */
-public class ToDoListActivity extends Activity implements GoogleApiClient.ConnectionCallbacks, DataApi.DataListener, AdapterView.OnItemClickListener{
+public class ToDoListActivity extends Activity implements GoogleApiClient.ConnectionCallbacks, DataApi.DataListener,
+        AdapterView.OnItemClickListener, MessageApi.MessageListener {
 
     private static final int SPEECH_REQUEST_CODE = 0;
 
+    private Collection<Node> mNodes;
     private ListView mListView;
-    private WearUtil mWearUtil;
+    private GoogleApiClient mApiClient;
     private List<ToDoItem> mItems;
     private ArrayAdapter<ToDoItem> mAdapter;
     private final Comparator<ToDoItem> mAdapterComparator = new Comparator<ToDoItem>() {
@@ -58,11 +73,14 @@ public class ToDoListActivity extends Activity implements GoogleApiClient.Connec
 
         mListView = (ListView) findViewById(R.id.list_view);
 
-        mWearUtil = new WearUtil(this)
-                .setConnectionCallbacks(this)
-                .setDataListener(this);
+        mApiClient = new GoogleApiClient.Builder(this)
+                .addApi(Wearable.API)
+                .addConnectionCallbacks(this)
+//                .addOnConnectionFailedListener(this)
+                .build();
 
         mItems = new ArrayList<>();
+        mNodes = new HashSet<>();
 
         mAdapter = new ArrayAdapter<ToDoItem>(this, android.R.layout.simple_list_item_1) {
             @Override
@@ -93,41 +111,66 @@ public class ToDoListActivity extends Activity implements GoogleApiClient.Connec
     @Override
     protected void onStart() {
         super.onStart();
-        mWearUtil.connect();
+
+        mApiClient.connect();
+        Wearable.DataApi.addListener(mApiClient, this);
+        Wearable.MessageApi.addListener(mApiClient, this);
+
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        mWearUtil.connect();
-    }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-
-        mWearUtil.disconnect();
+        Wearable.MessageApi.removeListener(mApiClient, this);
+        Wearable.DataApi.removeListener(mApiClient, this);
+        mApiClient.disconnect();
 
     }
 
     public void getToDoItems() {
 
+        Logd("gettingToDoListItems");
+        Wearable.DataApi.getDataItems(mApiClient).setResultCallback(new ResultCallback<DataItemBuffer>() {
+            @Override
+            public void onResult(DataItemBuffer dataItems) {
+
+                for (Node node : mNodes) {
+                    sendMessage(node, SharedConstants.Wearable.MESSAGE_REQUEST_TODO_ITEMS, null);
+                }
+
+                for (int i = 0; i < dataItems.getCount(); i++) {
+                    mItems.add(ToDoItemManager.fromDataMap(DataMap.fromByteArray(dataItems.get(i).getData())));
+                }
+                setToDoListItems();
+
+                dataItems.release();
+            }
+        });
+
+    }
+
+    private void setToDoListItems() {
+        Logd("Setting ToDoListItems");
+
         mAdapter.clear();
-        mItems.clear();
 
         // add a new item row
         mAdapter.add(new ToDoItem(getResources().getString(R.string.todo_new_item)));
 
-        mWearUtil.sendMessage(SharedConstants.Wearable.MESSAGE_REQUEST_TODO_ITEMS, "");
+        mAdapter.addAll(mItems);
 
-        Wearable.DataApi.getDataItems(mWearUtil.getGoogleApiClient());
+        mAdapter.sort(mAdapterComparator);
+
+        mAdapter.notifyDataSetChanged();
 
     }
 
     @Override
     public void onConnected(Bundle bundle) {
 
-        getToDoItems();
+        Logd("onConnected");
+        getNodes();
 
     }
 
@@ -139,21 +182,42 @@ public class ToDoListActivity extends Activity implements GoogleApiClient.Connec
     @Override
     public void onDataChanged(DataEventBuffer dataEvents) {
 
-        for (DataEvent event : dataEvents) {
+        Logd("onDataChanged");
+
+        final List<DataEvent> events = FreezableUtils.freezeIterable(dataEvents);
+
+        dataEvents.close();
+
+        for (DataEvent event : events) {
             DataItem dataItem = event.getDataItem();
             if (dataItem.getUri().getPath().equals(SharedConstants.Wearable.MESSAGE_REQUEST_TODO_ITEMS)) {
-                final ToDoItem item = ToDoItemManager.fromDataMap(DataMap.fromByteArray(event.getDataItem().getData()));
-                if (!mItems.contains(item)) {
-                    mItems.add(item);
-                    new Handler(Looper.getMainLooper()).post(new Runnable() {
-                        @Override
-                        public void run() {
-                            mAdapter.notifyDataSetChanged();
-                            mAdapter.add(item);
-                            mAdapter.sort(mAdapterComparator);
-                        }
-                    });
+
+                // we don't want to add deleted items to the list
+                if (event.getType() == DataEvent.TYPE_DELETED) {
+                    continue;
                 }
+
+                if (event.getType() == DataEvent.TYPE_CHANGED) {
+                    Logd("Item changed");
+                }
+
+                DataMap dataMap = DataMap.fromByteArray(event.getDataItem().getData());
+                ToDoItem item = ToDoItemManager.fromDataMap(dataMap);
+
+                boolean wasAdded = false;
+                for (int i = 0; i < mItems.size(); i++) {
+                    if (mItems.get(i).getId() == item.getId()) {
+                        // update
+                        mItems.set(i, item);
+                        wasAdded = true;
+                        break;
+                    }
+                }
+
+                if (!wasAdded) {
+                    mItems.add(item);
+                }
+
             }
         }
 
@@ -168,8 +232,10 @@ public class ToDoListActivity extends Activity implements GoogleApiClient.Connec
         } else {
             ToDoItem item = mAdapter.getItem(position);
             item.complete();
-            mWearUtil.sendMessage(SharedConstants.Wearable.MESSAGE_UPDATE_TODO_ITEM, Integer.toString(item.getId()));
             mAdapter.notifyDataSetChanged();
+
+            syncToDoItem(item);
+
         }
 
     }
@@ -195,18 +261,61 @@ public class ToDoListActivity extends Activity implements GoogleApiClient.Connec
 
             if (spokenText.length() > 0) {
                 ToDoItem item = new ToDoItem(spokenText);
-                createToDoItem(spokenText);
-                mItems.add(item);
-                mAdapter.insert(item, 1);
+                syncToDoItem(item);
+//                mItems.add(item);
+                setToDoListItems();
             }
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-    private void createToDoItem(String title) {
+    private void syncToDoItem(ToDoItem item) {
 
-        mWearUtil.sendMessage(SharedConstants.Wearable.MESSAGE_CREATE_TODO_ITEM, title);
+        PutDataMapRequest putDataMapRequest = ToDoItemManager.toPutDataMapRequest(item, SharedConstants.Wearable.MESSAGE_REQUEST_TODO_ITEMS);
+        Wearable.DataApi.putDataItem(mApiClient, putDataMapRequest.asPutDataRequest());
 
     }
 
+    private void getNodes() {
+
+        Logd("Getting nodes");
+        Wearable.NodeApi.getConnectedNodes(mApiClient).setResultCallback(new ResultCallback<NodeApi.GetConnectedNodesResult>() {
+            @Override
+            public void onResult(NodeApi.GetConnectedNodesResult getConnectedNodesResult) {
+                onNodesConnected(getConnectedNodesResult.getNodes());
+            }
+        });
+
+    }
+
+    private void onNodesConnected(Collection<Node> nodes) {
+        Logd("Nodes connected");
+        mNodes.addAll(nodes);
+        getToDoItems();
+    }
+
+    private PendingResult<MessageApi.SendMessageResult> sendMessage(Node node, String path, byte[] data) {
+        Logd("Sending message");
+        return Wearable.MessageApi.sendMessage(mApiClient, node.getId(), path, data);
+    }
+
+    private void Logd(String message) {
+        Log.d("D", message);
+    }
+
+    @Override
+    public void onMessageReceived(MessageEvent messageEvent) {
+
+        Logd("Message received: " + messageEvent.getPath());
+
+        if (messageEvent.getPath().equals("/todolist/refresh-list")) {
+            new Handler(Looper.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    setToDoListItems();
+                }
+            });
+        }
+
+    }
 }
