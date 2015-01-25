@@ -2,20 +2,18 @@ package com.aidangrabe.studentapp.activities;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Paint;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.speech.RecognizerIntent;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import com.aidangrabe.common.SharedConstants;
+import com.aidangrabe.common.adapters.ToDoListAdapter;
 import com.aidangrabe.common.model.todolist.ToDoItem;
 import com.aidangrabe.common.model.todolist.ToDoItemManager;
 import com.aidangrabe.studentapp.R;
@@ -80,27 +78,7 @@ public class ToDoListActivity extends Activity implements GoogleApiClient.Connec
         mItems = new ArrayList<>();
         mNodes = new HashSet<>();
 
-        mAdapter = new ArrayAdapter<ToDoItem>(this, android.R.layout.simple_list_item_1) {
-            @Override
-            public View getView(int position, View convertView, ViewGroup parent) {
-                View view = super.getView(position, convertView, parent);
-
-                ToDoItem item = mAdapter.getItem(position);
-
-                TextView tv = (TextView) view.findViewById(android.R.id.text1);
-                tv.setTextColor(getResources().getColor(R.color.default_text_color));
-                tv.setText(item.getTitle());
-
-                // toggle strike through
-                if (item.isCompleted()) {
-                    tv.setPaintFlags(tv.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
-                } else {
-                    tv.setPaintFlags(tv.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
-                }
-
-                return view;
-            }
-        };
+        mAdapter = new ToDoListAdapter(this, android.R.layout.simple_list_item_1);
         mListView.setAdapter(mAdapter);
         mListView.setOnItemClickListener(this);
 

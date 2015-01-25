@@ -15,7 +15,6 @@ import com.aidangrabe.common.model.todolist.ToDoItemManager;
 import com.aidangrabe.studentapp.R;
 import com.aidangrabe.studentapp.fragments.ToDoListFragment;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.tagmanager.DataLayer;
 import com.google.android.gms.wearable.PutDataRequest;
 import com.google.android.gms.wearable.Wearable;
 
@@ -38,7 +37,7 @@ public class ToDoListActivity extends ActionBarActivity {
         setContentView(R.layout.activity_main);
 
         mFragment = new ToDoListFragment();
-        getFragmentManager().beginTransaction().replace(R.id.container, mFragment, TAG_FRAGMENT).commit();
+        getSupportFragmentManager().beginTransaction().replace(R.id.container, mFragment, TAG_FRAGMENT).commit();
 
         mApiClient = new GoogleApiClient.Builder(this)
                 .addApi(Wearable.API)
@@ -53,17 +52,6 @@ public class ToDoListActivity extends ActionBarActivity {
         mApiClient.connect();
 
     }
-
-//    @Override
-//    protected void onResume() {
-//        super.onResume();
-//
-//    }
-//
-//    @Override
-//    protected void onPause() {
-//        super.onPause();
-//    }
 
     @Override
     protected void onStop() {

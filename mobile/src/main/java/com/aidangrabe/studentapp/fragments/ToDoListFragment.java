@@ -1,19 +1,22 @@
 package com.aidangrabe.studentapp.fragments;
 
-import android.app.ListFragment;
 import android.database.Cursor;
 import android.graphics.Paint;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.aidangrabe.common.adapters.ToDoListAdapter;
 import com.aidangrabe.common.model.todolist.ToDoItem;
 import com.aidangrabe.common.model.todolist.ToDoItemManager;
+import com.aidangrabe.common.wearable.WearableFragment;
 import com.aidangrabe.studentapp.R;
 import com.melnykov.fab.FloatingActionButton;
 
@@ -21,8 +24,9 @@ import com.melnykov.fab.FloatingActionButton;
  * Created by aidan on 09/01/15.
  * A Fragment to display the ToDoList items from the Database
  */
-public class ToDoListFragment extends ListFragment {
+public class ToDoListFragment extends WearableFragment implements AdapterView.OnItemClickListener {
 
+    private ListView mListView;
     private ArrayAdapter<ToDoItem> mAdapter;
     private NewToDoItemFragment mNewItemFragment;
 
@@ -41,34 +45,18 @@ public class ToDoListFragment extends ListFragment {
     };
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        mAdapter = new ArrayAdapter<ToDoItem>(getActivity(), android.R.layout.simple_list_item_1) {
-            @Override
-            public View getView(int position, View convertView, ViewGroup parent) {
-                View view = super.getView(position, convertView, parent);
+        View view = inflater.inflate(R.layout.fragment_todo_list, container, false);
 
-                ToDoItem item = getItem(position);
+        mListView = (ListView) view.findViewById(R.id.list_view);
 
-                TextView tv = (TextView) view.findViewById(android.R.id.text1);
-                tv.setTextColor(getResources().getColor(R.color.text_color));
-                tv.setText(item.getTitle());
+        mAdapter = new ToDoListAdapter(getActivity(), android.R.layout.simple_list_item_1);
 
-                // toggle strike through
-                if (item.isCompleted()) {
-                    tv.setPaintFlags(tv.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
-                } else {
-                    tv.setPaintFlags(tv.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
-                }
-
-                return view;
-
-            }
-        };
-
-        setListAdapter(mAdapter);
+        mListView.setAdapter(mAdapter);
         getToDoList();
+
+        return view;
 
     }
 
@@ -82,7 +70,7 @@ public class ToDoListFragment extends ListFragment {
         FloatingActionButton fab = (FloatingActionButton) v.findViewById(R.id.fab);
         fab.setOnClickListener(mNewToDoItemClickListener);
 
-        fab.attachToListView(getListView());
+        fab.attachToListView(mListView);
 
     }
 
@@ -95,32 +83,11 @@ public class ToDoListFragment extends ListFragment {
 
         while (cursor.moveToNext()) {
             ToDoItem item = ToDoItemManager.instanceFromCursor(cursor);
-
-//            if (!item.isCompleted()) {
-                mAdapter.add(item);
-//            }
+            mAdapter.add(item);
         }
 
         cursor.close();
         mAdapter.notifyDataSetChanged();
-
-    }
-
-    @Override
-    public void onListItemClick(ListView l, View v, int position, long id) {
-        super.onListItemClick(l, v, position, id);
-
-        ToDoItemManager manager = new ToDoItemManager(getActivity());
-        ToDoItem item = mAdapter.getItem(position);
-
-        TextView tv = (TextView) v.findViewById(android.R.id.text1);
-
-        // toggle strike through
-        item.complete();
-        manager.update(item);
-
-        tv.setPaintFlags(tv.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
-
 
     }
 
@@ -141,8 +108,22 @@ public class ToDoListFragment extends ListFragment {
 
         mNewItemFragment = new NewToDoItemFragment();
         mNewItemFragment.setSaveListener(mSaveClickListener);
-        mNewItemFragment.show(getFragmentManager(), "dialog");
+        mNewItemFragment.show(getActivity().getFragmentManager(), "dialog");
 
     }
 
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+        ToDoItemManager manager = new ToDoItemManager(getActivity());
+        ToDoItem item = mAdapter.getItem(position);
+
+        TextView tv = (TextView) view.findViewById(android.R.id.text1);
+
+        // toggle strike through
+        item.complete();
+        manager.update(item);
+
+        tv.setPaintFlags(tv.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+    }
 }
