@@ -133,9 +133,11 @@ public class ToDoItemManager extends SQLiteOpenHelper {
         db.update(ToDoEntry.TABLE_NAME, makeContentValues(item), ToDoEntry.COL_ID + " = ?", new String[]{Integer.toString(item.getId())});
     }
 
-    public void save(ToDoItem item) {
+    public long save(ToDoItem item) {
         SQLiteDatabase db = getWritableDatabase();
-        db.insert(ToDoEntry.TABLE_NAME, "", makeContentValues(item));
+        long newId = db.insert(ToDoEntry.TABLE_NAME, "", makeContentValues(item));
+        item.setId((int) newId);
+        return newId;
     }
 
     @Override

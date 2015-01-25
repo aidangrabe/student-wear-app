@@ -6,7 +6,6 @@ import android.graphics.Paint;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.os.Parcel;
 import android.speech.RecognizerIntent;
 import android.util.Log;
 import android.view.View;
@@ -24,7 +23,6 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.data.FreezableUtils;
-import com.google.android.gms.tagmanager.DataLayer;
 import com.google.android.gms.wearable.DataApi;
 import com.google.android.gms.wearable.DataEvent;
 import com.google.android.gms.wearable.DataEventBuffer;
@@ -194,6 +192,7 @@ public class ToDoListActivity extends Activity implements GoogleApiClient.Connec
 
                 // we don't want to add deleted items to the list
                 if (event.getType() == DataEvent.TYPE_DELETED) {
+                    Logd("Item deleted");
                     continue;
                 }
 
@@ -214,7 +213,8 @@ public class ToDoListActivity extends Activity implements GoogleApiClient.Connec
                     }
                 }
 
-                if (!wasAdded) {
+                // id can't be -1. This would mean the item has not been stored on the mobile side yet
+                if (!wasAdded && item.getId() != -1) {
                     mItems.add(item);
                 }
 

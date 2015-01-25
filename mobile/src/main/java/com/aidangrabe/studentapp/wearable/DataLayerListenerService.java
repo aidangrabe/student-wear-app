@@ -102,12 +102,20 @@ public class DataLayerListenerService extends WearableListenerService {
             ToDoItemManager itemManager = new ToDoItemManager(this);
             if (item.getId() == -1) {
                 Log.d("D", "Saving new ToDoItem");
-                itemManager.save(item);
+                int newId = (int) itemManager.save(item);
+                syncToDoItem(item);
             } else {
                 Log.d("D", "Updating existing ToDoItem");
                 itemManager.update(item);
             }
         }
+
+    }
+
+    private void syncToDoItem(ToDoItem item) {
+
+        PutDataMapRequest putDataMapRequest = ToDoItemManager.toPutDataMapRequest(item, SharedConstants.Wearable.MESSAGE_REQUEST_TODO_ITEMS);
+        Wearable.DataApi.putDataItem(mGoogleApiClient, putDataMapRequest.asPutDataRequest());
 
     }
 
