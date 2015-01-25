@@ -5,10 +5,13 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import com.google.android.gms.wearable.DataMap;
 import com.google.android.gms.wearable.PutDataMapRequest;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 
 /**
@@ -19,8 +22,6 @@ public class ToDoItemManager extends SQLiteOpenHelper {
 
     public static final String DATABASE_NAME = "ToDoList.db";
     public static final int DATABASE_VERSION = 1;
-
-    private static ToDoItemManager mInstance;
 
     /**
      * Class containing the column and table names
@@ -102,6 +103,26 @@ public class ToDoItemManager extends SQLiteOpenHelper {
     }
 
     /**
+     * Get all ToDoItems that are complete
+     * @return a Cursor containing the results of the ToDoList items
+     */
+    public Cursor getComplete() {
+        SQLiteDatabase db = getReadableDatabase();
+
+        String[] projection = new String[] {
+                ToDoEntry.COL_ID,
+                ToDoEntry.COL_TITLE,
+                ToDoEntry.COL_CREATE_DATE,
+                ToDoEntry.COL_COMPLETE_DATE
+        };
+        String orderBy = ToDoEntry.COL_CREATE_DATE + " DESC";
+        String where = String.format("%s > ?", ToDoEntry.COL_COMPLETE_DATE);
+        String[] whereArgs = new String[] {"0"};
+
+        return db.query(ToDoEntry.TABLE_NAME, projection, where, whereArgs, null, null, orderBy);
+    }
+
+    /**
      * Converts a ToDoItem into a ContentValues object
      * @param item the ToDoItem to convert
      * @return A ContentValues with the ToDoItem values inside
@@ -117,6 +138,11 @@ public class ToDoItemManager extends SQLiteOpenHelper {
         return cv;
     }
 
+
+    /**
+     * Permanently delete a ToDoItem
+     * @param item the item to delete
+     */
     public void delete(ToDoItem item) {
         if (item.getId() == -1) {
             return;
@@ -125,6 +151,10 @@ public class ToDoItemManager extends SQLiteOpenHelper {
         db.delete(ToDoEntry.TABLE_NAME, ToDoEntry.COL_ID + " = ?", new String[] {Integer.toString(item.getId())});
     }
 
+    /**
+     * Update a given ToDoItem
+     * @param item the ToDoItem to update
+     */
     public void update(ToDoItem item) {
         if (item.getId() == -1) {
             return;
@@ -133,6 +163,11 @@ public class ToDoItemManager extends SQLiteOpenHelper {
         db.update(ToDoEntry.TABLE_NAME, makeContentValues(item), ToDoEntry.COL_ID + " = ?", new String[]{Integer.toString(item.getId())});
     }
 
+    /**
+     * Save a ToDoItem in the database
+     * @param item the ToDoItem to save
+     * @return
+     */
     public long save(ToDoItem item) {
         SQLiteDatabase db = getWritableDatabase();
         long newId = db.insert(ToDoEntry.TABLE_NAME, "", makeContentValues(item));
