@@ -5,21 +5,14 @@ import android.media.AudioManager;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
-import android.os.Parcel;
 import android.util.Log;
 
 import com.aidangrabe.common.SharedConstants;
-import com.aidangrabe.common.wearable.WearUtil;
 import com.aidangrabe.common.model.todolist.ToDoItem;
 import com.aidangrabe.common.model.todolist.ToDoItemManager;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.PendingResult;
-import com.google.android.gms.common.api.ResultCallback;
-import com.google.android.gms.tagmanager.DataLayer;
-import com.google.android.gms.wearable.DataApi;
 import com.google.android.gms.wearable.DataEvent;
 import com.google.android.gms.wearable.DataEventBuffer;
-import com.google.android.gms.wearable.DataItemBuffer;
 import com.google.android.gms.wearable.DataMap;
 import com.google.android.gms.wearable.MessageEvent;
 import com.google.android.gms.wearable.Node;
@@ -36,10 +29,7 @@ import java.util.List;
  */
 public class DataLayerListenerService extends WearableListenerService {
 
-    private static final String DATA_ITEM_PREFIX = "/item";
-
     private GoogleApiClient mGoogleApiClient;
-    private WearUtil mWearUtil;
 
     @Override
     public void onCreate() {
@@ -49,8 +39,6 @@ public class DataLayerListenerService extends WearableListenerService {
         mGoogleApiClient.connect();
         Wearable.MessageApi.addListener(mGoogleApiClient, this);
         Wearable.DataApi.addListener(mGoogleApiClient, this);
-        mWearUtil = new WearUtil(this);
-        mWearUtil.connect();
 
     }
 
@@ -88,7 +76,6 @@ public class DataLayerListenerService extends WearableListenerService {
         Wearable.MessageApi.removeListener(mGoogleApiClient, this);
         Wearable.DataApi.removeListener(mGoogleApiClient, this);
         mGoogleApiClient.disconnect();
-        mWearUtil.disconnect();
 
     }
 
@@ -135,38 +122,11 @@ public class DataLayerListenerService extends WearableListenerService {
         }
 
         List<ToDoItem> items = queryToDoItems();
-//        items.add(new ToDoItem("Hello!"));
-
-        // putDataMapRequest
-//        final PutDataMapRequest putDataMapRequest = PutDataMapRequest.create(SharedConstants.Wearable.MESSAGE_REQUEST_TODO_ITEMS);
-//        DataMap dataMap = putDataMapRequest.getDataMap();
-//        Parcel parcel = Parcel.obtain();
-//        parcel.writeTypedList(items);
-//        dataMap.putByteArray("itemlist", parcel.marshall());
-//        parcel.recycle();
-//
-//        // sync
-//        Log.d("DEBUG", "Sending ToDoItem");
-//        PendingResult<DataApi.DataItemResult> pendingResult = Wearable.DataApi.putDataItem(mGoogleApiClient,
-//                putDataMapRequest.asPutDataRequest());
-//        pendingResult.setResultCallback(new ResultCallback<DataApi.DataItemResult>() {
-//            @Override
-//            public void onResult(DataApi.DataItemResult dataItemResult) {
-//                Log.d("DEBUG", "Data sent");
-//            }
-//        });
-
 
         for (ToDoItem item : items) {
             Log.d("DEBUG", "Sending ToDoItem");
             final PutDataMapRequest putDataMapRequest = ToDoItemManager.toPutDataMapRequest(item, SharedConstants.Wearable.MESSAGE_REQUEST_TODO_ITEMS);
             Wearable.DataApi.putDataItem(mGoogleApiClient, putDataMapRequest.asPutDataRequest()).await();
-//            .setResultCallback(new ResultCallback<DataApi.DataItemResult>() {
-//                @Override
-//                public void onResult(DataApi.DataItemResult dataItemResult) {
-//                    Log.d("DEBUG", "Data sent");
-//                }
-//            });
         }
 
         Log.d("D", "Sending refresh list message");
