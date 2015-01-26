@@ -23,10 +23,10 @@ import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.wearable.DataApi;
 import com.google.android.gms.wearable.DataEvent;
 import com.google.android.gms.wearable.DataEventBuffer;
+import com.google.android.gms.wearable.DataItem;
 import com.google.android.gms.wearable.DataItemBuffer;
 import com.google.android.gms.wearable.DataMap;
 import com.google.android.gms.wearable.MessageApi;
-import com.google.android.gms.wearable.MessageEvent;
 import com.google.android.gms.wearable.Node;
 import com.google.android.gms.wearable.NodeApi;
 import com.google.android.gms.wearable.PutDataMapRequest;
@@ -166,15 +166,18 @@ public class ToDoListActivity extends Activity implements GoogleApiClient.Connec
     public void onDataChanged(DataEventBuffer dataEvents) {
 
         for (DataEvent event : dataEvents) {
-            if (event.getDataItem().getData() == null) {
-                continue;
+            DataItem dataItem = event.getDataItem();
+
+            // update the list
+            if (dataItem.getUri().getPath().equals(SharedConstants.Wearable.MESSAGE_REQUEST_TODO_ITEMS)) {
+                DataMap dataMap = DataMap.fromByteArray(dataItem.getData());
+                List<ToDoItem> itemList = ToDoItemManager.listFromDataMap(dataMap);
+                if (itemList != null) {
+                    mItems = itemList;
+                    Logd("onDataChanged: Got list: " + itemList.size());
+                }
             }
-            DataMap dataMap = DataMap.fromByteArray(event.getDataItem().getData());
-            List<ToDoItem> itemList = ToDoItemManager.listFromDataMap(dataMap);
-            if (itemList != null) {
-                mItems = itemList;
-                Logd("onDataChanged: Got list: " + itemList.size());
-            }
+
         }
 
         new Handler(Looper.getMainLooper()).post(new Runnable() {
@@ -196,10 +199,8 @@ public class ToDoListActivity extends Activity implements GoogleApiClient.Connec
         } else {
             ToDoItem item = mAdapter.getItem(position);
             item.complete();
-            mAdapter.notifyDataSetChanged();
 
             syncToDoItem(item);
-
         }
 
     }
@@ -223,19 +224,24 @@ public class ToDoListActivity extends Activity implements GoogleApiClient.Connec
                     RecognizerIntent.EXTRA_RESULTS);
             String spokenText = results.get(0);
 
+            // only create a new item if the string is non-empty
             if (spokenText.length() > 0) {
                 ToDoItem item = new ToDoItem(spokenText);
                 syncToDoItem(item);
-//                mItems.add(item);
-                setToDoListItems();
             }
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
 
+    /**
+     * Sync a ToDoItem across to mobile app
+     * The mobile app will take care of updating/saving the ToDoItem and will notify us
+     * when the list is changed
+     * @param item the ToDoItem to sync
+     */
     private void syncToDoItem(ToDoItem item) {
 
-        PutDataMapRequest putDataMapRequest = ToDoItemManager.toPutDataMapRequest(item, SharedConstants.Wearable.MESSAGE_REQUEST_TODO_ITEMS);
+        PutDataMapRequest putDataMapRequest = ToDoItemManager.toPutDataMapRequest(item, SharedConstants.Wearable.MESSAGE_CREATE_TODO_ITEM);
         Wearable.DataApi.putDataItem(mApiClient, putDataMapRequest.asPutDataRequest());
 
     }
@@ -265,21 +271,5 @@ public class ToDoListActivity extends Activity implements GoogleApiClient.Connec
 
     private void Logd(String message) {
         Log.d("D", message);
-    }
-
-    @Override
-    public void onMessageReceived(MessageEvent messageEvent) {
-
-        Logd("Message received: " + messageEvent.getPath());
-
-        if (messageEvent.getPath().equals("/todolist/refresh-list")) {
-            new Handler(Looper.getMainLooper()).post(new Runnable() {
-                @Override
-                public void run() {
-                    setToDoListItems();
-                }
-            });
-        }
-
     }
 }

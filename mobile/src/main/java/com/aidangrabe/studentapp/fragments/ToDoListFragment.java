@@ -3,6 +3,8 @@ package com.aidangrabe.studentapp.fragments;
 import android.database.Cursor;
 import android.graphics.Paint;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,11 +15,16 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.aidangrabe.common.SharedConstants;
 import com.aidangrabe.common.adapters.ToDoListAdapter;
 import com.aidangrabe.common.model.todolist.ToDoItem;
 import com.aidangrabe.common.model.todolist.ToDoItemManager;
 import com.aidangrabe.common.wearable.WearableFragment;
 import com.aidangrabe.studentapp.R;
+import com.google.android.gms.wearable.DataEvent;
+import com.google.android.gms.wearable.DataEventBuffer;
+import com.google.android.gms.wearable.DataItem;
+import com.google.android.gms.wearable.DataMap;
 import com.melnykov.fab.FloatingActionButton;
 
 import java.util.ArrayList;
@@ -136,6 +143,27 @@ public class ToDoListFragment extends WearableFragment implements AdapterView.On
 
         tv.setPaintFlags(tv.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
         getToDoList();
+
+    }
+
+    @Override
+    public void onDataChanged(DataEventBuffer dataEvents) {
+
+        for (DataEvent event : dataEvents) {
+
+            DataItem dataItem = event.getDataItem();
+
+            if (dataItem.getUri().getPath().equals(SharedConstants.Wearable.MESSAGE_REQUEST_TODO_ITEMS)) {
+                DataMap dataMap = DataMap.fromByteArray(dataItem.getData());
+                new Handler(Looper.getMainLooper()).post(new Runnable() {
+                    @Override
+                    public void run() {
+                        getToDoList();
+                    }
+                });
+            }
+
+        }
 
     }
 }

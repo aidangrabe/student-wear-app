@@ -11,10 +11,12 @@ import com.aidangrabe.common.SharedConstants;
 import com.aidangrabe.common.model.todolist.ToDoItem;
 import com.aidangrabe.common.model.todolist.ToDoItemManager;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.wearable.DataEvent;
 import com.google.android.gms.wearable.DataEventBuffer;
+import com.google.android.gms.wearable.DataItem;
+import com.google.android.gms.wearable.DataMap;
 import com.google.android.gms.wearable.MessageEvent;
 import com.google.android.gms.wearable.Node;
-import com.google.android.gms.wearable.PutDataMapRequest;
 import com.google.android.gms.wearable.Wearable;
 import com.google.android.gms.wearable.WearableListenerService;
 
@@ -47,18 +49,7 @@ public class DataLayerListenerService extends WearableListenerService {
 
         // request todoitems
         if (path.endsWith(SharedConstants.Wearable.MESSAGE_REQUEST_TODO_ITEMS)) {
-            sendToDoItems(messageEvent.getSourceNodeId());
-        }
-        // update a todoitem
-        else if (path.equals(SharedConstants.Wearable.MESSAGE_UPDATE_TODO_ITEM)) {
-            int id = Integer.valueOf(new String(messageEvent.getData()));
-            updateToDoItem(id);
-        }
-        // create new todoitem
-        else if (path.equals(SharedConstants.Wearable.MESSAGE_CREATE_TODO_ITEM)) {
-            ToDoItem item = new ToDoItem(new String(messageEvent.getData()));
-            ToDoItemManager manager = new ToDoItemManager(this);
-            manager.save(item);
+            sendToDoItems();
         }
         // find my phone
         else if (path.equals(SharedConstants.Wearable.MESSAGE_FIND_MY_PHONE)) {
@@ -81,12 +72,29 @@ public class DataLayerListenerService extends WearableListenerService {
     public void onDataChanged(DataEventBuffer dataEvents) {
         Log.d("DEBUG", "onDataChanged");
 
-    }
+        for (DataEvent event : dataEvents) {
+            DataItem dataItem = event.getDataItem();
 
-    private void syncToDoItem(ToDoItem item) {
+            // create or update a single ToDoItem
+            if (dataItem.getUri().getPath().equals(SharedConstants.Wearable.MESSAGE_CREATE_TODO_ITEM)) {
+                DataMap dataMap = DataMap.fromByteArray(dataItem.getData());
+                ToDoItemManager itemManager = new ToDoItemManager(this);
+                ToDoItem item = ToDoItemManager.fromDataMap(dataMap);
 
-        PutDataMapRequest putDataMapRequest = ToDoItemManager.toPutDataMapRequest(item, SharedConstants.Wearable.MESSAGE_REQUEST_TODO_ITEMS);
-        Wearable.DataApi.putDataItem(mGoogleApiClient, putDataMapRequest.asPutDataRequest());
+                if (item.getId() == -1) {
+                    // create new
+                    Log.d("D", "Saving new ToDoItem");
+                    itemManager.save(item);
+                } else {
+                    // update existing
+                    Log.d("D", "Updating existing ToDoItem");
+                    itemManager.update(item);
+                }
+
+                // send over the updated items
+                sendToDoItems();
+            }
+        }
 
     }
 
@@ -95,21 +103,15 @@ public class DataLayerListenerService extends WearableListenerService {
         super.onPeerConnected(peer);
     }
 
-    private void sendToDoItems(String nodeId) {
-
-        Log.d("DEBUG", "Retrieving TodoItems");
-
-        if (!mGoogleApiClient.isConnected()) {
-            // error
-            Log.d("DEBUG", "NOT CONNECTED");
-            return;
-        }
+    // sync the ToDoItems List using the DataApi
+    private void sendToDoItems() {
 
         List<ToDoItem> items = queryToDoItems();
         ToDoItemManager.sync(mGoogleApiClient, items);
 
     }
 
+    // create a list of ToDoItems from the database
     private List<ToDoItem> queryToDoItems() {
 
         ToDoItemManager manager = new ToDoItemManager(this);
@@ -120,22 +122,6 @@ public class DataLayerListenerService extends WearableListenerService {
         }
         cursor.close();
         return items;
-
-    }
-
-    /**
-     * Complete a given ToDoItem by it's id
-     * @param id the id of the ToDoItem to complete
-     */
-    private void updateToDoItem(int id) {
-
-        ToDoItemManager manager = new ToDoItemManager(this);
-
-        ToDoItem item = manager.get(id);
-        if (item != null) {
-            item.complete();
-        }
-        manager.update(item);
 
     }
 
