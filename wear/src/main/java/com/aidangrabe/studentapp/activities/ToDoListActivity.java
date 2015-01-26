@@ -43,7 +43,7 @@ import java.util.List;
  * Activity to show the current ToDoItems
  */
 public class ToDoListActivity extends Activity implements GoogleApiClient.ConnectionCallbacks, DataApi.DataListener,
-        AdapterView.OnItemClickListener, MessageApi.MessageListener {
+        AdapterView.OnItemClickListener {
 
     private static final int SPEECH_REQUEST_CODE = 0;
 
@@ -70,7 +70,6 @@ public class ToDoListActivity extends Activity implements GoogleApiClient.Connec
         mApiClient = new GoogleApiClient.Builder(this)
                 .addApi(Wearable.API)
                 .addConnectionCallbacks(this)
-//                .addOnConnectionFailedListener(this)
                 .build();
 
         mItems = new ArrayList<>();
@@ -88,7 +87,6 @@ public class ToDoListActivity extends Activity implements GoogleApiClient.Connec
 
         mApiClient.connect();
         Wearable.DataApi.addListener(mApiClient, this);
-        Wearable.MessageApi.addListener(mApiClient, this);
 
     }
 
@@ -96,7 +94,6 @@ public class ToDoListActivity extends Activity implements GoogleApiClient.Connec
     protected void onStop() {
         super.onStop();
 
-        Wearable.MessageApi.removeListener(mApiClient, this);
         Wearable.DataApi.removeListener(mApiClient, this);
         mApiClient.disconnect();
 
