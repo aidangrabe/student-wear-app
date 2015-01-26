@@ -11,9 +11,7 @@ import com.aidangrabe.common.SharedConstants;
 import com.aidangrabe.common.model.todolist.ToDoItem;
 import com.aidangrabe.common.model.todolist.ToDoItemManager;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.wearable.DataEvent;
 import com.google.android.gms.wearable.DataEventBuffer;
-import com.google.android.gms.wearable.DataMap;
 import com.google.android.gms.wearable.MessageEvent;
 import com.google.android.gms.wearable.Node;
 import com.google.android.gms.wearable.PutDataMapRequest;
@@ -83,20 +81,6 @@ public class DataLayerListenerService extends WearableListenerService {
     public void onDataChanged(DataEventBuffer dataEvents) {
         Log.d("DEBUG", "onDataChanged");
 
-        for (DataEvent event : dataEvents) {
-            DataMap dataMap = DataMap.fromByteArray(event.getDataItem().getData());
-            ToDoItem item = ToDoItemManager.fromDataMap(dataMap);
-            ToDoItemManager itemManager = new ToDoItemManager(this);
-            if (item.getId() == -1) {
-                Log.d("D", "Saving new ToDoItem");
-                int newId = (int) itemManager.save(item);
-                syncToDoItem(item);
-            } else {
-                Log.d("D", "Updating existing ToDoItem");
-                itemManager.update(item);
-            }
-        }
-
     }
 
     private void syncToDoItem(ToDoItem item) {
@@ -122,16 +106,7 @@ public class DataLayerListenerService extends WearableListenerService {
         }
 
         List<ToDoItem> items = queryToDoItems();
-
-        for (ToDoItem item : items) {
-            Log.d("DEBUG", "Sending ToDoItem");
-            final PutDataMapRequest putDataMapRequest = ToDoItemManager.toPutDataMapRequest(item, SharedConstants.Wearable.MESSAGE_REQUEST_TODO_ITEMS);
-            Wearable.DataApi.putDataItem(mGoogleApiClient, putDataMapRequest.asPutDataRequest()).await();
-        }
-
-        Log.d("D", "Sending refresh list message");
-        Wearable.MessageApi.sendMessage(mGoogleApiClient, nodeId, "/todolist/refresh-list", null);
-
+        ToDoItemManager.sync(mGoogleApiClient, items);
 
     }
 

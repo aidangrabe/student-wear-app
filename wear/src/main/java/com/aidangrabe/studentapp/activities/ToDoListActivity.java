@@ -20,11 +20,9 @@ import com.aidangrabe.studentapp.R;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.common.api.ResultCallback;
-import com.google.android.gms.common.data.FreezableUtils;
 import com.google.android.gms.wearable.DataApi;
 import com.google.android.gms.wearable.DataEvent;
 import com.google.android.gms.wearable.DataEventBuffer;
-import com.google.android.gms.wearable.DataItem;
 import com.google.android.gms.wearable.DataItemBuffer;
 import com.google.android.gms.wearable.DataMap;
 import com.google.android.gms.wearable.MessageApi;
@@ -107,17 +105,26 @@ public class ToDoListActivity extends Activity implements GoogleApiClient.Connec
     public void getToDoItems() {
 
         Logd("gettingToDoListItems");
+
         Wearable.DataApi.getDataItems(mApiClient).setResultCallback(new ResultCallback<DataItemBuffer>() {
             @Override
             public void onResult(DataItemBuffer dataItems) {
 
+                Logd("DataApi onResult");
                 for (Node node : mNodes) {
                     sendMessage(node, SharedConstants.Wearable.MESSAGE_REQUEST_TODO_ITEMS, null);
                 }
 
                 for (int i = 0; i < dataItems.getCount(); i++) {
-                    mItems.add(ToDoItemManager.fromDataMap(DataMap.fromByteArray(dataItems.get(i).getData())));
+
+                    Logd("Found dataItem");
+                    byte[] bytes = dataItems.get(i).getData();
+                    if (bytes != null) {
+                        List<ToDoItem> itemList = ToDoItemManager.listFromDataMap(DataMap.fromByteArray(bytes));
+                        mItems = itemList == null ? mItems : itemList;
+                    }
                 }
+
                 setToDoListItems();
 
                 dataItems.release();
@@ -158,46 +165,25 @@ public class ToDoListActivity extends Activity implements GoogleApiClient.Connec
     @Override
     public void onDataChanged(DataEventBuffer dataEvents) {
 
-        Logd("onDataChanged");
-
-        final List<DataEvent> events = FreezableUtils.freezeIterable(dataEvents);
-
-        dataEvents.close();
-
-        for (DataEvent event : events) {
-            DataItem dataItem = event.getDataItem();
-            if (dataItem.getUri().getPath().equals(SharedConstants.Wearable.MESSAGE_REQUEST_TODO_ITEMS)) {
-
-                // we don't want to add deleted items to the list
-                if (event.getType() == DataEvent.TYPE_DELETED) {
-                    Logd("Item deleted");
-                    continue;
-                }
-
-                if (event.getType() == DataEvent.TYPE_CHANGED) {
-                    Logd("Item changed");
-                }
-
-                DataMap dataMap = DataMap.fromByteArray(event.getDataItem().getData());
-                ToDoItem item = ToDoItemManager.fromDataMap(dataMap);
-
-                boolean wasAdded = false;
-                for (int i = 0; i < mItems.size(); i++) {
-                    if (mItems.get(i).getId() == item.getId()) {
-                        // update
-                        mItems.set(i, item);
-                        wasAdded = true;
-                        break;
-                    }
-                }
-
-                // id can't be -1. This would mean the item has not been stored on the mobile side yet
-                if (!wasAdded && item.getId() != -1) {
-                    mItems.add(item);
-                }
-
+        for (DataEvent event : dataEvents) {
+            if (event.getDataItem().getData() == null) {
+                continue;
+            }
+            DataMap dataMap = DataMap.fromByteArray(event.getDataItem().getData());
+            List<ToDoItem> itemList = ToDoItemManager.listFromDataMap(dataMap);
+            if (itemList != null) {
+                mItems = itemList;
+                Logd("onDataChanged: Got list: " + itemList.size());
             }
         }
+
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+                setToDoListItems();
+            }
+        });
+
 
     }
 

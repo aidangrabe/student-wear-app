@@ -5,14 +5,20 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.os.Parcel;
 import android.util.Log;
 
+import com.aidangrabe.common.SharedConstants;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.wearable.DataApi;
 import com.google.android.gms.wearable.DataMap;
 import com.google.android.gms.wearable.PutDataMapRequest;
+import com.google.android.gms.wearable.Wearable;
 
-import java.util.Arrays;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by aidan on 09/01/15.
@@ -164,6 +170,56 @@ public class ToDoItemManager extends SQLiteOpenHelper {
     }
 
     /**
+     * Sync a given list of ToDoItems using the Google Wear DataLayer
+     * @param apiClient a connected GoogleApiClient
+     * @param items the list of ToDoItems to sync
+     */
+    public static void sync(GoogleApiClient apiClient, List<ToDoItem> items) {
+
+        Log.d("D", "syn list size: " + items.size());
+
+        Parcel parcel = Parcel.obtain();
+//        parcel.setDataPosition(0);  // TODO: check?
+        parcel.writeTypedList(items);
+
+        PutDataMapRequest putDataMapRequest = PutDataMapRequest.create(SharedConstants.Wearable.MESSAGE_REQUEST_TODO_ITEMS);
+        DataMap dataMap = putDataMapRequest.getDataMap();
+        byte[] bytes = parcel.marshall();
+        dataMap.putByteArray("todolist", bytes);
+        Log.d("D", "Byte Array size: " + bytes.length);
+
+        parcel.recycle();
+        Wearable.DataApi.putDataItem(apiClient, putDataMapRequest.asPutDataRequest()).setResultCallback(new ResultCallback<DataApi.DataItemResult>() {
+            @Override
+            public void onResult(DataApi.DataItemResult dataItemResult) {
+                Log.d("D", "sync successful");
+            }
+        });
+
+    }
+
+    /**
+     * Get a list of ToDoItems from a DataMap
+     * @param dataMap the DataMap to create a list from
+     * @return a list of ToDoItems
+     */
+    public static List<ToDoItem> listFromDataMap(DataMap dataMap) {
+        List<ToDoItem> items = new ArrayList<>();
+        byte[] bytes = dataMap.getByteArray("todolist");
+        if (bytes == null) {
+            return items;
+        }
+        Log.d("D", "Byte Array size: " + bytes.length);
+        Parcel parcel = Parcel.obtain();
+        parcel.unmarshall(bytes, 0, bytes.length);
+        parcel.setDataPosition(0);
+        parcel.readTypedList(items, ToDoItem.CREATOR);
+        Log.d("D", "list size: " + items.size());
+        parcel.recycle();
+        return items;
+    }
+
+    /**
      * Save a ToDoItem in the database
      * @param item the ToDoItem to save
      * @return
@@ -240,6 +296,5 @@ public class ToDoItemManager extends SQLiteOpenHelper {
         }
         return item;
     }
-
 
 }

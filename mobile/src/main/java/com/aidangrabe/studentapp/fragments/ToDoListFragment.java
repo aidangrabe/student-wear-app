@@ -20,6 +20,9 @@ import com.aidangrabe.common.wearable.WearableFragment;
 import com.aidangrabe.studentapp.R;
 import com.melnykov.fab.FloatingActionButton;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by aidan on 09/01/15.
  * A Fragment to display the ToDoList items from the Database
@@ -27,6 +30,7 @@ import com.melnykov.fab.FloatingActionButton;
 public class ToDoListFragment extends WearableFragment implements AdapterView.OnItemClickListener {
 
     private ListView mListView;
+    private List<ToDoItem> mItems;
     private ArrayAdapter<ToDoItem> mAdapter;
     private NewToDoItemFragment mNewItemFragment;
 
@@ -52,8 +56,10 @@ public class ToDoListFragment extends WearableFragment implements AdapterView.On
         mListView = (ListView) view.findViewById(R.id.list_view);
 
         mAdapter = new ToDoListAdapter(getActivity(), android.R.layout.simple_list_item_1);
+        mItems = new ArrayList<>();
 
         mListView.setAdapter(mAdapter);
+        mListView.setOnItemClickListener(this);
         getToDoList();
 
         return view;
@@ -80,14 +86,18 @@ public class ToDoListFragment extends WearableFragment implements AdapterView.On
         ToDoItemManager manager = new ToDoItemManager(getActivity());
         Cursor cursor = manager.getAll();
         mAdapter.clear();
+        mItems.clear();
 
         while (cursor.moveToNext()) {
             ToDoItem item = ToDoItemManager.instanceFromCursor(cursor);
             mAdapter.add(item);
+            mItems.add(item);
         }
 
         cursor.close();
         mAdapter.notifyDataSetChanged();
+
+        ToDoItemManager.sync(getGoogleApiClient(), mItems);
 
     }
 
@@ -125,5 +135,7 @@ public class ToDoListFragment extends WearableFragment implements AdapterView.On
         manager.update(item);
 
         tv.setPaintFlags(tv.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+        getToDoList();
+
     }
 }
