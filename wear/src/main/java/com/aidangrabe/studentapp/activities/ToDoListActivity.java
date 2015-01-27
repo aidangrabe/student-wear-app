@@ -195,7 +195,9 @@ public class ToDoListActivity extends Activity implements GoogleApiClient.Connec
             displaySpeechRecognizer();
         } else {
             ToDoItem item = mAdapter.getItem(position);
-            item.complete();
+
+            // toggle the completion state of the ToDoItem
+            item.setComplete(!item.isCompleted());
 
             syncToDoItem(item);
         }

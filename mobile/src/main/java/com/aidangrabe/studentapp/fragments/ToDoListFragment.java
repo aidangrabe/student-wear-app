@@ -135,13 +135,15 @@ public class ToDoListFragment extends WearableFragment implements AdapterView.On
         ToDoItemManager manager = new ToDoItemManager(getActivity());
         ToDoItem item = mAdapter.getItem(position);
 
-        TextView tv = (TextView) view.findViewById(android.R.id.text1);
+        TextView tv = (TextView) view.findViewById(R.id.tv_title);
 
-        // toggle strike through
-        item.complete();
+        // toggle the completion state of the ToDoItem
+        item.setComplete(!item.isCompleted());
+
         manager.update(item);
 
-        tv.setPaintFlags(tv.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+        ToDoListAdapter.setViewComplete(tv, item.isCompleted());
+
         getToDoList();
 
     }

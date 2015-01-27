@@ -61,6 +61,14 @@ public class ToDoItem implements Parcelable {
         setCompletionDate(new Date());
     }
 
+    public void setComplete(boolean complete) {
+        if (complete) {
+            complete();
+        } else {
+            completionDate = null;
+        }
+    }
+
     public boolean isCompleted() {
         return completionDate != null;
     }
