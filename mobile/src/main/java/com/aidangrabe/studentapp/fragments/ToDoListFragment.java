@@ -1,7 +1,6 @@
 package com.aidangrabe.studentapp.fragments;
 
 import android.database.Cursor;
-import android.graphics.Paint;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -10,8 +9,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.AnimationSet;
+import android.view.animation.DecelerateInterpolator;
+import android.view.animation.RotateAnimation;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -136,6 +140,7 @@ public class ToDoListFragment extends WearableFragment implements AdapterView.On
         ToDoItem item = mAdapter.getItem(position);
 
         TextView tv = (TextView) view.findViewById(R.id.tv_title);
+        ImageView tickImage = (ImageView) view.findViewById(R.id.img_tick);
 
         // toggle the completion state of the ToDoItem
         item.setComplete(!item.isCompleted());
@@ -143,8 +148,32 @@ public class ToDoListFragment extends WearableFragment implements AdapterView.On
         manager.update(item);
 
         ToDoListAdapter.setViewComplete(tv, item.isCompleted());
+        animateCheckmark(tickImage, item.isCompleted());
 
         getToDoList();
+
+    }
+
+    /**
+     * Animate the checkmark ImageView
+     * @param img the checkmark ImageView to animate
+     * @param checked whether to use checked or unchecked animation
+     */
+    private void animateCheckmark(ImageView img, boolean checked) {
+
+        AnimationSet animations = new AnimationSet(true);
+
+        animations.setInterpolator(new DecelerateInterpolator(3f));
+        animations.setDuration(700);
+
+        if (checked) {
+            animations.addAnimation(new RotateAnimation(0, 360, img.getPivotX(), img.getPivotY()));
+            animations.addAnimation(new AlphaAnimation(0, 1));
+        } else {
+            animations.addAnimation(new RotateAnimation(360, 0, img.getPivotX(), img.getPivotY()));
+            animations.addAnimation(new AlphaAnimation(1, 0));
+        }
+        img.startAnimation(animations);
 
     }
 
