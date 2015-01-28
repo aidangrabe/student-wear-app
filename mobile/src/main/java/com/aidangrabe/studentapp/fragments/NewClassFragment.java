@@ -11,7 +11,6 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
-import android.widget.SpinnerAdapter;
 import android.widget.Toast;
 
 import com.aidangrabe.studentapp.R;
@@ -26,7 +25,7 @@ import cn.pedant.SweetAlert.SweetAlertDialog;
  * Created by aidan on 07/01/15.
  * Class to handle adding a New Class/Lecture
  */
-public class NewClassFragment extends Fragment {
+public class NewClassFragment extends Fragment implements TimeEditText.TimeEditTextListener {
 
     private int mDayOfWeek;
     private ArrayAdapter<String> mDaySpinnerAdapter;
@@ -59,8 +58,11 @@ public class NewClassFragment extends Fragment {
         EditText fromText = (EditText) view.findViewById(R.id.time_from);
         EditText toText = (EditText) view.findViewById(R.id.time_to);
 
-        mFromEditText = new TimeEditText(getActivity(), fromText, savedInstanceState);
-        mToEditText = new TimeEditText(getActivity(), toText, savedInstanceState);
+        mFromEditText = new TimeEditText(getActivity(), fromText);
+        mToEditText = new TimeEditText(getActivity(), toText);
+
+        mFromEditText.setListener(this);
+        mToEditText.setListener(this);
 
         mNameEditText = (EditText) view.findViewById(R.id.class_title);
         mLocationEditText = (EditText) view.findViewById(R.id.class_room);
@@ -142,6 +144,18 @@ public class NewClassFragment extends Fragment {
         mToEditText.onSaveInstanceState(outState);
 
         super.onSaveInstanceState(outState);
+
+    }
+
+    // called when one of the TimeEditText's TimePickerDialogs has been selected
+    @Override
+    public void onTimeSet(TimeEditText editText, int hourOfDay, int minute) {
+
+        if (editText == mFromEditText) {
+            // set the to-time to one hour ahead
+            int nextHour = (hourOfDay + 1)  % 24;
+            mToEditText.setTime(nextHour, minute);
+        }
 
     }
 }

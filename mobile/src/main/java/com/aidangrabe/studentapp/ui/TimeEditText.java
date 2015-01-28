@@ -14,25 +14,33 @@ import java.util.Calendar;
  * Created by aidan on 07/01/15.
  * Class to make an EditText show a TimePicker when clicked
  */
-public class TimeEditText implements View.OnFocusChangeListener, DialogInterface.OnDismissListener{
+public class TimeEditText implements View.OnFocusChangeListener, DialogInterface.OnDismissListener {
 
     private Boolean mPickerShowing;
     private EditText mEditText;
     private Context mContext;
     private TimePickerDialog mTimePickerDialog;
     private int mHourOfDay, mMinutes;
+    private TimeEditTextListener mListener;
+
+    /**
+     * Simple interface to mimic OnTimeSetListener, but is passed a TimeEditText instead of
+     * a TimePicker
+     */
+    public interface TimeEditTextListener {
+        public void onTimeSet(TimeEditText editText, int hourOfDay, int minute);
+    }
 
     private TimePickerDialog.OnTimeSetListener mTimeSetListener = new TimePickerDialog.OnTimeSetListener() {
 
         @Override
         public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-            mEditText.setText(String.format("%d:%02d", hourOfDay, minute));
+            setTime(hourOfDay, minute);
+            if (mListener != null) {
+                mListener.onTimeSet(TimeEditText.this, hourOfDay, minute);
+            }
         }
     };
-
-    public TimeEditText(Context context, EditText editText, Bundle bundle) {
-        this(context, editText);
-    }
 
     public TimeEditText(Context context, EditText editText) {
 
@@ -112,4 +120,25 @@ public class TimeEditText implements View.OnFocusChangeListener, DialogInterface
     public void onDismiss(DialogInterface dialog) {
         mPickerShowing = false;
     }
+
+    /**
+     * The listener for when the TimePickerDialog's OnTimeSetListener gets notified
+     * @param listener
+     */
+    public void setListener(TimeEditTextListener listener) {
+        this.mListener = listener;
+    }
+
+    /**
+     * Set the TimeEditText's time
+     * This is the time that will be populated into the TimePickerDialog
+     * @param hourOfDay the hour of the day (24-hour)
+     * @param minute the minute value
+     */
+    public void setTime(int hourOfDay, int minute) {
+        mMinutes = minute;
+        mHourOfDay = hourOfDay;
+        mEditText.setText(String.format("%d:%02d", hourOfDay, minute));
+    }
+
 }
