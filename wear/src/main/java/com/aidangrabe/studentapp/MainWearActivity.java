@@ -3,12 +3,13 @@ package com.aidangrabe.studentapp;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.wearable.view.WearableListView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.aidangrabe.studentapp.activities.FindMyPhoneActivity;
@@ -16,10 +17,12 @@ import com.aidangrabe.studentapp.activities.MapActivity;
 import com.aidangrabe.studentapp.activities.ToDoListActivity;
 import com.aidangrabe.studentapp.activities.games.GameMenuActivity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class MainWearActivity extends Activity implements WearableListView.ClickListener {
 
     private WearableListView mListView;
-    private String[] mMenuOptions;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,52 +30,28 @@ public class MainWearActivity extends Activity implements WearableListView.Click
 
         setContentView(R.layout.activity_main_menu);
 
-        mMenuOptions = getMenuOptions();
-
         mListView = (WearableListView) findViewById(R.id.wearable_list);
-        mListView.setAdapter(new Adapter(this, mMenuOptions));
+        mListView.setAdapter(new Adapter(this, getMenuOptions()));
         mListView.setClickListener(this);
 
     }
 
-    private String[] getMenuOptions() {
-        return new String[] {
-                getResources().getString(R.string.menu_todo_list),
-                getResources().getString(R.string.menu_timetable),
-                getResources().getString(R.string.menu_games),
-                getResources().getString(R.string.menu_map),
-                getResources().getString(R.string.find_my_phone)
-        };
+    // create the menu
+    private List<MenuItem> getMenuOptions() {
+        List<MenuItem> items = new ArrayList<>();
+        items.add(new MenuItem(R.string.menu_todo_list, ToDoListActivity.class, R.drawable.ic_todo));
+        items.add(new MenuItem(R.string.menu_games, GameMenuActivity.class, R.drawable.ic_games));
+        items.add(new MenuItem(R.string.menu_map, MapActivity.class, R.drawable.ic_map));
+        items.add(new MenuItem(R.string.find_my_phone, FindMyPhoneActivity.class, R.drawable.ic_phone));
+        return items;
     }
-
-
 
     @Override
     public void onClick(WearableListView.ViewHolder viewHolder) {
 
-        Class newActivityClass = null;
-        int tag = (int) viewHolder.itemView.getTag();
+        Adapter.ItemViewHolder itemHolder = (Adapter.ItemViewHolder) viewHolder;
 
-        // ToDoList
-        if (mMenuOptions[tag].equals(getResources().getString(R.string.menu_todo_list))) {
-            newActivityClass = ToDoListActivity.class;
-        }
-        // Timetable
-        else if (mMenuOptions[tag].equals(getResources().getString(R.string.menu_timetable))) {
-
-        }
-        // Games
-        else if (mMenuOptions[tag].equals(getResources().getString(R.string.menu_games))) {
-            newActivityClass = GameMenuActivity.class;
-        }
-        // Games
-        else if (mMenuOptions[tag].equals(getResources().getString(R.string.menu_map))) {
-            newActivityClass = MapActivity.class;
-        }
-        // Find My Phone
-        else if (mMenuOptions[tag].equals(getResources().getString(R.string.find_my_phone))) {
-            newActivityClass = FindMyPhoneActivity.class;
-        }
+        Class<? extends Activity> newActivityClass = itemHolder.menuItem.getActivityClass();
 
         if (newActivityClass != null) {
             Intent intent = new Intent(this, newActivityClass);
@@ -82,29 +61,55 @@ public class MainWearActivity extends Activity implements WearableListView.Click
     }
 
     @Override
-    public void onTopEmptyRegionClick() {
-        Log.d("DEBUG", "onTopEmptyRegionClick!");
+    public void onTopEmptyRegionClick() {}
+
+    private class MenuItem {
+
+        private String mTitle;
+        private Class<? extends Activity> mActivityClass;
+        private Drawable mIconDrawable;
+
+        public MenuItem(int titleResource, Class<? extends Activity> activityClass, int iconResource) {
+            mTitle = getResources().getString(titleResource);
+            mActivityClass = activityClass;
+            mIconDrawable = getResources().getDrawable(iconResource);
+        }
+
+        public String getTitle() {
+            return mTitle;
+        }
+
+        public Class<? extends Activity> getActivityClass() {
+            return mActivityClass;
+        }
+
+        public Drawable getIconDrawable() {
+            return mIconDrawable;
+        }
     }
 
     private static class Adapter extends WearableListView.Adapter {
 
         private Context mContext;
         private LayoutInflater mInflater;
-        private String[] mDataset;
+        private List<MenuItem> mMenuItems;
 
-        public Adapter(Context context, String[] dataset) {
+        public Adapter(Context context, List<MenuItem> menuItems) {
             mContext = context;
             mInflater = LayoutInflater.from(context);
-            mDataset = dataset;
+            mMenuItems = menuItems;
         }
 
         // Provide a reference to the type of views you're using
         public static class ItemViewHolder extends WearableListView.ViewHolder {
             private TextView textView;
+            private ImageView iconView;
+            private MenuItem menuItem;
             public ItemViewHolder(View itemView) {
                 super(itemView);
                 // find the text view within the custom item's layout
                 textView = (TextView) itemView.findViewById(R.id.name);
+                iconView = (ImageView) itemView.findViewById(R.id.item_icon);
             }
         }
         // Create new views for list items
@@ -122,20 +127,20 @@ public class MainWearActivity extends Activity implements WearableListView.Click
         @Override
         public void onBindViewHolder(WearableListView.ViewHolder holder,
                                      int position) {
-            // retrieve the text view
+            MenuItem menuItem = mMenuItems.get(position);
+
             ItemViewHolder itemHolder = (ItemViewHolder) holder;
-            TextView view = itemHolder.textView;
-            // replace text contents
-            view.setText(mDataset[position]);
-            // replace list item's metadata
-            holder.itemView.setTag(position);
+
+            itemHolder.textView.setText(menuItem.getTitle());
+            itemHolder.iconView.setImageDrawable(menuItem.getIconDrawable());
+            itemHolder.menuItem = menuItem;
         }
 
         // Return the size of your dataset
         // (invoked by the WearableListView's layout manager)
         @Override
         public int getItemCount() {
-            return mDataset.length;
+            return mMenuItems.size();
         }
     }
 
