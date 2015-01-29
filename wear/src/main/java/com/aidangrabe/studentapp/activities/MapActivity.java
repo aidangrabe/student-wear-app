@@ -90,6 +90,7 @@ public class MapActivity extends Activity implements DataApi.DataListener, Googl
                         loadBitmapFromAsset(dataMapItem.getDataMap().getAsset("map"));
                     }
                 }
+                dataItems.release();
             }
         });
     }
