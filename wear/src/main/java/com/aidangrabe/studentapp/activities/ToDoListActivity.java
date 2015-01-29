@@ -114,6 +114,10 @@ public class ToDoListActivity extends Activity implements GoogleApiClient.Connec
 
                 for (int i = 0; i < dataItems.getCount(); i++) {
 
+                    if (!dataItems.get(i).getUri().getPath().equals(SharedConstants.Wearable.MESSAGE_REQUEST_TODO_ITEMS)) {
+                        continue;
+                    }
+                    
                     Logd("Found dataItem");
                     byte[] bytes = dataItems.get(i).getData();
                     if (bytes != null) {
