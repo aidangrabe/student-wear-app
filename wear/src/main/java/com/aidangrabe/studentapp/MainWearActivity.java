@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.wearable.view.WatchViewStub;
 import android.support.wearable.view.WearableListView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,9 +12,9 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.aidangrabe.studentapp.activities.FindMyPhoneActivity;
+import com.aidangrabe.studentapp.activities.MapActivity;
 import com.aidangrabe.studentapp.activities.ToDoListActivity;
 import com.aidangrabe.studentapp.activities.games.GameMenuActivity;
-import com.aidangrabe.studentapp.activities.games.MineSweeperActivity;
 
 public class MainWearActivity extends Activity implements WearableListView.ClickListener {
 
@@ -41,6 +40,7 @@ public class MainWearActivity extends Activity implements WearableListView.Click
                 getResources().getString(R.string.menu_todo_list),
                 getResources().getString(R.string.menu_timetable),
                 getResources().getString(R.string.menu_games),
+                getResources().getString(R.string.menu_map),
                 getResources().getString(R.string.find_my_phone)
         };
     }
@@ -64,6 +64,10 @@ public class MainWearActivity extends Activity implements WearableListView.Click
         // Games
         else if (mMenuOptions[tag].equals(getResources().getString(R.string.menu_games))) {
             newActivityClass = GameMenuActivity.class;
+        }
+        // Games
+        else if (mMenuOptions[tag].equals(getResources().getString(R.string.menu_map))) {
+            newActivityClass = MapActivity.class;
         }
         // Find My Phone
         else if (mMenuOptions[tag].equals(getResources().getString(R.string.find_my_phone))) {

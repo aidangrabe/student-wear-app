@@ -8,9 +8,11 @@ public class SharedConstants {
 
     public static final class Wearable {
         public static final String MESSAGE_CREATE_TODO_ITEM = "/todo/create";
-        public static final String MESSAGE_UPDATE_TODO_ITEM = "/todo/update";
         public static final String MESSAGE_REQUEST_TODO_ITEMS = "/request-todo-items";
         public static final String MESSAGE_FIND_MY_PHONE = "/find-my-phone";
+
+        // map
+        public static final String REQUEST_MAP = "/map/request";
 
         // game controller
         public static final String MESSAGE_GAME_CONTROLLER = "/game-controller";

@@ -1,6 +1,7 @@
 package com.aidangrabe.studentapp.wearable;
 
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.media.AudioManager;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
@@ -10,16 +11,23 @@ import android.util.Log;
 import com.aidangrabe.common.SharedConstants;
 import com.aidangrabe.common.model.todolist.ToDoItem;
 import com.aidangrabe.common.model.todolist.ToDoItemManager;
+import com.aidangrabe.common.requests.StaticMapRequest;
+import com.aidangrabe.common.util.MyVolley;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.wearable.Asset;
 import com.google.android.gms.wearable.DataEvent;
 import com.google.android.gms.wearable.DataEventBuffer;
 import com.google.android.gms.wearable.DataItem;
 import com.google.android.gms.wearable.DataMap;
 import com.google.android.gms.wearable.MessageEvent;
 import com.google.android.gms.wearable.Node;
+import com.google.android.gms.wearable.PutDataMapRequest;
 import com.google.android.gms.wearable.Wearable;
 import com.google.android.gms.wearable.WearableListenerService;
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -55,7 +63,34 @@ public class DataLayerListenerService extends WearableListenerService {
         else if (path.equals(SharedConstants.Wearable.MESSAGE_FIND_MY_PHONE)) {
             findMyPhone();
         }
+        // map
+        else if (path.equals(SharedConstants.Wearable.REQUEST_MAP)) {
+            Log.d("D", "Downloading map image");
+            StaticMapRequest request = new StaticMapRequest(51.8928387,-8.4942547, 17, 320, 320, new Response.Listener<Bitmap>() {
+                @Override
+                public void onResponse(Bitmap response) {
+                    Log.d("D", "Map successfully downloaded, width:  " + response.getWidth());
+                    Asset map = createAssetFromBitmap(response);
+                    PutDataMapRequest putDataMapRequest = PutDataMapRequest.create(SharedConstants.Wearable.REQUEST_MAP);
+                    DataMap dataMap = putDataMapRequest.getDataMap();
+                    dataMap.putAsset("map", map);
+                    Wearable.DataApi.putDataItem(mGoogleApiClient, putDataMapRequest.asPutDataRequest());
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Log.d("D", "Error downloading Static Map: \n\n" + error.toString());
+                }
+            });
+            MyVolley.getInstance(this).add(request);
+        }
 
+    }
+
+    public Asset createAssetFromBitmap(Bitmap bitmap) {
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+        return Asset.createFromBytes(byteArrayOutputStream.toByteArray());
     }
 
     @Override
