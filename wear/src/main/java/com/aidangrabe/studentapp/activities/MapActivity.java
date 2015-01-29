@@ -11,7 +11,6 @@ import android.widget.ImageView;
 
 import com.aidangrabe.common.SharedConstants;
 import com.aidangrabe.studentapp.R;
-import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.wearable.Asset;
@@ -20,7 +19,6 @@ import com.google.android.gms.wearable.DataEvent;
 import com.google.android.gms.wearable.DataEventBuffer;
 import com.google.android.gms.wearable.DataItem;
 import com.google.android.gms.wearable.DataItemBuffer;
-import com.google.android.gms.wearable.DataMap;
 import com.google.android.gms.wearable.DataMapItem;
 import com.google.android.gms.wearable.Node;
 import com.google.android.gms.wearable.NodeApi;
@@ -29,11 +27,11 @@ import com.google.android.gms.wearable.Wearable;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Created by aidan on 28/01/15.
- *
+ * This Activity displays a static image of a Map region by asking the mobile app
+ * for a Bitmap
  */
 public class MapActivity extends Activity implements DataApi.DataListener, GoogleApiClient.ConnectionCallbacks {
 
@@ -56,8 +54,10 @@ public class MapActivity extends Activity implements DataApi.DataListener, Googl
 
     }
 
+    /**
+     * Ask the mobile app for the map Bitmap
+     */
     private void requestMap() {
-        Logd("Requesting map");
         for (Node node : mNodes) {
             Wearable.MessageApi.sendMessage(mGoogleApiClient, node.getId(), SharedConstants.Wearable.REQUEST_MAP, null);
         }
@@ -77,15 +77,15 @@ public class MapActivity extends Activity implements DataApi.DataListener, Googl
         super.onPause();
     }
 
+    /**
+     * Get the map image currently synced to the DataApi
+     */
     public void getMapImage() {
         Wearable.DataApi.getDataItems(mGoogleApiClient).setResultCallback(new ResultCallback<DataItemBuffer>() {
             @Override
             public void onResult(DataItemBuffer dataItems) {
                 for (DataItem dataItem : dataItems) {
                     if (dataItem.getUri().getPath().equals(SharedConstants.Wearable.REQUEST_MAP)) {
-
-//                        DataMap dataMap = DataMap.fromByteArray(dataItem.getData());
-//                        Asset map = dataMap.getAsset("map");
                         DataMapItem dataMapItem = DataMapItem.fromDataItem(dataItem);
                         loadBitmapFromAsset(dataMapItem.getDataMap().getAsset("map"));
                     }
@@ -101,14 +101,16 @@ public class MapActivity extends Activity implements DataApi.DataListener, Googl
             if (event.getDataItem().getUri().getPath().equals(SharedConstants.Wearable.REQUEST_MAP)) {
                 Logd("Map Asset received");
                 DataMapItem dataMapItem = DataMapItem.fromDataItem(event.getDataItem());
-                Asset mapAsset = dataMapItem.getDataMap().getAsset("map");
-                loadBitmapFromAsset(mapAsset);
+                loadBitmapFromAsset(dataMapItem.getDataMap().getAsset("map"));
             }
         }
 
     }
 
-
+    /**
+     * Using the given Asset, creates a Bitmap and sets the ImageView imageBitmap
+     * @param asset the Asset to to convert to a Bitmap
+     */
     public void loadBitmapFromAsset(Asset asset) {
         if (asset == null) {
             throw new IllegalArgumentException("Asset must be non-null");
@@ -120,6 +122,8 @@ public class MapActivity extends Activity implements DataApi.DataListener, Googl
             public void onResult(DataApi.GetFdForAssetResult getFdForAssetResult) {
                 InputStream assetInputStream = getFdForAssetResult.getInputStream();
                 final Bitmap mapBitmap = BitmapFactory.decodeStream(assetInputStream);
+
+                // set the new image on the main thread
                 new Handler(Looper.getMainLooper()).post(new Runnable() {
                     @Override
                     public void run() {

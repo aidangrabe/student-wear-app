@@ -87,6 +87,11 @@ public class DataLayerListenerService extends WearableListenerService {
 
     }
 
+    /**
+     * Helper method to create an Asset from a Bitmap
+     * @param bitmap the Bitmap to convert
+     * @return the Asset
+     */
     public Asset createAssetFromBitmap(Bitmap bitmap) {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
