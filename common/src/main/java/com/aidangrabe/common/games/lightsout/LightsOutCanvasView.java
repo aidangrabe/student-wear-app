@@ -1,13 +1,17 @@
 package com.aidangrabe.common.games.lightsout;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
+import android.graphics.Rect;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
+
+import com.aidangrabe.common.R;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -22,6 +26,8 @@ public class LightsOutCanvasView extends View {
     private Collection<Tile> mTiles;
     private int mWidth, mHeight, mBoardWidth, mBoardHeight, mTileWidth, mTileHeight;
     private Paint mTilePaint;
+    private Bitmap mImgOn, mImgOff;
+    private Rect mImgSrcRect, mImgDestRect;
 
     public LightsOutCanvasView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -34,13 +40,19 @@ public class LightsOutCanvasView extends View {
         mBoardWidth = width;
         mBoardHeight = height;
         mTilePaint = new Paint();
-        mTilePaint.setColor(Color.RED);
+        mTilePaint.setColor(Color.WHITE);
+        mTilePaint.setAntiAlias(true);
     }
 
     private void init() {
 
-        mBackgroundColor = Color.WHITE;
+        mBackgroundColor = Color.rgb(20, 20, 20);
         mTiles = new ArrayList<>();
+
+        mImgOn = BitmapFactory.decodeResource(getResources(), R.drawable.ic_circle_blue);
+        mImgOff = BitmapFactory.decodeResource(getResources(), R.drawable.ic_circle);
+
+        mImgSrcRect = new Rect(0, 0, mImgOn.getWidth(), mImgOn.getHeight());
 
     }
 
@@ -52,11 +64,14 @@ public class LightsOutCanvasView extends View {
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
 
+        // recalculate all the heights
         mWidth = w;
         mHeight = h;
 
         mTileWidth = w / mBoardWidth;
         mTileHeight = h / mBoardHeight;
+
+        mImgDestRect = new Rect(0, 0, mTileWidth, mTileHeight);
 
         invalidate();
 
@@ -78,10 +93,9 @@ public class LightsOutCanvasView extends View {
     private void drawTiles(Canvas c) {
 
         for (Tile tile : mTiles) {
-            mTilePaint.setColor(tile.isOn() ? Color.RED : Color.GREEN);
-            c.drawRect(tile.position.x * mTileWidth, tile.position.y * mTileHeight,
-                    tile.position.x * mTileWidth + mTileWidth, tile.position.y * mTileHeight + mTileHeight,
-                    mTilePaint);
+            // position the drawing rectangle
+            mImgDestRect.offsetTo(tile.position.x * mTileWidth, tile.position.y * mTileHeight);
+            c.drawBitmap(tile.isOn() ? mImgOn : mImgOff, mImgSrcRect, mImgDestRect, mTilePaint);
         }
 
     }
