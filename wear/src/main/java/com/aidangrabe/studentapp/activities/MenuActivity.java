@@ -50,9 +50,14 @@ public class MenuActivity extends Activity implements WearableListView.ClickList
 
         if (newActivityClass != null) {
             Intent intent = new Intent(this, newActivityClass);
+            onIntentCreated(itemHolder.menuItem, intent);
             startActivity(intent);
         }
 
+    }
+
+    protected void onIntentCreated(MenuItem item, Intent intent) {
+        // to override
     }
 
     @Override

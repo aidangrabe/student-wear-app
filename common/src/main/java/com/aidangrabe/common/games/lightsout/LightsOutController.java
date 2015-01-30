@@ -48,6 +48,27 @@ public class LightsOutController {
 
     }
 
+    public void loadLevel(String level) {
+
+        int position = 0;
+        int x = 0;
+        int y = 0;
+
+        for (char c : level.toCharArray()) {
+            switch (c) {
+                default:
+                    break;
+                case 'X':
+                    selectTile(x, y);
+                    break;
+            }
+            position++;
+            x = position % mWidth;
+            y = position / mWidth;
+        }
+
+    }
+
     public Collection<Tile> getNeighbours(int x, int y) {
         Tile tile = getTile(x, y);
         return getNeighbours(tile);

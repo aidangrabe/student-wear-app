@@ -18,6 +18,8 @@ import com.aidangrabe.studentapp.R;
  */
 public class LightsOutActivity extends Activity implements LightsOutController.Listener, View.OnTouchListener {
 
+    public static final String ARG_LEVEL = "level";
+
     private static final int NUM_TILES_X = 5;
     private static final int NUM_TILES_Y = 5;
 
@@ -37,6 +39,12 @@ public class LightsOutActivity extends Activity implements LightsOutController.L
         mView.setBoardSize(NUM_TILES_X, NUM_TILES_Y);
         mView.setTiles(mGame.getTiles());
         mView.setOnTouchListener(this);
+
+        Bundle args = getIntent().getExtras();
+        String level = args.getString(ARG_LEVEL, "");
+        if (level.length() > 0) {
+            mGame.loadLevel(level);
+        }
 
     }
 
