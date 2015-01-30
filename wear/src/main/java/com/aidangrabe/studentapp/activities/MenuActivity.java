@@ -64,10 +64,14 @@ public class MenuActivity extends Activity implements WearableListView.ClickList
         private Class<? extends Activity> mActivityClass;
         private Drawable mIconDrawable;
 
-        public MenuItem(int titleResource, Class<? extends Activity> activityClass, int iconResource) {
-            mTitle = getResources().getString(titleResource);
+        public MenuItem(String title, Class<? extends Activity> activityClass, int iconResource) {
+            mTitle = title;
             mActivityClass = activityClass;
             mIconDrawable = getResources().getDrawable(iconResource);
+        }
+
+        public MenuItem(int titleResource, Class<? extends Activity> activityClass, int iconResource) {
+            this(getResources().getString(titleResource), activityClass, iconResource);
         }
 
         public String getTitle() {
