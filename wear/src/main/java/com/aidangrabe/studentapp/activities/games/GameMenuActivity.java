@@ -16,8 +16,8 @@ public class GameMenuActivity extends MenuActivity {
     @Override
     public List<MenuItem> onCreateMenu() {
         List<MenuItem> items = new ArrayList<>();
-        items.add(new MenuItem(R.string.game_menu_controller, DirectionalControllerActivity.class, R.drawable.ic_launcher));
-        items.add(new MenuItem(R.string.game_menu_minesweeper, MineSweeperActivity.class, R.drawable.ic_launcher));
+        items.add(new MenuItem(R.string.game_menu_controller, DirectionalControllerActivity.class, R.drawable.ic_games));
+        items.add(new MenuItem(R.string.game_menu_minesweeper, MineSweeperActivity.class, R.drawable.ic_mine));
         items.add(new MenuItem(R.string.game_menu_lightsout, LightsOutActivity.class, R.drawable.ic_launcher));
         return items;
     }
