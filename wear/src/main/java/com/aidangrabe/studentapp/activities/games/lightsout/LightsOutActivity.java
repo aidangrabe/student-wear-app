@@ -1,8 +1,10 @@
 package com.aidangrabe.studentapp.activities.games.lightsout;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Point;
 import android.os.Bundle;
+import android.support.wearable.activity.ConfirmationActivity;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -55,6 +57,11 @@ public class LightsOutActivity extends Activity implements LightsOutController.L
 
     @Override
     public void onGameOver(int numMoves) {
+
+        Intent intent = new Intent(this, ConfirmationActivity.class);
+        intent.putExtra(ConfirmationActivity.EXTRA_ANIMATION_TYPE, ConfirmationActivity.SUCCESS_ANIMATION);
+        intent.putExtra(ConfirmationActivity.EXTRA_MESSAGE, "Level complete!\nScore: " + numMoves);
+        startActivity(intent);
 
     }
 

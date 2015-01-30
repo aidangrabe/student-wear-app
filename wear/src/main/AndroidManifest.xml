@@ -34,6 +34,9 @@
         <activity android:name=".activities.games.lightsout.LightsOutActivity" />
         <activity android:name=".activities.games.lightsout.LevelMenuActivity" />
 
+        <!-- Success activity -->
+        <activity android:name="android.support.wearable.activity.ConfirmationActivity" />
+
     </application>
 
 </manifest>

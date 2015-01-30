@@ -167,7 +167,7 @@ public class LightsOutController {
         for (int y = 0; y < mHeight; y++) {
             for (int x = 0; x < mWidth; x++) {
                 Tile tile = getTile(x, y);
-                if (!tile.isOn()) {
+                if (tile.isOn()) {
                     win = false;
                     break lose;
                 }
