@@ -2,6 +2,7 @@ package com.aidangrabe.studentapp.activities.games;
 
 import com.aidangrabe.studentapp.R;
 import com.aidangrabe.studentapp.activities.MenuActivity;
+import com.aidangrabe.studentapp.activities.games.lightsout.LightsOutActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +18,7 @@ public class GameMenuActivity extends MenuActivity {
         List<MenuItem> items = new ArrayList<>();
         items.add(new MenuItem(R.string.game_menu_controller, DirectionalControllerActivity.class, R.drawable.ic_launcher));
         items.add(new MenuItem(R.string.game_menu_minesweeper, MineSweeperActivity.class, R.drawable.ic_launcher));
+        items.add(new MenuItem(R.string.game_menu_lightsout, LightsOutActivity.class, R.drawable.ic_launcher));
         return items;
     }
 }

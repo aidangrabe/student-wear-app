@@ -20,5 +20,6 @@
     <string name="find_my_phone">Find My Phone</string>
     <string name="find_my_phone_details">By playing a sound</string>
     <string name="menu_map">Campus Map</string>
+    <string name="game_menu_lightsout">Lights Out</string>
 
 </resources>
