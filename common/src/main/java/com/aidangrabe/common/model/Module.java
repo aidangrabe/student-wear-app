@@ -1,10 +1,12 @@
 package com.aidangrabe.common.model;
 
+import com.orm.SugarRecord;
+
 /**
  * Created by aidan on 31/01/15.
  *
  */
-public class Module {
+public class Module extends SugarRecord<Module> {
 
     private String name;
 
