@@ -1,11 +1,7 @@
 package com.aidangrabe.studentapp.fragments;
 
-import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.support.v4.app.ListFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,16 +11,18 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.aidangrabe.studentapp.R;
+import com.aidangrabe.studentapp.activities.ModulesActivity;
 import com.aidangrabe.studentapp.activities.TimeTableActivity;
 import com.aidangrabe.studentapp.activities.ToDoListActivity;
 import com.aidangrabe.studentapp.activities.games.SnakeActivity;
+import com.aidangrabe.studentapp.fragments.base.MenuFragment;
 
 
 /**
  * Created by aidan on 07/01/15.
  *
  */
-public class MainMenuFragment extends ListFragment {
+public class MainMenuFragment extends MenuFragment {
 
     // the list's adapter
     private ArrayAdapter<MenuItem> mAdapter;
@@ -77,66 +75,11 @@ public class MainMenuFragment extends ListFragment {
 
     private void createMenu() {
 
-        mAdapter.add(new MenuItem(R.string.menu_modules, R.string.menu_modules_description, R.drawable.ic_plus, ToDoListActivity.class));
+        mAdapter.add(new MenuItem(R.string.menu_modules, R.string.menu_modules_description, R.drawable.ic_plus, ModulesActivity.class));
         mAdapter.add(new MenuItem(R.string.menu_todo_list, R.string.menu_todo_list_description, R.drawable.ic_todo, ToDoListActivity.class));
         mAdapter.add(new MenuItem(R.string.menu_timetable, R.string.menu_timetable_description, R.drawable.ic_timetable, TimeTableActivity.class));
         mAdapter.add(new MenuItem(R.string.menu_games, R.string.menu_games_description, R.drawable.ic_games, SnakeActivity.class));
 
-    }
-
-    /**
-     * This class represents a single menu item in a list of menu options
-     * Each menu item contains a title, description, icon and Activity class to start when selected
-     */
-    protected class MenuItem {
-
-        private String mTitle, mDescription;
-        private Bitmap mIcon;
-        private Class<? extends Activity> mActivityClass;
-
-        public MenuItem(int titleRes, int descRes, int iconRes, Class<? extends Activity> activityClass) {
-            this(getResources().getString(titleRes), getResources().getString(descRes),
-                    BitmapFactory.decodeResource(getResources(), iconRes), activityClass);
-        }
-
-        public MenuItem(String title, String description, Bitmap iconBitmap, Class<? extends Activity> activityClass) {
-            mTitle = title;
-            mDescription = description;
-            mIcon = iconBitmap;
-            mActivityClass = activityClass;
-        }
-
-        public String getTitle() {
-            return mTitle;
-        }
-
-        public void setTitle(String mTitle) {
-            this.mTitle = mTitle;
-        }
-
-        public String getDescription() {
-            return mDescription;
-        }
-
-        public void setDescription(String mDescription) {
-            this.mDescription = mDescription;
-        }
-
-        public Bitmap getIcon() {
-            return mIcon;
-        }
-
-        public void setIcon(Bitmap mIcon) {
-            this.mIcon = mIcon;
-        }
-
-        public Class<? extends Activity> getActivityClass() {
-            return mActivityClass;
-        }
-
-        public void setActivityClass(Class<? extends Activity> mActivityClass) {
-            this.mActivityClass = mActivityClass;
-        }
     }
 
 }

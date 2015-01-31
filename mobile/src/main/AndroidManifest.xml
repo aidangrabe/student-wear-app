@@ -22,6 +22,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".activities.ModulesActivity" />
         <activity android:name=".activities.NewClassActivity" />
         <activity android:name=".activities.TimeTableActivity" />
         <activity android:name=".activities.ToDoListActivity" />

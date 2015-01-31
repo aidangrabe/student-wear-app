@@ -20,6 +20,9 @@
     <string name="new_todo_item">New ToDo Item</string>
     <string name="new_todo_title">Title:</string>
 
+    <!-- Modules -->
+    <string name="modules_title">Modules</string>
+
     <!-- New Class -->
     <string name="new_class_success">New Class Created</string>
 
