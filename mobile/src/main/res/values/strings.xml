@@ -7,9 +7,14 @@
 
     <!-- Main Menu -->
     <string name="menu_add_class">+ Add Class</string>
-    <string name="menu_todo_list">ToDo List</string>
+    <string name="menu_modules">Modules</string>
+        <string name="menu_modules_description">Manage the subjects you are taking</string>
+    <string name="menu_todo_list">To-do list</string>
+        <string name="menu_todo_list_description">Add/remove and keep track of your tasks</string>
     <string name="menu_timetable">Timetable</string>
+        <string name="menu_timetable_description">View your daily class schedule</string>
     <string name="menu_games">Games</string>
+        <string name="menu_games_description">Unwind with some fun games!</string>
 
     <!-- Creating a ToDoItem -->
     <string name="new_todo_item">New ToDo Item</string>
