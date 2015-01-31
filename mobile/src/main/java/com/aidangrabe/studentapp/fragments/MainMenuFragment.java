@@ -77,8 +77,7 @@ public class MainMenuFragment extends ListFragment {
 
     private void createMenu() {
 
-        //TODO: Modules
-//        mAdapter.add(new MenuItem(R.string.menu_todo_list, R.string.menu_todo_list, R.drawable.ic_todo, ToDoListActivity.class));
+        mAdapter.add(new MenuItem(R.string.menu_modules, R.string.menu_modules_description, R.drawable.ic_plus, ToDoListActivity.class));
         mAdapter.add(new MenuItem(R.string.menu_todo_list, R.string.menu_todo_list_description, R.drawable.ic_todo, ToDoListActivity.class));
         mAdapter.add(new MenuItem(R.string.menu_timetable, R.string.menu_timetable_description, R.drawable.ic_timetable, TimeTableActivity.class));
         mAdapter.add(new MenuItem(R.string.menu_games, R.string.menu_games_description, R.drawable.ic_games, SnakeActivity.class));
