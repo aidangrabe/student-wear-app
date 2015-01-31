@@ -10,6 +10,8 @@ public class Module extends SugarRecord<Module> {
 
     private String name;
 
+    public Module() {}
+
     public Module(String name) {
         this.name = name;
     }

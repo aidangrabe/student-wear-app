@@ -16,7 +16,7 @@ public class MenuFragment extends android.support.v4.app.ListFragment {
      */
     protected class MenuItem {
 
-        private String mTitle, mDescription;
+        private String mTitle, mDescription, mTag;
         private Bitmap mIcon;
         private Class<? extends Activity> mActivityClass;
 
@@ -62,6 +62,14 @@ public class MenuFragment extends android.support.v4.app.ListFragment {
 
         public void setActivityClass(Class<? extends Activity> mActivityClass) {
             this.mActivityClass = mActivityClass;
+        }
+
+        public String getTag() {
+            return mTag;
+        }
+
+        public void setTag(String mTag) {
+            this.mTag = mTag;
         }
     }
 
