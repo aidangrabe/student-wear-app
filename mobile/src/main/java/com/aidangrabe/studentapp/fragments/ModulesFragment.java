@@ -27,6 +27,7 @@ public class ModulesFragment extends MenuFragment implements NewModuleDialogFrag
     private ArrayAdapter<MenuItem> mAdapter;
     private ArrayList<Module> mModules;
     private NewModuleDialogFragment mNewModuleDialog;
+    private AlertDialog mConfirmationDialog;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -55,7 +56,7 @@ public class ModulesFragment extends MenuFragment implements NewModuleDialogFrag
 
     private void showConfirmationDialog(DialogInterface.OnClickListener okListener) {
 
-        new AlertDialog.Builder(getActivity())
+        mConfirmationDialog = new AlertDialog.Builder(getActivity())
                 .setMessage("Are you sure you want to delete this module?")
                 .setPositiveButton("Yes", okListener)
                 .setNegativeButton("No", null)
@@ -116,10 +117,21 @@ public class ModulesFragment extends MenuFragment implements NewModuleDialogFrag
     }
 
     @Override
+    public void onStop() {
+        super.onStop();
+
+        if (mConfirmationDialog != null) {
+            mConfirmationDialog.dismiss();
+            mConfirmationDialog.cancel();
+        }
+
+    }
+
+    @Override
     public void onDestroy() {
         super.onDestroy();
 
-        // make sure we dismiss the NewModuleDialogFragment
+        // make sure we dismiss the Dialogs
         if (mNewModuleDialog != null) {
             mNewModuleDialog.dismiss();
         }
