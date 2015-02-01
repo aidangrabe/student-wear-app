@@ -50,12 +50,15 @@ public class Lecture extends SugarRecord<Lecture> {
         bundle.putInt("endHour", endHour);
         bundle.putInt("endMinute", endMinute);
 
+        // Sugar ORM "Id" field
+        bundle.putLong("id", getId());
+
         return bundle;
 
     }
 
     public static Lecture instanceFromBundle(Bundle bundle) {
-        return new Lecture(bundle.getString("name"),
+        Lecture lecture = new Lecture(bundle.getString("name"),
                 bundle.getString("location"),
                 bundle.getInt("dayOfWeek"),
                 bundle.getInt("startHour"),
@@ -63,6 +66,10 @@ public class Lecture extends SugarRecord<Lecture> {
                 bundle.getInt("endHour"),
                 bundle.getInt("endMinute")
                 );
+
+        // Sugar ORM "Id" field
+        lecture.setId(bundle.getLong("id"));
+        return lecture;
     }
 
     // getters and setters

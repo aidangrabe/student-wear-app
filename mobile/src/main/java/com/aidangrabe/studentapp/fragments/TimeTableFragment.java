@@ -1,5 +1,7 @@
 package com.aidangrabe.studentapp.fragments;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -35,6 +37,7 @@ public class TimeTableFragment extends Fragment implements AdapterView.OnItemLon
     private List<Lecture> mLectures;
     private ArrayAdapter<Lecture> mAdapter;
     private ListView mListView;
+    private AlertDialog mConfirmationDialog;
 
     // compare 2 Lectures by their start time
     private final Comparator<Lecture> mLectureComparator = new Comparator<Lecture>() {
@@ -136,8 +139,46 @@ public class TimeTableFragment extends Fragment implements AdapterView.OnItemLon
     @Override
     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
 
-        // TODO: delete the lecture
+        final Lecture lecture = mAdapter.getItem(position);
+
+        // show confirmation Dialog and delete the Lecture if the user so chooses
+        showConfirmationDialog(new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                deleteLecture(lecture);
+            }
+        });
 
         return false;
+    }
+
+    /**
+     * Delete a lecture from storage, and refresh the Adapter
+     * @param lecture the Lecture to delete
+     */
+    private void deleteLecture(Lecture lecture) {
+        mAdapter.remove(lecture);
+        mAdapter.notifyDataSetChanged();
+        lecture.delete();
+    }
+
+    private void showConfirmationDialog(DialogInterface.OnClickListener okListener) {
+
+        mConfirmationDialog = new AlertDialog.Builder(getActivity())
+                .setMessage("Are you sure you want to delete this class?")
+                .setPositiveButton("Yes", okListener)
+                .setNegativeButton("No", null)
+                .show();
+
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        if (mConfirmationDialog != null) {
+            mConfirmationDialog.dismiss();
+        }
+
     }
 }
