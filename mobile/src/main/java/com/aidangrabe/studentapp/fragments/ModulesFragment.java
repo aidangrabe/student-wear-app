@@ -3,17 +3,17 @@ package com.aidangrabe.studentapp.fragments;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.aidangrabe.common.model.Module;
+import com.aidangrabe.studentapp.R;
 import com.aidangrabe.studentapp.fragments.base.MenuFragment;
+import com.melnykov.fab.FloatingActionButton;
 
 import java.util.ArrayList;
 
@@ -22,8 +22,6 @@ import java.util.ArrayList;
  *
  */
 public class ModulesFragment extends MenuFragment {
-
-    private static final String TAG_NEW_MODULE = "add-module";
 
     private ArrayAdapter<MenuItem> mAdapter;
     private ArrayList<Module> mModules;
@@ -72,21 +70,42 @@ public class ModulesFragment extends MenuFragment {
             @Override
             public boolean onItemLongClick(AdapterView<?> arg0, View view,
                                            int position, long id) {
-                MenuItem item = mAdapter.getItem(position);
-                if (!TAG_NEW_MODULE.equals(item.getTag())) {
-                    final Module module = mModules.get(position - 1);
-                    showConfirmationDialog( new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            module.delete();
-                            getAllModules();
-                            refreshList();
-                        }
-                    });
-                }
+                final Module module = mModules.get(position);
+                showConfirmationDialog(new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        module.delete();
+                        getAllModules();
+                        refreshList();
+                    }
+                });
                 return true;
             }
         });
+
+        createFab(view);
+
+    }
+
+    private void createFab(View view) {
+
+        LayoutInflater inflater = LayoutInflater.from(getActivity());
+        View v = inflater.inflate(R.layout.fab_new_layout, (ViewGroup) view);
+
+        FloatingActionButton fab = (FloatingActionButton) v.findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onFabNewModuleClicked();
+            }
+        });
+
+        fab.attachToListView(getListView());
+
+    }
+
+    // called when the FAB for creating a new module is clicked
+    private void onFabNewModuleClicked() {
 
     }
 
@@ -100,29 +119,18 @@ public class ModulesFragment extends MenuFragment {
     private void refreshList() {
         mAdapter.clear();
 
-        MenuItem addModuleMenuItem = new MenuItem("+ New Module", null, null, null);
-        addModuleMenuItem.setTag(TAG_NEW_MODULE);
-        mAdapter.add(addModuleMenuItem);
-
         for (Module module : mModules) {
             mAdapter.add(new MenuItem(module.getName(), null, null, null));
         }
+
         mAdapter.notifyDataSetChanged();
     }
 
-    @Override
-    public void onListItemClick(ListView l, View v, int position, long id) {
-        super.onListItemClick(l, v, position, id);
-
-        MenuItem item = mAdapter.getItem(position);
-
-        if (TAG_NEW_MODULE.equals(item.getTag())) {
-            Log.d("D", "Adding a new item");
-            Module module = new Module("CS4614");
-            module.save();
-            getAllModules();
-            refreshList();
-        }
-
+    private void createNewModule(String title) {
+        Module module = new Module(title);
+        module.save();
+        getAllModules();
+        refreshList();
     }
+
 }
