@@ -17,8 +17,6 @@ import com.aidangrabe.studentapp.R;
 import com.aidangrabe.studentapp.models.Lecture;
 import com.aidangrabe.studentapp.ui.TimeEditText;
 
-import java.util.List;
-
 import cn.pedant.SweetAlert.SweetAlertDialog;
 
 /**
@@ -116,10 +114,7 @@ public class NewClassFragment extends Fragment implements TimeEditText.TimeEditT
                 mFromEditText.getHourOfDay(), mFromEditText.getMinutes(), mToEditText.getHourOfDay(), mToEditText.getMinutes());
 
         try {
-            // read all lectures, add our new one and write the new list back
-            List<Lecture> lectures = Lecture.getSavedLectures(getActivity());
-            lectures.add(lecture);
-            Lecture.saveLectures(getActivity(), lectures);
+            lecture.save();
         } catch (Exception e) {
             e.printStackTrace();
             Toast.makeText(getActivity(), "An error occurred while saving", Toast.LENGTH_SHORT).show();

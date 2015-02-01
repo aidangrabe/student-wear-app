@@ -45,7 +45,7 @@ public class TimeTableActivity extends ActionBarActivity {
         setContentView(R.layout.activity_timetable);
 
         try {
-            mLectures = Lecture.getSavedLectures(this);
+            mLectures = Lecture.listAll(Lecture.class);
         } catch (Exception e) {
             // error
             mLectures = new ArrayList<>();

@@ -6,6 +6,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -25,7 +26,7 @@ import java.util.List;
  * Created by aidan on 11/01/15.
  *
  */
-public class TimeTableFragment extends Fragment {
+public class TimeTableFragment extends Fragment implements AdapterView.OnItemLongClickListener {
 
     public static final String ARG_COUNT = "day";
     public static final String ARG_LECTURE_PREFIX = "lecture_";
@@ -109,6 +110,8 @@ public class TimeTableFragment extends Fragment {
         mListView.setAdapter(mAdapter);
         mAdapter.notifyDataSetChanged();
 
+        mListView.setOnItemLongClickListener(this);
+
         return view;
 
     }
@@ -130,4 +133,11 @@ public class TimeTableFragment extends Fragment {
 
     }
 
+    @Override
+    public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+
+        // TODO: delete the lecture
+
+        return false;
+    }
 }

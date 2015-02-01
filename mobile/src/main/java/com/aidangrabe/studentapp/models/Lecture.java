@@ -1,34 +1,21 @@
 package com.aidangrabe.studentapp.models;
 
-import android.content.Context;
 import android.os.Bundle;
 
-import com.aidangrabe.studentapp.util.FileUtils;
 import com.google.gson.Gson;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.orm.SugarRecord;
 
 /**
  * Created by aidan on 08/01/15.
  * Should be called Class but can't do that! :P
  */
-public class Lecture {
-
-    public static final String FILE_NAME = "class_list.json";
-    public static final String KEY_CLASSES = "classes";
+public class Lecture extends SugarRecord<Lecture> {
 
     private String name, location;
     private int dayOfWeek, startHour, startMinute, endHour, endMinute;
+
+    // needed for Sugar ORM
+    public Lecture() {}
 
     /**
      * @param name the name of the class
@@ -49,82 +36,6 @@ public class Lecture {
         this.endHour = endHour;
         this.endMinute = endMinute;
 
-    }
-
-    /**
-     * Get an ArrayList of lectures saved as JSON
-     * @param context the context used for resolving the file path
-     * @return a list of lectures
-     * @throws IOException
-     * @throws JSONException
-     */
-    public static ArrayList<Lecture> getSavedLectures(Context context) throws IOException, JSONException {
-
-        String filePath = getSaveFilePath(context);
-        ArrayList<Lecture> lectures = new ArrayList<>();
-
-        // read from the class file
-        String jsonContent = FileUtils.getFileContents(context.openFileInput(FILE_NAME));
-
-        // if the file is empty, do nothing
-        if (jsonContent.length() > 0) {
-
-            // get the wrapper objects
-            JSONObject json = new JSONObject(jsonContent);
-            JSONArray classes = json.getJSONArray(KEY_CLASSES);
-
-            // re-construct each lecture add each lecture to the Array
-            for (int i = 0; i < classes.length(); i++) {
-                Lecture lecture = new Gson().fromJson(classes.getJSONObject(i).toString(), Lecture.class);
-                lectures.add(lecture);
-            }
-        }
-
-        return lectures;
-
-    }
-
-    /**
-     * Save a given list of lectures in JSON format
-     * @param context the context used for resolving the file path
-     * @param lectures the lecture list to save
-     * @throws JSONException
-     * @throws IOException
-     */
-    public static void saveLectures(Context context, List<Lecture> lectures) throws JSONException, IOException {
-
-        // create the JSON data to save
-        Map<String, List<Lecture>> data = new HashMap<>();
-        data.put(KEY_CLASSES, lectures);
-        String json = new Gson().toJson(data);
-
-        // ensure our classes file exists
-        String filePath = getSaveFilePath(context);
-
-        // write the JSON
-        // note: we can not use directories with openFileOutput, just the file name
-        OutputStream outputStream = context.openFileOutput(FILE_NAME, Context.MODE_PRIVATE);
-        FileUtils.putFileContents(json, outputStream);
-
-    }
-
-    /**
-     * Ensure that the save file exists and return the absolure path to it
-     * @param context the context used for resolving the file path
-     * @return the absolute file path of the save file
-     * @throws IOException
-     */
-    public static String getSaveFilePath(Context context) throws IOException {
-
-        File file = new File(context.getFilesDir(), FILE_NAME);
-        if (!file.exists()) {
-            boolean success = file.createNewFile();
-            if (!success) {
-                throw new IOException("Error creating file: " + FILE_NAME);
-            }
-        }
-
-        return file.getAbsolutePath();
     }
 
     public Bundle toBundle() {
