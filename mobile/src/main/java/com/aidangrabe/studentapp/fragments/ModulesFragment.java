@@ -13,6 +13,7 @@ import android.widget.TextView;
 import com.aidangrabe.common.model.Module;
 import com.aidangrabe.studentapp.R;
 import com.aidangrabe.studentapp.fragments.base.MenuFragment;
+import com.aidangrabe.studentapp.fragments.dialogs.NewModuleDialogFragment;
 import com.melnykov.fab.FloatingActionButton;
 
 import java.util.ArrayList;
@@ -21,10 +22,11 @@ import java.util.ArrayList;
  * Created by aidan on 31/01/15.
  *
  */
-public class ModulesFragment extends MenuFragment {
+public class ModulesFragment extends MenuFragment implements NewModuleDialogFragment.OnSaveListener {
 
     private ArrayAdapter<MenuItem> mAdapter;
     private ArrayList<Module> mModules;
+    private NewModuleDialogFragment mNewModuleDialog;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -107,6 +109,21 @@ public class ModulesFragment extends MenuFragment {
     // called when the FAB for creating a new module is clicked
     private void onFabNewModuleClicked() {
 
+        mNewModuleDialog = new NewModuleDialogFragment();
+        mNewModuleDialog.show(getActivity().getFragmentManager(), "dialog");
+        mNewModuleDialog.setOnSaveListener(this);
+
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        // make sure we dismiss the NewModuleDialogFragment
+        if (mNewModuleDialog != null) {
+            mNewModuleDialog.dismiss();
+        }
+
     }
 
     private void getAllModules() {
@@ -126,11 +143,16 @@ public class ModulesFragment extends MenuFragment {
         mAdapter.notifyDataSetChanged();
     }
 
-    private void createNewModule(String title) {
-        Module module = new Module(title);
+    private void createNewModule(Module module) {
         module.save();
         getAllModules();
         refreshList();
     }
 
+    @Override
+    public void onSaveNewModule(Module module) {
+
+        createNewModule(module);
+
+    }
 }
