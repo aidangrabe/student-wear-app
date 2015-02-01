@@ -1,22 +1,22 @@
 package com.aidangrabe.studentapp.activities;
 
-import android.app.ActionBar;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 
 import com.aidangrabe.common.SharedConstants;
 import com.aidangrabe.studentapp.R;
 import com.aidangrabe.studentapp.fragments.TimeTableFragment;
 import com.aidangrabe.studentapp.models.Lecture;
+import com.melnykov.fab.FloatingActionButton;
 
-import org.json.JSONException;
-
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -70,7 +70,6 @@ public class TimeTableActivity extends ActionBarActivity {
         mViewPager.setAdapter(mPagerAdapter);
         mDayNames = new HashMap<>();
 
-        // TODO: localize day names
         mDayNames.put(SharedConstants.Day.MONDAY, "Monday");
         mDayNames.put(SharedConstants.Day.TUESDAY, "Tuesday");
         mDayNames.put(SharedConstants.Day.WEDNESDAY, "Wednesday");
@@ -78,6 +77,26 @@ public class TimeTableActivity extends ActionBarActivity {
         mDayNames.put(SharedConstants.Day.FRIDAY, "Friday");
         mDayNames.put(SharedConstants.Day.SATURDAY, "Saturday");
         mDayNames.put(SharedConstants.Day.SUNDAY, "Sunday");
+
+        addFabToView((ViewGroup) getWindow().getDecorView().findViewById(android.R.id.content));
+
+    }
+
+    private void addFabToView(ViewGroup viewGroup) {
+
+        // inflate the FAB view and add it to the given ViewGroup
+        View view = LayoutInflater.from(TimeTableActivity.this)
+                .inflate(R.layout.fab_new_layout, viewGroup, true);
+        FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab);
+
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // start the NewClassActivity
+                Intent intent = new Intent(TimeTableActivity.this, NewClassActivity.class);
+                startActivity(intent);
+            }
+        });
 
     }
 
