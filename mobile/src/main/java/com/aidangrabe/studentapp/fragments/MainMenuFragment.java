@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import com.aidangrabe.studentapp.R;
 import com.aidangrabe.studentapp.activities.ModulesActivity;
+import com.aidangrabe.studentapp.activities.ResultsActivity;
 import com.aidangrabe.studentapp.activities.TimeTableActivity;
 import com.aidangrabe.studentapp.activities.ToDoListActivity;
 import com.aidangrabe.studentapp.activities.games.GameMenuActivity;
@@ -79,6 +80,7 @@ public class MainMenuFragment extends MenuFragment {
         mAdapter.add(new MenuItem(R.string.menu_modules, R.string.menu_modules_description, R.drawable.ic_plus, ModulesActivity.class));
         mAdapter.add(new MenuItem(R.string.menu_todo_list, R.string.menu_todo_list_description, R.drawable.ic_todo, ToDoListActivity.class));
         mAdapter.add(new MenuItem(R.string.menu_timetable, R.string.menu_timetable_description, R.drawable.ic_timetable, TimeTableActivity.class));
+        mAdapter.add(new MenuItem(R.string.menu_results, R.string.menu_results_description, R.drawable.ic_results, ResultsActivity.class));
         mAdapter.add(new MenuItem(R.string.menu_games, R.string.menu_games_description, R.drawable.ic_games, GameMenuActivity.class));
 
     }
