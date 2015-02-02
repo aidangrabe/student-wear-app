@@ -7,4 +7,7 @@
     <!-- the default text color for all views -->
     <color name="DefaultTextColor">#111</color>
 
+    <color name="progress_bar_fill">#03A9F4</color>
+    <color name="progress_bar_empty">#CFD8DC</color>
+
 </resources>
