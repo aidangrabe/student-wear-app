@@ -27,6 +27,9 @@
         <activity android:name=".activities.NewClassActivity" />
         <activity android:name=".activities.TimeTableActivity" />
         <activity android:name=".activities.ToDoListActivity" />
+
+        <!-- games -->
+        <activity android:name=".activities.games.GameMenuActivity" />
         <activity android:name=".activities.games.SnakeActivity" />
 
         <!-- services -->
