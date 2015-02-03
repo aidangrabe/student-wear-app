@@ -1,12 +1,12 @@
 package com.aidangrabe.studentapp.activities;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -20,7 +20,7 @@ import com.melnykov.fab.FloatingActionButton;
  * Created by aidan on 02/02/15.
  *
  */
-public class ResultsActivity extends ActionBarActivity {
+public class ResultsActivity extends ActionBarActivity implements AdapterView.OnItemClickListener {
 
     private ArrayAdapter<Module> mAdapter;
     private ListView mListView;
@@ -56,31 +56,20 @@ public class ResultsActivity extends ActionBarActivity {
             }
         };
         mListView.setAdapter(mAdapter);
+        mListView.setOnItemClickListener(this);
 
         mAdapter.addAll(Module.listAll(Module.class));
         mAdapter.notifyDataSetChanged();
 
-        addFabToView((ViewGroup) getWindow().getDecorView().findViewById(android.R.id.content));
-
     }
 
-    private void addFabToView(ViewGroup viewGroup) {
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-        // inflate the FAB view and add it to the given ViewGroup
-        View view = LayoutInflater.from(this)
-                .inflate(R.layout.fab_new_layout, viewGroup, true);
-        FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab);
-
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // start the NewClassActivity
-                // TODO a dialog/screen to create a new Result
-//                Intent intent = new Intent(this, NewClassActivity.class);
-//                startActivity(intent);
-            }
-        });
+        Module module = mAdapter.getItem(position);
+        Intent intent = new Intent(this, ModuleResultsActivity.class);
+        intent.putExtra(ModuleResultsActivity.ARG_MODULE_ID, module.getId());
+        startActivity(intent);
 
     }
-
 }

@@ -28,6 +28,7 @@
         <activity android:name=".activities.TimeTableActivity" />
         <activity android:name=".activities.ToDoListActivity" />
         <activity android:name=".activities.ResultsActivity" />
+        <activity android:name=".activities.ModuleResultsActivity" />
 
         <!-- games -->
         <activity android:name=".activities.games.GameMenuActivity" />
