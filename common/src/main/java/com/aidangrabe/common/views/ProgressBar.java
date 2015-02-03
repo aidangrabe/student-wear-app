@@ -1,10 +1,13 @@
 package com.aidangrabe.common.views;
 
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
+import android.view.animation.DecelerateInterpolator;
 
 /**
  * Created by aidan on 02/02/15.
@@ -54,11 +57,27 @@ public class ProgressBar extends View {
     }
 
     public void setProgress(float progress, boolean animated) {
-        mProgress = progress;
+
+        Log.d("D", "setProgress");
 
         if (animated) {
-            // do animation
+            Log.d("D", "animating!");
+            ValueAnimator animator = ValueAnimator.ofFloat(mProgress, progress);
+            animator.setDuration(1500)
+                    .addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                        @Override
+                        public void onAnimationUpdate(ValueAnimator animation) {
+                            mProgress = (float) animation.getAnimatedValue();
+                            invalidate();
+                        }
+                    });
+            animator.setInterpolator(new DecelerateInterpolator(3f));
+            animator.start();
+        } else {
+            mProgress = progress;
         }
+
+        invalidate();
 
     }
 

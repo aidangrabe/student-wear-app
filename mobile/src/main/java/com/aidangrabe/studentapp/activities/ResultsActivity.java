@@ -50,6 +50,7 @@ public class ResultsActivity extends ActionBarActivity implements AdapterView.On
                 ProgressBar progressBar = (ProgressBar) view.findViewById(R.id.progress_bar);
                 progressBar.setFillColor(getResources().getColor(R.color.progress_bar_fill));
                 progressBar.setEmptyColor(getResources().getColor(R.color.progress_bar_empty));
+                progressBar.setProgress(0, false);
                 progressBar.setProgress(module.getResultAverage(), true);
 
                 return view;
