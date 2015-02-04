@@ -1,6 +1,9 @@
 package com.aidangrabe.common.model;
 
+import android.graphics.Bitmap;
+
 import com.orm.SugarRecord;
+import com.orm.dsl.Ignore;
 
 /**
  * Created by aidan on 04/02/15.
@@ -11,6 +14,9 @@ public class Article extends SugarRecord<Article> {
 
     private String title, link, imageUrl;
     private long publishTime;
+
+    @Ignore
+    private Bitmap image;
 
     // needed for Sugar ORM
     public Article() {}
@@ -51,5 +57,13 @@ public class Article extends SugarRecord<Article> {
 
     public void setPublishTime(long publishTime) {
         this.publishTime = publishTime;
+    }
+
+    public Bitmap getImage() {
+        return image;
+    }
+
+    public void setImage(Bitmap image) {
+        this.image = image;
     }
 }
