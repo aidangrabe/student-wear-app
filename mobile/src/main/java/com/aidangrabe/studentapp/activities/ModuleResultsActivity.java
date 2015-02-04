@@ -17,6 +17,8 @@ import com.aidangrabe.studentapp.R;
 import com.aidangrabe.studentapp.fragments.dialogs.NewResultDialogFragment;
 import com.melnykov.fab.FloatingActionButton;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -32,6 +34,7 @@ public class ModuleResultsActivity extends ActionBarActivity implements NewResul
     private NewResultDialogFragment mNewResultDialog;
     private ListView mListView;
     private SimpleGraph mGraph;
+    private SimpleDateFormat mDateFormat;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,15 +55,24 @@ public class ModuleResultsActivity extends ActionBarActivity implements NewResul
             return;
         }
 
+        mDateFormat = new SimpleDateFormat("MMM d");
+        final Date date = new Date();
+
         mAdapter = new ArrayAdapter<Result>(this, android.R.layout.simple_list_item_1) {
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
-                View view = super.getView(position, convertView, parent);
+//                View view = super.getView(position, convertView, parent);
+                if (convertView == null) {
+                    convertView = LayoutInflater.from(ModuleResultsActivity.this).inflate(R.layout.listitem_result, parent, false);
+                }
 
                 Result result = getItem(position);
-                ((TextView) view.findViewById(android.R.id.text1)).setText("Grade: " + result.getGrade());
+                date.setTime(result.getCreateTime());
+                ((TextView) convertView.findViewById(R.id.date_text)).setText(mDateFormat.format(date));
+                ((TextView) convertView.findViewById(R.id.grade_text)).setText(String.format("%.0f%%", result.getGrade() * 100));
 
-                return view;
+
+                return convertView;
 
             }
         };
