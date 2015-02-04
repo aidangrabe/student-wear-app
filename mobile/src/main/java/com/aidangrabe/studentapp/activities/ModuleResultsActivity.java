@@ -5,13 +5,19 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.aidangrabe.common.model.Module;
 import com.aidangrabe.common.model.Result;
+import com.aidangrabe.common.views.SimpleGraph;
 import com.aidangrabe.studentapp.R;
 import com.aidangrabe.studentapp.fragments.dialogs.NewResultDialogFragment;
 import com.melnykov.fab.FloatingActionButton;
+
+import java.util.List;
 
 /**
  * Created by aidan on 03/02/15.
@@ -21,8 +27,11 @@ public class ModuleResultsActivity extends ActionBarActivity implements NewResul
 
     public static final String ARG_MODULE_ID = "module_id";
 
+    private ArrayAdapter<Result> mAdapter;
     private Module mModule;
     private NewResultDialogFragment mNewResultDialog;
+    private ListView mListView;
+    private SimpleGraph mGraph;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,7 +52,50 @@ public class ModuleResultsActivity extends ActionBarActivity implements NewResul
             return;
         }
 
+        mAdapter = new ArrayAdapter<Result>(this, android.R.layout.simple_list_item_1) {
+            @Override
+            public View getView(int position, View convertView, ViewGroup parent) {
+                View view = super.getView(position, convertView, parent);
+
+                Result result = getItem(position);
+                ((TextView) view.findViewById(android.R.id.text1)).setText("Grade: " + result.getGrade());
+
+                return view;
+
+            }
+        };
+
+        setupListView();
+        getResults();
+
         addFabToView((ViewGroup) getWindow().getDecorView().findViewById(android.R.id.content));
+
+    }
+
+    private void setupListView() {
+
+        View graphView = LayoutInflater.from(this).inflate(R.layout.simple_graph, null);
+        mGraph = (SimpleGraph) graphView.findViewById(R.id.simple_graph);
+
+        mListView = (ListView) findViewById(R.id.list_view);
+        mListView.addHeaderView(graphView);
+        mListView.setAdapter(mAdapter);
+
+    }
+
+    private void getResults() {
+
+        List<Result> results = mModule.listAllResults();
+
+        mAdapter.clear();
+        mAdapter.addAll(results);
+        mAdapter.notifyDataSetChanged();
+
+        mGraph.clearValues();
+        for (Result result : results) {
+            mGraph.addValue(result.getGrade());
+        }
+        mGraph.invalidate();
 
     }
 
@@ -80,6 +132,8 @@ public class ModuleResultsActivity extends ActionBarActivity implements NewResul
 
         result.setModule(mModule);
         result.save();
+
+        getResults();
 
         if (mNewResultDialog != null) {
             mNewResultDialog.dismiss();
