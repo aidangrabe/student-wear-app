@@ -17,6 +17,8 @@
         <string name="menu_games_description">Unwind with some fun games!</string>
     <string name="menu_results">Results</string>
         <string name="menu_results_description">Add/track your results and progress for your modules</string>
+    <string name="menu_news">News</string>
+        <string name="menu_news_description">Keep up to date with the latest stories from your college</string>
 
     <!-- Games -->
     <string name="game_menu_snake">Snake</string>
