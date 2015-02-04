@@ -11,6 +11,12 @@ import java.util.List;
  */
 public interface ArticleFetcher {
 
-    public List<Article> fetchArticles();
+    public interface Listener {
+        public void onArticlesReady(List<Article> articles);
+    }
+
+    public void fetchArticles();
+
+    public void fetchArticles(Listener callback);
 
 }
