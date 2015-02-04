@@ -12,11 +12,11 @@ import android.widget.TextView;
 
 import com.aidangrabe.studentapp.R;
 import com.aidangrabe.studentapp.activities.ModulesActivity;
+import com.aidangrabe.studentapp.activities.NewsActivity;
 import com.aidangrabe.studentapp.activities.ResultsActivity;
 import com.aidangrabe.studentapp.activities.TimeTableActivity;
 import com.aidangrabe.studentapp.activities.ToDoListActivity;
 import com.aidangrabe.studentapp.activities.games.GameMenuActivity;
-import com.aidangrabe.studentapp.activities.games.SnakeActivity;
 import com.aidangrabe.studentapp.fragments.base.MenuFragment;
 
 
@@ -81,7 +81,7 @@ public class MainMenuFragment extends MenuFragment {
         mAdapter.add(new MenuItem(R.string.menu_todo_list, R.string.menu_todo_list_description, R.drawable.ic_todo, ToDoListActivity.class));
         mAdapter.add(new MenuItem(R.string.menu_timetable, R.string.menu_timetable_description, R.drawable.ic_timetable, TimeTableActivity.class));
         mAdapter.add(new MenuItem(R.string.menu_results, R.string.menu_results_description, R.drawable.ic_results, ResultsActivity.class));
-        mAdapter.add(new MenuItem(R.string.menu_news, R.string.menu_news_description, R.drawable.ic_globe, GameMenuActivity.class));
+        mAdapter.add(new MenuItem(R.string.menu_news, R.string.menu_news_description, R.drawable.ic_globe, NewsActivity.class));
         mAdapter.add(new MenuItem(R.string.menu_games, R.string.menu_games_description, R.drawable.ic_games, GameMenuActivity.class));
 
     }
