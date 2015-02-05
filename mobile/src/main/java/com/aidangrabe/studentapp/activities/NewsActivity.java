@@ -1,5 +1,6 @@
 package com.aidangrabe.studentapp.activities;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -9,6 +10,7 @@ import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.DecelerateInterpolator;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -32,7 +34,7 @@ import java.util.List;
  * Created by aidan on 04/02/15.
  * This Activity displays a list of news articles fetched by an ArticleFetcher
  */
-public class NewsActivity extends ActionBarActivity {
+public class NewsActivity extends ActionBarActivity implements AdapterView.OnItemClickListener {
 
     private ListView mListView;
     private ArrayAdapter<Article> mAdapter;
@@ -97,6 +99,7 @@ public class NewsActivity extends ActionBarActivity {
             }
         };
         mListView.setAdapter(mAdapter);
+        mListView.setOnItemClickListener(this);
     }
 
     private void downloadImage(final Article article, ImageView imageView) {
@@ -126,4 +129,14 @@ public class NewsActivity extends ActionBarActivity {
 
     }
 
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+        Article article = mAdapter.getItem(position);
+
+        Intent intent = new Intent(this, NewsArticleActivity.class);
+        intent.putExtra(NewsArticleActivity.EXTRA_ARTICLE_URL, article.getLink());
+        startActivity(intent);
+
+    }
 }

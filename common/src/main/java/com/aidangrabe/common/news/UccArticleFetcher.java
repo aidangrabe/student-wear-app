@@ -25,8 +25,8 @@ import java.util.List;
  */
 public class UccArticleFetcher implements ArticleFetcher {
 
-    private static final String BASE_URL = "http://www.ucc.ie";
-    private static final String ALL_ARTICLES_URL = BASE_URL + "/en/news/";
+    public static final String BASE_URL = "http://www.ucc.ie";
+    public static final String ALL_ARTICLES_URL = BASE_URL + "/en/news/";
 
     private Context mContext;
     private List<Article> mArticles;
@@ -106,7 +106,7 @@ public class UccArticleFetcher implements ArticleFetcher {
         try {
             Element linkElement = element.select("h2 > a").first();
             String title = linkElement.text();
-            String link = linkElement.attr("href");
+            String link = BASE_URL + linkElement.attr("href");
             String dateText = element.select(".date").first().text();
             String imageUrl = element.select(".image img").first().attr("src");
             Date date = mDateFormat.parse(dateText);

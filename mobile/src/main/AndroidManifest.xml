@@ -30,6 +30,7 @@
         <activity android:name=".activities.ResultsActivity" />
         <activity android:name=".activities.ModuleResultsActivity" />
         <activity android:name=".activities.NewsActivity" />
+        <activity android:name=".activities.NewsArticleActivity" />
 
         <!-- games -->
         <activity android:name=".activities.games.GameMenuActivity" />
