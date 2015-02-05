@@ -3,6 +3,7 @@ package com.aidangrabe.studentapp.fragments;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,6 +28,7 @@ import org.jsoup.nodes.Element;
 public class NewsArticleFragment extends Fragment {
 
     private static final String ARG_ARTICLE_URL = "article_url";
+    private String mHtmlContent = "";
 
     public static Bundle makeArgs(String url) {
         Bundle args = new Bundle();
@@ -54,22 +56,42 @@ public class NewsArticleFragment extends Fragment {
         Bundle args = getArguments();
         if (args != null) {
             String url = args.getString(ARG_ARTICLE_URL);
-            MyVolley.getInstance(getActivity()).add(new StringRequest(url, new Response.Listener<String>() {
-                @Override
-                public void onResponse(String response) {
-                    Document doc = Jsoup.parse(response);
-                    Element content = doc.select("#content").first();
-                    mWebView.loadDataWithBaseURL(UccArticleFetcher.BASE_URL, makeHtmlContent(content.html()), "text/html", "utf-8", null);
-                }
-            }, new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    Toast.makeText(getActivity(), "Error loading article", Toast.LENGTH_SHORT).show();
-                    getActivity().finish();
-                }
-            }));
+
+            if (needsToDownload()) {
+                MyVolley.getInstance(getActivity()).add(new StringRequest(url, new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Document doc = Jsoup.parse(response);
+                        Element content = doc.select("#content").first();
+                        updateWebView(content.html());
+                    }
+                }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Toast.makeText(getActivity(), "Error loading article", Toast.LENGTH_SHORT).show();
+                        getActivity().finish();
+                    }
+                }));
+            } else {
+                Log.d("D", "Using previously downloaded data");
+                updateWebView();
+            }
         }
 
+    }
+
+    // returns true if we need to download the Article's content
+    private boolean needsToDownload() {
+        return mHtmlContent.length() == 0;
+    }
+
+    private void updateWebView() {
+        mWebView.loadDataWithBaseURL(UccArticleFetcher.BASE_URL, makeHtmlContent(mHtmlContent), "text/html", "utf-8", null);
+    }
+
+    private void updateWebView(String html) {
+        mHtmlContent = html;
+        updateWebView();
     }
 
     private String makeHtmlContent(String html) {

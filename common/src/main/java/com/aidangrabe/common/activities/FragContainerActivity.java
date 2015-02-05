@@ -13,6 +13,7 @@ import com.aidangrabe.common.R;
 public abstract class FragContainerActivity extends ActionBarActivity {
 
     public static final String FRAG_TAG = "main-fragment";
+    private Fragment mFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,16 +21,30 @@ public abstract class FragContainerActivity extends ActionBarActivity {
 
         setContentView(R.layout.activity_frag_container);
 
-        // try find the fragment first
-        Fragment frag = getSupportFragmentManager().findFragmentByTag(FRAG_TAG);
-        if (frag == null) {
-            frag = onCreateFragment();
-            frag.setRetainInstance(true);
-            getSupportFragmentManager().beginTransaction().replace(R.id.container, frag, FRAG_TAG).commit();
-        }
+    }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        // try find the fragment first
+        mFragment = getSupportFragmentManager().findFragmentByTag(FRAG_TAG);
+        if (mFragment == null) {
+            mFragment = onCreateFragment();
+            mFragment.setRetainInstance(true);
+            mFragment.setArguments(onCreateFragmentArgs());
+            getSupportFragmentManager().beginTransaction().replace(R.id.container, mFragment, FRAG_TAG).commit();
+        }
     }
 
     protected abstract Fragment onCreateFragment();
+
+    protected Bundle onCreateFragmentArgs() {
+        return new Bundle();
+    }
+
+    protected Fragment getFragment() {
+        return mFragment;
+    }
 
 }

@@ -18,8 +18,8 @@ public class NewsArticleActivity extends FragContainerActivity {
     private NewsArticleFragment mFrag;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected void onCreate(Bundle inState) {
+        super.onCreate(inState);
 
         Bundle extras = getIntent().getExtras();
         if (extras == null) {
@@ -27,17 +27,30 @@ public class NewsArticleActivity extends FragContainerActivity {
             return;
         }
 
-        mUrl = extras.getString(EXTRA_ARTICLE_URL);
-        mFrag.setArguments(NewsArticleFragment.makeArgs(mUrl));
+        mUrl = inState == null
+                ? extras.getString(EXTRA_ARTICLE_URL)
+                : inState.getString(EXTRA_ARTICLE_URL);
 
     }
 
     @Override
-    protected Fragment onCreateFragment() {
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
 
-        mFrag = new NewsArticleFragment();
-        return mFrag;
+        outState.putString(EXTRA_ARTICLE_URL, mUrl);
 
     }
+
+    @Override
+    protected Bundle onCreateFragmentArgs() {
+        return NewsArticleFragment.makeArgs(mUrl);
+    }
+
+    @Override
+    protected Fragment onCreateFragment() {
+        mFrag =  new NewsArticleFragment();
+        return mFrag;
+    }
+
 
 }
