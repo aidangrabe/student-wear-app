@@ -4,9 +4,11 @@ import android.app.AlarmManager;
 import android.app.Application;
 import android.app.PendingIntent;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -16,6 +18,8 @@ import com.aidangrabe.studentapp.wearable.DataLayerListenerService;
 
 
 public class MainActivity extends ActionBarActivity {
+
+    private static final String PREF_NEWS_ALARM_ACTIVE = "news_alarm_active";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,11 +44,22 @@ public class MainActivity extends ActionBarActivity {
 
     private void setupAlarm(Application context) {
 
-        Intent intent = new Intent(context, NewsDownloaderService.class);
-        PendingIntent pendingIntent = PendingIntent.getService(context, 0, intent, 0);
+        SharedPreferences prefs = getPreferences(MODE_PRIVATE);
+        boolean alarmUp = prefs.getBoolean(PREF_NEWS_ALARM_ACTIVE, false);
 
-        AlarmManager alarmManager = (AlarmManager) context.getSystemService(ALARM_SERVICE);
-        alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(), 1000 * 60 * 60, pendingIntent);
+        if (alarmUp) {
+            Log.d("D", "Alarm is already active");
+        } else {
+            Log.d("D", "Alarm not already active");
+            Intent intent = new Intent(context, NewsDownloaderService.class);
+            PendingIntent pendingIntent = PendingIntent.getService(context, 0, intent, 0);
+
+            AlarmManager alarmManager = (AlarmManager) context.getSystemService(ALARM_SERVICE);
+            alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(), 1000 * 60 * 60, pendingIntent);
+
+            // update the prefs
+            prefs.edit().putBoolean(PREF_NEWS_ALARM_ACTIVE, true).apply();
+        }
 
     }
 
