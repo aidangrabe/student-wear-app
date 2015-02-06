@@ -1,5 +1,8 @@
 package com.aidangrabe.common.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.orm.SugarRecord;
 
 import java.util.List;
@@ -8,7 +11,7 @@ import java.util.List;
  * Created by aidan on 31/01/15.
  *
  */
-public class Module extends SugarRecord<Module> {
+public class Module extends SugarRecord<Module> implements Parcelable {
 
     private String name;
 
@@ -58,5 +61,33 @@ public class Module extends SugarRecord<Module> {
         return results.size() > 0 ? getResultSum(results) / results.size() : 0;
 
     }
+
+
+    // Parcel methods
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(name);
+    }
+
+    public Module(Parcel in) {
+        this(in.readString());
+    }
+
+    public static final Creator<Module> CREATOR = new Creator<Module>() {
+        @Override
+        public Module createFromParcel(Parcel source) {
+            return new Module(source);
+        }
+
+        @Override
+        public Module[] newArray(int size) {
+            return new Module[0];
+        }
+    };
 
 }
