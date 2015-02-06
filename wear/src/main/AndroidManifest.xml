@@ -25,6 +25,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".activities.ToDoListActivity" />
+        <activity android:name=".activities.ResultsActivity" />
         <activity android:name=".activities.games.MineSweeperActivity" />
         <activity android:name=".activities.FindMyPhoneActivity" />
         <activity android:name=".activities.games.GameMenuActivity" />
