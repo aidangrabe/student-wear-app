@@ -3,12 +3,15 @@ package com.aidangrabe.common.util;
 import android.content.Context;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.Log;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.common.api.Result;
 import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.wearable.DataApi;
 import com.google.android.gms.wearable.DataItem;
 import com.google.android.gms.wearable.DataItemBuffer;
 import com.google.android.gms.wearable.DataMap;
@@ -16,6 +19,7 @@ import com.google.android.gms.wearable.DataMapItem;
 import com.google.android.gms.wearable.MessageApi;
 import com.google.android.gms.wearable.Node;
 import com.google.android.gms.wearable.NodeApi;
+import com.google.android.gms.wearable.PutDataMapRequest;
 import com.google.android.gms.wearable.PutDataRequest;
 import com.google.android.gms.wearable.Wearable;
 
@@ -46,11 +50,16 @@ public class WearUtils {
     public static GoogleApiClient makeClient(Context context,
                                              GoogleApiClient.ConnectionCallbacks connectionCallbacks,
                                              GoogleApiClient.OnConnectionFailedListener onConnectionFailedListener) {
-        return new GoogleApiClient.Builder(context)
+        GoogleApiClient client =  new GoogleApiClient.Builder(context)
                 .addApi(Wearable.API)
-                .addConnectionCallbacks(connectionCallbacks)
-                .addOnConnectionFailedListener(onConnectionFailedListener)
                 .build();
+        if (connectionCallbacks != null) {
+            client.registerConnectionCallbacks(connectionCallbacks);
+        }
+        if (onConnectionFailedListener != null) {
+            client.registerConnectionFailedListener(onConnectionFailedListener);
+        }
+        return client;
     }
 
     public static void getNodes(final GoogleApiClient client, final NodeListener nodeListener) {
@@ -97,7 +106,26 @@ public class WearUtils {
         }
     }
 
+    public static void putDataItem(final GoogleApiClient client, final DataMap dataMap, final String path) {
 
+        new AsyncTask<Void, Void, Void>() {
+
+            @Override
+            protected Void doInBackground(Void... params) {
+
+                if (!client.isConnected()) {
+                    client.blockingConnect();
+                }
+
+                PutDataMapRequest putDataMapRequest = PutDataMapRequest.create(path);
+                putDataMapRequest.getDataMap().putAll(dataMap);
+                Wearable.DataApi.putDataItem(client, putDataMapRequest.asPutDataRequest()).await();
+
+                return null;
+            }
+        }.execute();
+
+    }
 
     public static void getSyncedItems(final GoogleApiClient client, final GetDataListener getDataListener) {
         getSyncedItems(client, null, getDataListener);
@@ -160,6 +188,31 @@ public class WearUtils {
                 uriListener.onUriBuilt(uri);
             }
         }.execute();
+
+    }
+
+    public static <T extends Parcelable> DataMap listToDataMap(String key, List<T> list) {
+
+        Parcel parcel = Parcel.obtain();
+        parcel.setDataPosition(0);
+        parcel.writeTypedList(list);
+        DataMap dataMap = new DataMap();
+        dataMap.putByteArray(key, parcel.marshall());
+        return dataMap;
+
+    }
+
+    public static <T extends Parcelable> List<T> listFromDataMap(String key, DataMap dataMap, Parcelable.Creator<T> creator) {
+
+        List<T> list = new ArrayList<>();
+        byte[] byteArray = dataMap.getByteArray(key);
+        Parcel parcel = Parcel.obtain();
+
+        parcel.unmarshall(byteArray, 0, byteArray.length);
+        parcel.setDataPosition(0);
+        parcel.readTypedList(list, creator);
+
+        return list;
 
     }
 
