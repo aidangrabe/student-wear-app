@@ -3,19 +3,16 @@ package com.aidangrabe.studentapp.activities;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.wearable.view.FragmentGridPagerAdapter;
-import android.support.wearable.view.GridPagerAdapter;
 import android.support.wearable.view.GridViewPager;
 import android.util.Log;
-import android.view.View;
-import android.view.ViewGroup;
 
+import com.aidangrabe.common.SharedConstants;
 import com.aidangrabe.common.model.Module;
 import com.aidangrabe.common.util.WearUtils;
-import com.aidangrabe.common.wearable.WearUtil;
 import com.aidangrabe.studentapp.R;
+import com.aidangrabe.studentapp.fragments.ResultFragment;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.wearable.DataApi;
@@ -36,6 +33,7 @@ import java.util.List;
 public class ResultsActivity extends Activity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, MessageApi.MessageListener, DataApi.DataListener {
 
     private GridViewPager mGridPager;
+    private Adapter mAdapter;
     private List<Module> mModules;
     private GoogleApiClient mGoogleApiClient;
     private List<Node> mNodes;
@@ -49,9 +47,10 @@ public class ResultsActivity extends Activity implements GoogleApiClient.Connect
         mModules = new ArrayList<>();
         mNodes = new ArrayList<>();
         mGoogleApiClient = WearUtils.makeClient(this, this, this);
+        mAdapter = new Adapter(getFragmentManager());
 
         mGridPager = (GridViewPager) findViewById(R.id.grid_pager);
-        mGridPager.setAdapter(new Adapter(getFragmentManager()));
+        mGridPager.setAdapter(mAdapter);
 
     }
 
@@ -81,10 +80,16 @@ public class ResultsActivity extends Activity implements GoogleApiClient.Connect
     }
 
     private void getModules() {
-        WearUtils.getSyncedItems(mGoogleApiClient, "/modules/get", new WearUtils.GetDataListener() {
+        WearUtils.getSyncedItems(mGoogleApiClient, SharedConstants.Wearable.DATA_PATH_MODULES, new WearUtils.GetDataListener() {
             @Override
             public void onDataReceived(List<DataMap> dataMaps) {
                 Log.d("D", "DataMaps received: " + dataMaps.size());
+                for (DataMap dataMap : dataMaps) {
+                    if (dataMap.containsKey("modules")) {
+                        mModules = WearUtils.listFromDataMap("modules", dataMap, Module.CREATOR);
+                        mAdapter.notifyDataSetChanged();
+                    }
+                }
             }
         });
     }
@@ -138,9 +143,11 @@ public class ResultsActivity extends Activity implements GoogleApiClient.Connect
 
         @Override
         public Fragment getFragment(int row, int col) {
-            Fragment fragment = null;
+            ResultFragment fragment = new ResultFragment();
 
-
+            Bundle args = new Bundle();
+            args.putParcelable(ResultFragment.ARG_MODULE, mModules.get(row));
+            fragment.setArguments(args);
 
             return fragment;
         }
