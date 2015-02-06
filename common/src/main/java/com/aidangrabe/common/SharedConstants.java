@@ -13,6 +13,7 @@ public class SharedConstants {
 
         // map
         public static final String REQUEST_MAP = "/map/request";
+        public static final String DATA_PATH_MODULES = "/modules/get";
 
         // game controller
         public static final String MESSAGE_GAME_CONTROLLER = "/game-controller";

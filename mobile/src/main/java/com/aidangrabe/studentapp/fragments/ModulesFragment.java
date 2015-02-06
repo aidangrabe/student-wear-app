@@ -10,7 +10,9 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import com.aidangrabe.common.SharedConstants;
 import com.aidangrabe.common.model.Module;
+import com.aidangrabe.common.util.WearUtils;
 import com.aidangrabe.studentapp.R;
 import com.aidangrabe.studentapp.fragments.base.MenuFragment;
 import com.aidangrabe.studentapp.fragments.dialogs.NewModuleDialogFragment;
@@ -158,6 +160,10 @@ public class ModulesFragment extends MenuFragment implements NewModuleDialogFrag
     private void createNewModule(Module module) {
         module.save();
         getAllModules();
+
+        WearUtils.putDataItem(WearUtils.makeClient(getActivity(), null, null), WearUtils.listToDataMap("modules", mModules),
+                SharedConstants.Wearable.DATA_PATH_MODULES);
+
         refreshList();
     }
 
