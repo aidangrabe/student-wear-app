@@ -57,7 +57,7 @@ public class NewsDownloaderService extends Service implements ArticleFetcher.Lis
                 .setContentTitle(article.getTitle())
                 .setContentText(article.getImageUrl())
                 .setSmallIcon(com.aidangrabe.common.R.drawable.ic_launcher)
-                .setLargeIcon(BitmapFactory.decodeResource(getResources(), com.aidangrabe.common.R.drawable.ic_globe))
+                .setLargeIcon(article.getImage())
                 .setStyle(bigStyle)
                 .setContentIntent(pendingIntent)
                 .extend(new NotificationCompat.WearableExtender().setBackground(article.getImage()))
