@@ -1,5 +1,7 @@
 package com.aidangrabe.common;
 
+import com.aidangrabe.common.model.Module;
+
 /**
  * Created by aidan on 10/01/15.
  *
@@ -21,6 +23,11 @@ public class SharedConstants {
         public static final String MESSAGE_GAME_CONTROLLER_RIGHT = "right";
         public static final String MESSAGE_GAME_CONTROLLER_UP = "up";
         public static final String MESSAGE_GAME_CONTROLLER_DOWN = "down";
+
+        public static String DATA_PATH_RESULTS(Module module) {
+            return String.format("/results/get/%d", module.getId());
+        }
+
     }
 
     public static final class Day {

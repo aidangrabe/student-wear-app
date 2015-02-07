@@ -145,6 +145,7 @@ public class ResultsActivity extends Activity implements GoogleApiClient.Connect
         public Fragment getFragment(int row, int col) {
             ResultFragment fragment = new ResultFragment();
 
+            fragment.setGoogleApiClient(mGoogleApiClient);
             Bundle args = new Bundle();
             args.putParcelable(ResultFragment.ARG_MODULE, mModules.get(row));
             fragment.setArguments(args);
