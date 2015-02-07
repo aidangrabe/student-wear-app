@@ -198,6 +198,7 @@ public class WearUtils {
         parcel.writeTypedList(list);
         DataMap dataMap = new DataMap();
         dataMap.putByteArray(key, parcel.marshall());
+        parcel.recycle();
         return dataMap;
 
     }
@@ -211,6 +212,7 @@ public class WearUtils {
         parcel.unmarshall(byteArray, 0, byteArray.length);
         parcel.setDataPosition(0);
         parcel.readTypedList(list, creator);
+        parcel.recycle();
 
         return list;
 
