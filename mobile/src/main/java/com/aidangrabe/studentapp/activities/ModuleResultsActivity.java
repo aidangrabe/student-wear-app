@@ -13,11 +13,14 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.aidangrabe.common.SharedConstants;
 import com.aidangrabe.common.model.Module;
 import com.aidangrabe.common.model.Result;
+import com.aidangrabe.common.util.WearUtils;
 import com.aidangrabe.common.views.SimpleGraph;
 import com.aidangrabe.studentapp.R;
 import com.aidangrabe.studentapp.fragments.dialogs.NewResultDialogFragment;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.melnykov.fab.FloatingActionButton;
 
 import java.text.SimpleDateFormat;
@@ -153,12 +156,21 @@ public class ModuleResultsActivity extends ActionBarActivity implements NewResul
         result.setModule(mModule);
         result.save();
 
+        syncResults();
+
         getResults();
 
         if (mNewResultDialog != null) {
             mNewResultDialog.dismiss();
         }
 
+    }
+
+    private void syncResults() {
+        // sync the new list of results for the Wearable
+        GoogleApiClient apiClient = WearUtils.makeClient(this, null, null);
+        WearUtils.putDataItem(apiClient, WearUtils.listToDataMap("results", mModule.listAllResults()),
+                SharedConstants.Wearable.DATA_PATH_RESULTS(mModule));
     }
 
     @Override
@@ -172,6 +184,7 @@ public class ModuleResultsActivity extends ActionBarActivity implements NewResul
                     public void onClick(DialogInterface dialog, int which) {
                         result.delete();
                         getResults();
+                        syncResults();
                     }
                 })
                 .setNegativeButton("No", null)
