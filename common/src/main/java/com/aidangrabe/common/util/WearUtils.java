@@ -12,6 +12,8 @@ import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.common.api.Result;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.wearable.DataApi;
+import com.google.android.gms.wearable.DataEvent;
+import com.google.android.gms.wearable.DataEventBuffer;
 import com.google.android.gms.wearable.DataItem;
 import com.google.android.gms.wearable.DataItemBuffer;
 import com.google.android.gms.wearable.DataMap;
@@ -215,6 +217,29 @@ public class WearUtils {
         parcel.recycle();
 
         return list;
+
+    }
+
+    public static List<DataMap> getDataMaps(DataEventBuffer dataEvents) {
+        return getDataMaps(dataEvents, null);
+    }
+
+    public static List<DataMap> getDataMaps(DataEventBuffer dataEvents, String path) {
+
+        List<DataMap> dataMaps = new ArrayList<>();
+
+        for (DataEvent event : dataEvents) {
+            DataItem dataItem = event.getDataItem();
+            if (path != null && path.length() > 0) {
+                if (dataItem.getUri().getPath().equals(path)) {
+                    dataMaps.add(DataMapItem.fromDataItem(dataItem).getDataMap());
+                }
+            } else {
+                dataMaps.add(DataMapItem.fromDataItem(dataItem).getDataMap());
+            }
+        }
+
+        return dataMaps;
 
     }
 
