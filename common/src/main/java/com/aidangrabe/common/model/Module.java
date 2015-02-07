@@ -72,16 +72,15 @@ public class Module extends SugarRecord<Module> implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(name);
-    }
-
-    public Module(Parcel in) {
-        this(in.readString());
+        dest.writeLong(getId());
     }
 
     public static final Creator<Module> CREATOR = new Creator<Module>() {
         @Override
         public Module createFromParcel(Parcel source) {
-            return new Module(source);
+            Module module = new Module(source.readString());
+            module.setId(source.readLong());
+            return module;
         }
 
         @Override
