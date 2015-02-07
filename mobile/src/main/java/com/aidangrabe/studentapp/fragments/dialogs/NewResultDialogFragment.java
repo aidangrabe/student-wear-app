@@ -45,6 +45,7 @@ public class NewResultDialogFragment extends DialogFragment implements View.OnCl
         saveButton.setOnClickListener(this);
 
         mPercentText = (TextView) view.findViewById(R.id.percent_text);
+        updatePercenText(mGradeSeekBar.getProgress());
 
         getDialog().setTitle("New Result");
 
@@ -67,9 +68,13 @@ public class NewResultDialogFragment extends DialogFragment implements View.OnCl
 
         // show the user the seek bar value as a percentage
         if (fromUser) {
-            mPercentText.setText(String.format("%d%%", progress));
+            updatePercenText(progress);
         }
 
+    }
+
+    private void updatePercenText(int progress) {
+        mPercentText.setText(String.format("%d%%", progress));
     }
 
     @Override
