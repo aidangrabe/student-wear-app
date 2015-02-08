@@ -124,6 +124,7 @@ public class ModuleResultsActivity extends ActionBarActivity implements NewResul
         View view = LayoutInflater.from(this)
                 .inflate(R.layout.fab_new_layout, viewGroup, true);
         FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab);
+        fab.attachToListView(mListView);
 
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
