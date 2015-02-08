@@ -56,7 +56,7 @@ public class NewsDownloaderService extends Service implements ArticleFetcher.Lis
         Notification notif = new NotificationCompat.Builder(this)
                 .setContentTitle(article.getTitle())
                 .setContentText(article.getImageUrl())
-                .setSmallIcon(com.aidangrabe.common.R.drawable.ic_launcher)
+                .setSmallIcon(com.aidangrabe.common.R.drawable.ic_stat_social_school)
                 .setLargeIcon(article.getImage())
                 .setStyle(bigStyle)
                 .setContentIntent(pendingIntent)
