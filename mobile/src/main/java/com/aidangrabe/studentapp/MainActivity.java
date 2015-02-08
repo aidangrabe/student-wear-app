@@ -9,6 +9,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.support.v7.app.ActionBarActivity;
+import android.text.format.DateUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -53,12 +54,12 @@ public class MainActivity extends ActionBarActivity {
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(ALARM_SERVICE);
 
         if (!newsAlarmOn) {
-            setAlarm(alarmManager, NewsDownloaderService.class, 1000 * 60 * 60 * 2);
+            setAlarm(alarmManager, NewsDownloaderService.class, DateUtils.HOUR_IN_MILLIS * 2);
             prefs.edit().putBoolean(PREF_NEWS_ALARM_ACTIVE, true).apply();
         }
 
         if (!timetableAlarmOn) {
-            setAlarm(alarmManager, TimeTableService.class, 1000 * 60 * 5);
+            setAlarm(alarmManager, TimeTableService.class, DateUtils.MINUTE_IN_MILLIS * 5);
             prefs.edit().putBoolean(PREF_TIMETABLE_ALARM_ACTIVE, true).apply();
         }
 

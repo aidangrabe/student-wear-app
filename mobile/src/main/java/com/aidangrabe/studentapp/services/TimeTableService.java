@@ -81,7 +81,7 @@ public class TimeTableService extends Service {
         notif.flags = notif.flags | Notification.FLAG_AUTO_CANCEL;
 
         NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        notificationManager.notify(001, notif);
+        notificationManager.notify(2, notif);
 
     }
 
