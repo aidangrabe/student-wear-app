@@ -187,7 +187,6 @@ public class TimeTableActivity extends ActionBarActivity {
 
         @Override
         public void onDeleteLecture(Lecture lecture, int remainingLectures) {
-//            mLectures.remove(lecture);
             reloadTimetable();
         }
     }

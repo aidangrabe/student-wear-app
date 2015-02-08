@@ -48,7 +48,8 @@ public class TimeTableFragment extends Fragment implements AdapterView.OnItemLon
     private final Comparator<Lecture> mLectureComparator = new Comparator<Lecture>() {
         @Override
         public int compare(Lecture lhs, Lecture rhs) {
-            return lhs.getStartHour() * 60 + lhs.getStartMinute() > rhs.getStartHour() * 60 + rhs.getStartMinute() ? 0 : 1;
+            return lhs.getStartHour() * 60 + lhs.getStartMinute()
+                    - rhs.getStartHour() * 60 + rhs.getStartMinute();
         }
     };
 
