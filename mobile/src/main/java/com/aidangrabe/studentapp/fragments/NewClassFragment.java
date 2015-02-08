@@ -14,6 +14,7 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.aidangrabe.studentapp.R;
+import com.aidangrabe.studentapp.activities.NewClassActivity;
 import com.aidangrabe.studentapp.models.Lecture;
 import com.aidangrabe.studentapp.ui.TimeEditText;
 
@@ -53,6 +54,12 @@ public class NewClassFragment extends Fragment implements TimeEditText.TimeEditT
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        Bundle args = getArguments();
+        int defaultDay = 2;
+        if (args != null) {
+            defaultDay = args.getInt(NewClassActivity.ARG_DEFAULT_DAY, defaultDay);
+        }
+
         EditText fromText = (EditText) view.findViewById(R.id.time_from);
         EditText toText = (EditText) view.findViewById(R.id.time_to);
 
@@ -88,6 +95,9 @@ public class NewClassFragment extends Fragment implements TimeEditText.TimeEditT
         mDaySpinnerAdapter.add("Friday");
         mDaySpinnerAdapter.add("Saturday");
         mDaySpinnerAdapter.notifyDataSetChanged();
+
+        // minus 1 as we are converting from day number to array position
+        spinner.setSelection(defaultDay - 1, true);
 
         mCancelButton = (Button) view.findViewById(R.id.cancel_button);
         mSaveButton = (Button) view.findViewById(R.id.save_button);

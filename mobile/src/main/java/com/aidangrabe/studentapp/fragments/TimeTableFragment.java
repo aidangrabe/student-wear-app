@@ -38,6 +38,11 @@ public class TimeTableFragment extends Fragment implements AdapterView.OnItemLon
     private ArrayAdapter<Lecture> mAdapter;
     private ListView mListView;
     private AlertDialog mConfirmationDialog;
+    private Listener mListener;
+
+    public interface Listener {
+        public void onDeleteLecture(Lecture lecture, int remainingLectures);
+    }
 
     // compare 2 Lectures by their start time
     private final Comparator<Lecture> mLectureComparator = new Comparator<Lecture>() {
@@ -157,6 +162,10 @@ public class TimeTableFragment extends Fragment implements AdapterView.OnItemLon
      * @param lecture the Lecture to delete
      */
     private void deleteLecture(Lecture lecture) {
+        mLectures.remove(lecture);
+        if (mListener != null) {
+            mListener.onDeleteLecture(lecture, mLectures.size());
+        }
         mAdapter.remove(lecture);
         mAdapter.notifyDataSetChanged();
         lecture.delete();
@@ -181,4 +190,9 @@ public class TimeTableFragment extends Fragment implements AdapterView.OnItemLon
         }
 
     }
+
+    public void setListener(Listener listener) {
+        this.mListener = listener;
+    }
+
 }

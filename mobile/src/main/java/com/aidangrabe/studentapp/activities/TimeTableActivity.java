@@ -43,12 +43,7 @@ public class TimeTableActivity extends ActionBarActivity {
 
         setContentView(R.layout.activity_timetable);
 
-        try {
-            mLectures = Lecture.listAll(Lecture.class);
-        } catch (Exception e) {
-            // error
-            mLectures = new ArrayList<>();
-        }
+        getLectures();
 
         createIndex();
 
@@ -74,6 +69,15 @@ public class TimeTableActivity extends ActionBarActivity {
 
         addFabToView((ViewGroup) getWindow().getDecorView().findViewById(android.R.id.content));
 
+    }
+
+    private void getLectures() {
+        try {
+            mLectures = Lecture.listAll(Lecture.class);
+        } catch (Exception e) {
+            // error
+            mLectures = new ArrayList<>();
+        }
     }
 
     private void setToCurrentDay() {
@@ -110,14 +114,25 @@ public class TimeTableActivity extends ActionBarActivity {
                 .inflate(R.layout.fab_new_layout, viewGroup, true);
         FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab);
 
+        // get the day the user is currently viewing
+
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // start the NewClassActivity
                 Intent intent = new Intent(TimeTableActivity.this, NewClassActivity.class);
+                intent.putExtra(NewClassActivity.ARG_DEFAULT_DAY, getDayIndex(mViewPager.getCurrentItem()));
                 startActivity(intent);
             }
         });
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        reloadTimetable();
 
     }
 
@@ -141,7 +156,13 @@ public class TimeTableActivity extends ActionBarActivity {
         }
     }
 
-    public class TimeTablePagerAdapter extends FragmentPagerAdapter {
+    private void reloadTimetable() {
+        getLectures();
+        createIndex();
+        mPagerAdapter.notifyDataSetChanged();
+    }
+
+    public class TimeTablePagerAdapter extends FragmentPagerAdapter implements TimeTableFragment.Listener {
 
         public TimeTablePagerAdapter(FragmentManager fm) {
             super(fm);
@@ -149,7 +170,9 @@ public class TimeTableActivity extends ActionBarActivity {
 
         @Override
         public Fragment getItem(int position) {
-            return TimeTableFragment.makeInstance(mLectures, getDayIndex(position));
+            TimeTableFragment frag = TimeTableFragment.makeInstance(mLectures, getDayIndex(position));
+            frag.setListener(this);
+            return frag;
         }
 
         @Override
@@ -160,6 +183,12 @@ public class TimeTableActivity extends ActionBarActivity {
         @Override
         public CharSequence getPageTitle(int position) {
             return getDayName(getDayIndex(position));
+        }
+
+        @Override
+        public void onDeleteLecture(Lecture lecture, int remainingLectures) {
+//            mLectures.remove(lecture);
+            reloadTimetable();
         }
     }
 
