@@ -43,9 +43,8 @@
                 <action android:name="com.google.android.gms.wearable.BIND_LISTENER" />
             </intent-filter>
         </service>
-        <service android:name=".services.NewsDownloaderService" android:exported="false">
-
-        </service>
+        <service android:name=".services.NewsDownloaderService" android:exported="false" />
+        <service android:name=".services.TimeTableService" android:exported="false" />
 
         <!-- Sugar ORM -->
         <meta-data android:name="DATABASE" android:value="student_app.db" />
