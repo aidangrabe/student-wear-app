@@ -1,10 +1,13 @@
 package com.aidangrabe.studentapp.activities;
 
 import android.content.Intent;
+import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.PagerTabStrip;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
@@ -77,6 +80,13 @@ public class TimeTableActivity extends ActionBarActivity {
         mDayNames.put(SharedConstants.Day.FRIDAY, "Friday");
         mDayNames.put(SharedConstants.Day.SATURDAY, "Saturday");
         mDayNames.put(SharedConstants.Day.SUNDAY, "Sunday");
+
+        // make the tabs look like they're part of the ActionBar
+        getSupportActionBar().setElevation(0);
+        PagerTabStrip strip = (PagerTabStrip) findViewById(R.id.tab_strip);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            strip.setElevation(8);
+        }
 
         addFabToView((ViewGroup) getWindow().getDecorView().findViewById(android.R.id.content));
 

@@ -53,12 +53,12 @@ public class MainActivity extends ActionBarActivity {
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(ALARM_SERVICE);
 
         if (!newsAlarmOn) {
-            setAlarm(alarmManager, NewsDownloaderService.class, 1000 * 60 * 60);
+            setAlarm(alarmManager, NewsDownloaderService.class, 1000 * 60 * 60 * 2);
             prefs.edit().putBoolean(PREF_NEWS_ALARM_ACTIVE, true).apply();
         }
 
         if (!timetableAlarmOn) {
-            setAlarm(alarmManager, TimeTableService.class, 1000 * 60 * 10);
+            setAlarm(alarmManager, TimeTableService.class, 1000 * 60 * 5);
             prefs.edit().putBoolean(PREF_TIMETABLE_ALARM_ACTIVE, true).apply();
         }
 
