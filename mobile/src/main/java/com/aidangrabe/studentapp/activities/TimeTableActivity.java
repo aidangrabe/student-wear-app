@@ -1,7 +1,6 @@
 package com.aidangrabe.studentapp.activities;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -10,22 +9,21 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.PagerTabStrip;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.aidangrabe.common.SharedConstants;
 import com.aidangrabe.studentapp.R;
 import com.aidangrabe.studentapp.fragments.TimeTableFragment;
 import com.aidangrabe.studentapp.models.Lecture;
 import com.melnykov.fab.FloatingActionButton;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by aidan on 08/01/15.
@@ -35,10 +33,8 @@ public class TimeTableActivity extends ActionBarActivity {
 
     private FragmentPagerAdapter mPagerAdapter;
     private ViewPager mViewPager;
-    private Map<Integer, String> mDayNames;
     private List<Lecture> mLectures;
 
-    // the index of the days to show in the tab view
     private List<Integer> mDaysToShow;
 
     @Override
@@ -54,12 +50,7 @@ public class TimeTableActivity extends ActionBarActivity {
             mLectures = new ArrayList<>();
         }
 
-        mDaysToShow = new ArrayList<>();
-        for (Lecture lecture : mLectures) {
-            if (!mDaysToShow.contains(lecture.getDayOfWeek())) {
-                mDaysToShow.add(lecture.getDayOfWeek());
-            }
-        }
+        createIndex();
 
         Collections.sort(mDaysToShow, new Comparator<Integer>() {
             @Override
@@ -71,15 +62,8 @@ public class TimeTableActivity extends ActionBarActivity {
         mViewPager = (ViewPager) findViewById(R.id.view_pager);
         mPagerAdapter = new TimeTablePagerAdapter(getSupportFragmentManager());
         mViewPager.setAdapter(mPagerAdapter);
-        mDayNames = new HashMap<>();
 
-        mDayNames.put(SharedConstants.Day.MONDAY, "Monday");
-        mDayNames.put(SharedConstants.Day.TUESDAY, "Tuesday");
-        mDayNames.put(SharedConstants.Day.WEDNESDAY, "Wednesday");
-        mDayNames.put(SharedConstants.Day.THURSDAY, "Thursday");
-        mDayNames.put(SharedConstants.Day.FRIDAY, "Friday");
-        mDayNames.put(SharedConstants.Day.SATURDAY, "Saturday");
-        mDayNames.put(SharedConstants.Day.SUNDAY, "Sunday");
+        setToCurrentDay();
 
         // make the tabs look like they're part of the ActionBar
         getSupportActionBar().setElevation(0);
@@ -90,6 +74,33 @@ public class TimeTableActivity extends ActionBarActivity {
 
         addFabToView((ViewGroup) getWindow().getDecorView().findViewById(android.R.id.content));
 
+    }
+
+    private void setToCurrentDay() {
+        // open the current day
+        int currentDay = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
+        Log.d("D", "Current Day: " + currentDay);
+        if (mDaysToShow.contains(currentDay)) {
+            Log.d("D", "Setting to today: " + getPageFromDay(currentDay));
+            mViewPager.setCurrentItem(getPageFromDay(currentDay));
+        }
+    }
+
+    private int getPageFromDay(int day) {
+        return mDaysToShow.indexOf(day);
+    }
+
+    private int getDayIndex(int i) {
+        return mDaysToShow.get(i);
+    }
+
+    private void createIndex() {
+        mDaysToShow = new ArrayList<>();
+        for (Lecture lecture : mLectures) {
+            if (!mDaysToShow.contains(lecture.getDayOfWeek())) {
+                mDaysToShow.add(lecture.getDayOfWeek());
+            }
+        }
     }
 
     private void addFabToView(ViewGroup viewGroup) {
@@ -110,6 +121,26 @@ public class TimeTableActivity extends ActionBarActivity {
 
     }
 
+    public String getDayName(int i) {
+        switch (i) {
+            default:
+            case 1:
+                return "Sunday";
+            case 2:
+                return "Monday";
+            case 3:
+                return "Tuesday";
+            case 4:
+                return "Wednesday";
+            case 5:
+                return "Thursday";
+            case 6:
+                return "Friday";
+            case 7:
+                return "Saturday";
+        }
+    }
+
     public class TimeTablePagerAdapter extends FragmentPagerAdapter {
 
         public TimeTablePagerAdapter(FragmentManager fm) {
@@ -118,7 +149,7 @@ public class TimeTableActivity extends ActionBarActivity {
 
         @Override
         public Fragment getItem(int position) {
-            return TimeTableFragment.makeInstance(mLectures, mDaysToShow.get(position));
+            return TimeTableFragment.makeInstance(mLectures, getDayIndex(position));
         }
 
         @Override
@@ -128,7 +159,7 @@ public class TimeTableActivity extends ActionBarActivity {
 
         @Override
         public CharSequence getPageTitle(int position) {
-            return mDayNames.get(mDaysToShow.get(position));
+            return getDayName(getDayIndex(position));
         }
     }
 

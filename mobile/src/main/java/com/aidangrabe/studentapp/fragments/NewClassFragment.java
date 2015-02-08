@@ -72,7 +72,7 @@ public class NewClassFragment extends Fragment implements TimeEditText.TimeEditT
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                mDayOfWeek = position;
+                mDayOfWeek = position + 1;
             }
 
             @Override
@@ -80,13 +80,13 @@ public class NewClassFragment extends Fragment implements TimeEditText.TimeEditT
                 // do nothing
             }
         });
+        mDaySpinnerAdapter.add("Sunday");
         mDaySpinnerAdapter.add("Monday");
         mDaySpinnerAdapter.add("Tuesday");
         mDaySpinnerAdapter.add("Wednesday");
         mDaySpinnerAdapter.add("Thursday");
         mDaySpinnerAdapter.add("Friday");
         mDaySpinnerAdapter.add("Saturday");
-        mDaySpinnerAdapter.add("Sunday");
         mDaySpinnerAdapter.notifyDataSetChanged();
 
         mCancelButton = (Button) view.findViewById(R.id.cancel_button);
