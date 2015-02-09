@@ -36,16 +36,24 @@ public class TimeTableService extends Service {
         }
 
         Calendar calendar = Calendar.getInstance();
+        int day = calendar.get(Calendar.DAY_OF_WEEK);
         int hour = calendar.get(Calendar.HOUR_OF_DAY);
         int minutes = calendar.get(Calendar.MINUTE);
 
         Lecture nextLecture = null;
 
         for (Lecture lecture : lectures) {
+
+            if (lecture.getDayOfWeek() != day) {
+                // wrong day
+                continue;
+            }
+
             long delta = toMinutes(lecture) - toMinutes(hour, minutes);
             if (delta > 0 && delta < DELTA_TIME) {
                 nextLecture = lecture;
             }
+
         }
 
         if (nextLecture != null) {
