@@ -66,7 +66,7 @@ public class DataLayerListenerService extends WearableListenerService {
         // map
         else if (path.equals(SharedConstants.Wearable.REQUEST_MAP)) {
             Log.d("D", "Downloading map image");
-            StaticMapRequest request = new StaticMapRequest(51.8928387,-8.4942547, 17, 320, 320, new Response.Listener<Bitmap>() {
+            StaticMapRequest request = new StaticMapRequest(51.8928387,-8.4942547, 17, 320 * 3, 320 * 3, new Response.Listener<Bitmap>() {
                 @Override
                 public void onResponse(Bitmap response) {
                     Log.d("D", "Map successfully downloaded, width:  " + response.getWidth());

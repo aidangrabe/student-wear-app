@@ -1,16 +1,18 @@
 package com.aidangrabe.studentapp.activities;
 
 import android.app.Activity;
+import android.app.Fragment;
+import android.app.FragmentManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
+import android.support.wearable.view.FragmentGridPagerAdapter;
+import android.support.wearable.view.GridViewPager;
 import android.util.Log;
-import android.widget.ImageView;
 
 import com.aidangrabe.common.SharedConstants;
 import com.aidangrabe.studentapp.R;
+import com.aidangrabe.studentapp.fragments.MapFragment;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.wearable.Asset;
@@ -35,21 +37,29 @@ import java.util.HashSet;
  */
 public class MapActivity extends Activity implements DataApi.DataListener, GoogleApiClient.ConnectionCallbacks {
 
-    private ImageView mImageView;
+    private static final int GRID_SIZE_X = 3;
+    private static final int GRID_SIZE_Y = 3;
+
+    private Adapter mAdapter;
+    private GridViewPager mGridPager;
     private GoogleApiClient mGoogleApiClient;
     private Collection<Node> mNodes;
+    private Bitmap[][] mMapGrid;
+    private int mCurrentRow, mCurrentCol;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_map);
+        setContentView(R.layout.activity_grid_pager);
+
+        mGridPager = (GridViewPager) findViewById(R.id.grid_pager);
 
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addApi(Wearable.API)
                 .addConnectionCallbacks(this)
                 .build();
-        mImageView = (ImageView) findViewById(R.id.image_view);
+
         mNodes = new HashSet<>();
 
     }
@@ -124,15 +134,45 @@ public class MapActivity extends Activity implements DataApi.DataListener, Googl
                 InputStream assetInputStream = getFdForAssetResult.getInputStream();
                 final Bitmap mapBitmap = BitmapFactory.decodeStream(assetInputStream);
 
-                // set the new image on the main thread
-                new Handler(Looper.getMainLooper()).post(new Runnable() {
+                mMapGrid = chunkMap(GRID_SIZE_X, GRID_SIZE_Y, mapBitmap);
+                mAdapter = new Adapter(getFragmentManager());
+                mGridPager.setAdapter(mAdapter);
+                mAdapter.notifyDataSetChanged();
+                mGridPager.setOnPageChangeListener(new GridViewPager.OnPageChangeListener() {
                     @Override
-                    public void run() {
-                        mImageView.setImageBitmap(mapBitmap);
+                    public void onPageScrolled(int i, int i2, float v, float v2, int i3, int i4) {
+
+                    }
+
+                    @Override
+                    public void onPageSelected(int row, int col) {
+                        mCurrentRow = row;
+                        mCurrentCol = col;
+                    }
+
+                    @Override
+                    public void onPageScrollStateChanged(int i) {
+
                     }
                 });
+
             }
         });
+    }
+
+    /**
+     * Split the given map into <numX>x<numY> grid
+     */
+    private Bitmap[][] chunkMap(int numX, int numY, Bitmap bitmap) {
+        int w = bitmap.getWidth() / numX;
+        int h = bitmap.getHeight() / numY;
+        Bitmap[][] grid = new Bitmap[numX][numY];
+        for (int x = 0; x < numY; x++) {
+            for (int y = 0; y < numY; y++) {
+                grid[x][y] = Bitmap.createBitmap(bitmap, w * x, h * y, w, h);
+            }
+        }
+        return grid;
     }
 
     @Override
@@ -159,5 +199,33 @@ public class MapActivity extends Activity implements DataApi.DataListener, Googl
     private void Logd(String message) {
         Log.d("D", message);
     }
+
+    private class Adapter extends FragmentGridPagerAdapter {
+
+        public Adapter(FragmentManager fm) {
+            super(fm);
+        }
+
+        @Override
+        public Fragment getFragment(int row, int col) {
+            MapFragment frag = new MapFragment();
+            frag.setBitmap(mMapGrid[row][col]);
+            return frag;
+        }
+
+        @Override
+        public int getRowCount() {
+            return GRID_SIZE_Y;
+        }
+
+        @Override
+        public int getColumnCount(int row) {
+            return GRID_SIZE_X;
+        }
+
+
+
+    }
+
 
 }
