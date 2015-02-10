@@ -95,6 +95,15 @@ public class NewsFragment extends Fragment implements View.OnClickListener {
 
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        // cancel the download
+        mArticleFetcher.cancel();
+
+    }
+
     public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
 
         @Override

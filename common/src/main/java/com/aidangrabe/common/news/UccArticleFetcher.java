@@ -5,6 +5,7 @@ import android.util.Log;
 
 import com.aidangrabe.common.model.Article;
 import com.aidangrabe.common.util.MyVolley;
+import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
@@ -32,6 +33,7 @@ public class UccArticleFetcher implements ArticleFetcher {
     private List<Article> mArticles;
     private SimpleDateFormat mDateFormat;
     private Listener mListener;
+    private Request<String> mArticleRequest;
 
     public UccArticleFetcher(Context context) {
         mContext = context;
@@ -51,10 +53,17 @@ public class UccArticleFetcher implements ArticleFetcher {
         fetchArticles();
     }
 
+    @Override
+    public void cancel() {
+        if (mArticleRequest != null) {
+            mArticleRequest.cancel();
+        }
+    }
+
     private void downloadArticlePage() {
 
         Log.d("D", "Downloading: " + ALL_ARTICLES_URL);
-        MyVolley.getInstance(mContext).add(new StringRequest(ALL_ARTICLES_URL, new Response.Listener<String>() {
+        mArticleRequest = MyVolley.getInstance(mContext).add(new StringRequest(ALL_ARTICLES_URL, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 parseResponse(response);
@@ -120,6 +129,8 @@ public class UccArticleFetcher implements ArticleFetcher {
         return article;
 
     }
+
+
 
     public void setListener(Listener listener) {
         this.mListener = listener;
