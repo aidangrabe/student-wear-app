@@ -5,10 +5,13 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 
+import com.aidangrabe.common.SharedConstants;
 import com.aidangrabe.common.model.Article;
 import com.aidangrabe.common.news.ArticleFetcher;
 import com.aidangrabe.common.news.UccArticleFetcher;
@@ -36,6 +39,9 @@ public class NewsDownloaderService extends Service implements ArticleFetcher.Lis
 
     }
 
+    /**
+     * Download the News Articles using the ArticleFetcher
+     */
     private void downloadArticles() {
 
         mArticleFetcher = new UccArticleFetcher(this);
@@ -43,6 +49,10 @@ public class NewsDownloaderService extends Service implements ArticleFetcher.Lis
 
     }
 
+    /**
+     * Show a Notification for the given Article
+     * @param article the Article to display in the Notification
+     */
     private void showNotification(Article article) {
         int notificationId = 001;
 
@@ -77,7 +87,11 @@ public class NewsDownloaderService extends Service implements ArticleFetcher.Lis
         if (articles.size() != 0) {
 
             Article newArticle = articles.get(0);
-            downloadArticleImage(newArticle);
+            if (isNewArticle(newArticle)) {
+                downloadArticleImage(newArticle);
+            } else {
+                stopSelf();
+            }
 
         } else {
             // stop the service
@@ -86,6 +100,30 @@ public class NewsDownloaderService extends Service implements ArticleFetcher.Lis
 
     }
 
+    /**
+     * Check if a given Article is new, compared to the previously downloaded Articles
+     * @param article the Article to check if new
+     * @return true if the Article is newer than the previously "newest" Article
+     */
+    private boolean isNewArticle(Article article) {
+
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+        String lastTitle = prefs.getString(SharedConstants.PREF_LAST_ARTICLE_TITLE, "");
+        boolean isNew = lastTitle.equals(article.getTitle());
+
+        // save the new title
+        if (isNew) {
+            prefs.edit().putString(SharedConstants.PREF_LAST_ARTICLE_TITLE, article.getTitle()).apply();
+        }
+
+        return isNew;
+
+    }
+
+    /**
+     * Download the image set in getImageUrl() for a given Article
+     * @param article the Article whose image should be downloaded
+     */
     private void downloadArticleImage(final Article article) {
 
         MyVolley.getInstance(this).add(new ImageRequest(article.getImageUrl(), new Response.Listener<Bitmap>() {

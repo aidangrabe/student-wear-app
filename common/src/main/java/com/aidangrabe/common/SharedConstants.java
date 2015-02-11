@@ -30,6 +30,9 @@ public class SharedConstants {
 
     }
 
+    // SharedPreferences Key for the "latest" Article title
+    public static final String PREF_LAST_ARTICLE_TITLE = "latest_article.title";
+
     public static final class Day {
         public static final int MONDAY = 0;
         public static final int TUESDAY = 1;
