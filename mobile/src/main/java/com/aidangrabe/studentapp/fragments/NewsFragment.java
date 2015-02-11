@@ -46,6 +46,8 @@ public class NewsFragment extends Fragment implements View.OnClickListener {
     private List<Article> mArticles;
     private RecyclerView.Adapter<Adapter.ViewHolder> mAdapter;
     private ArticleFetcher mArticleFetcher;
+    private ViewGroup mContainerView;
+    private View mLoadingView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -62,6 +64,7 @@ public class NewsFragment extends Fragment implements View.OnClickListener {
             public void onArticlesReady(List<Article> articles) {
                 mArticles = articles;
                 mAdapter.notifyDataSetChanged();
+                setLoading(false);
             }
         });
 
@@ -72,6 +75,8 @@ public class NewsFragment extends Fragment implements View.OnClickListener {
 
         View view = inflater.inflate(R.layout.fragment_news, container, false);
 
+        mContainerView = container;
+
         mRecyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
         mLayoutManager = new LinearLayoutManager(getActivity());
         mRecyclerView.setLayoutManager(mLayoutManager);
@@ -79,8 +84,24 @@ public class NewsFragment extends Fragment implements View.OnClickListener {
         mAdapter = new Adapter();
         mRecyclerView.setAdapter(mAdapter);
 
+        setupLoadingView();
+
         return view;
 
+    }
+
+    private void setupLoadingView() {
+
+        LayoutInflater inflater = LayoutInflater.from(getActivity());
+        mLoadingView = inflater.inflate(R.layout.loading_view, mContainerView, false);
+        mContainerView.addView(mLoadingView);
+        setLoading(true);
+
+    }
+
+    private void setLoading(boolean loading) {
+        mRecyclerView.setVisibility(loading ? View.INVISIBLE : View.VISIBLE);
+        mLoadingView.setVisibility(loading ? View.VISIBLE : View.INVISIBLE);
     }
 
     @Override
