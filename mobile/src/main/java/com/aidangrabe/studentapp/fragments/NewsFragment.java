@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.DecelerateInterpolator;
+import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -48,6 +49,7 @@ public class NewsFragment extends Fragment implements View.OnClickListener {
     private ArticleFetcher mArticleFetcher;
     private ViewGroup mContainerView;
     private View mLoadingView;
+    private int mLastLoadedPosition = 0;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -146,6 +148,15 @@ public class NewsFragment extends Fragment implements View.OnClickListener {
 
             holder.titleTextView.setText(article.getTitle());
             holder.summaryTextView.setText(mDateFormat.format(mDate));
+
+            // only animate if we're scrolling down
+            if (position > mLastLoadedPosition) {
+                mLastLoadedPosition = position;
+                TranslateAnimation anim = new TranslateAnimation(0, 0, 600, 0);
+                anim.setInterpolator(new DecelerateInterpolator(3f));
+                anim.setDuration(700);
+                holder.itemView.startAnimation(anim);
+            }
 
             if (article.getImage() == null) {
                 downloadImage(article, holder.imageView);
