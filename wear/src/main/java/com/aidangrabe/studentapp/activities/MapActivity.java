@@ -75,6 +75,14 @@ public class MapActivity extends Activity implements DataApi.DataListener, Googl
 
             return true;
         }
+
+        @Override
+        public void onLongPress(MotionEvent e) {
+
+            finish();
+
+            super.onLongPress(e);
+        }
     };
 
     private void animateImage(final int x, final int y) {
