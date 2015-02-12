@@ -7,21 +7,25 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.wearable.view.FragmentGridPagerAdapter;
-import android.support.wearable.view.GridViewPager;
 import android.util.Log;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.LinearInterpolator;
+import android.view.animation.TranslateAnimation;
+import android.widget.ImageView;
 
 import com.aidangrabe.common.SharedConstants;
+import com.aidangrabe.common.util.WearUtils;
 import com.aidangrabe.studentapp.R;
 import com.aidangrabe.studentapp.fragments.MapFragment;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.wearable.Asset;
 import com.google.android.gms.wearable.DataApi;
-import com.google.android.gms.wearable.DataEvent;
 import com.google.android.gms.wearable.DataEventBuffer;
-import com.google.android.gms.wearable.DataItem;
-import com.google.android.gms.wearable.DataItemBuffer;
-import com.google.android.gms.wearable.DataMapItem;
+import com.google.android.gms.wearable.DataMap;
 import com.google.android.gms.wearable.Node;
 import com.google.android.gms.wearable.NodeApi;
 import com.google.android.gms.wearable.Wearable;
@@ -29,6 +33,7 @@ import com.google.android.gms.wearable.Wearable;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 
 /**
  * Created by aidan on 28/01/15.
@@ -40,27 +45,137 @@ public class MapActivity extends Activity implements DataApi.DataListener, Googl
     private static final int GRID_SIZE_X = 3;
     private static final int GRID_SIZE_Y = 3;
 
-    private Adapter mAdapter;
-    private GridViewPager mGridPager;
     private GoogleApiClient mGoogleApiClient;
     private Collection<Node> mNodes;
     private Bitmap[][] mMapGrid;
     private int mCurrentRow, mCurrentCol;
+    private GestureDetector mGestureDetector;
+    private ImageView[] mImageViews;
+    private View mRootView;
+    private boolean mAnimating;
+
+    private GestureDetector.OnGestureListener mGestureListener = new GestureDetector.SimpleOnGestureListener() {
+        @Override
+        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+
+            int newRow = mCurrentRow;
+            int newCol = mCurrentCol;
+
+            if (Math.abs(velocityY) > Math.abs(velocityX)) {
+                newRow += velocityY > 0
+                        ? -1 : 1;
+                Log.d("D", "New row: " + mCurrentRow + " -> " + newRow);
+            } else {
+                newCol += velocityX > 0
+                        ? -1 : 1;
+                Log.d("D", "New col: " + mCurrentCol + " -> " + newCol);
+            }
+
+            animateImage(newCol, newRow);
+
+            return true;
+        }
+    };
+
+    private void animateImage(final int x, final int y) {
+
+        // don't animate if we're already animating, or if there is no change in x/y
+        if (mAnimating || (x == mCurrentCol && y == mCurrentRow)) {
+            return;
+        }
+
+        Log.d("D", "Animating!");
+
+        int destX = 0;
+        int destY = 0;
+        int destX2 = 0;
+        int destY2 = 0;
+        if (x != mCurrentCol) {
+            destX = x > mCurrentCol ? -320 : 640;
+            destX2 = x > mCurrentCol ? 640 : -320;
+        }
+        if (y != mCurrentRow) {
+            destY = y > mCurrentRow ? -320 : 640;
+            destY2 = y > mCurrentRow ? 640 : -320;
+        }
+
+        TranslateAnimation anim1 = new TranslateAnimation(0, destX, 0, destY);
+        anim1.setDuration(200);
+        anim1.setInterpolator(new LinearInterpolator());
+        anim1.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+                mAnimating = true;
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                mImageViews[0].setX(0);
+                mImageViews[0].setImageBitmap(getBitmapAt(x, y));
+                mCurrentCol = getX(x);
+                mCurrentRow = getY(y);
+                mAnimating = false;
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+
+        TranslateAnimation anim2 = new TranslateAnimation(destX2, 0, destY2, 0);
+        anim2.setDuration(200);
+        anim2.setInterpolator(new LinearInterpolator());
+        anim2.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+                mImageViews[1].setImageBitmap(getBitmapAt(x, y));
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+
+        mImageViews[0].startAnimation(anim1);
+        mImageViews[1].startAnimation(anim2);
+
+    }
+
+    private int getX(int x) {
+        return Math.min(GRID_SIZE_X - 1, Math.max(0, x));
+    }
+
+    private int getY(int y) {
+        return Math.min(GRID_SIZE_Y - 1, Math.max(0, y));
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_grid_pager);
+        setContentView(R.layout.activity_map);
 
-        mGridPager = (GridViewPager) findViewById(R.id.grid_pager);
+        mRootView = findViewById(R.id.frame_layout);
 
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addApi(Wearable.API)
-                .addConnectionCallbacks(this)
-                .build();
+        mImageViews = new ImageView[2];
+        mImageViews[0] = (ImageView) findViewById(R.id.image_view);
+        mImageViews[1] = (ImageView) findViewById(R.id.image_view2);
 
+        mCurrentRow = GRID_SIZE_X / 2;
+        mCurrentCol = GRID_SIZE_Y / 2;
+
+        mGestureDetector = new GestureDetector(this, mGestureListener);
+        mGoogleApiClient = WearUtils.makeClient(this, this, null);
         mNodes = new HashSet<>();
+
+        mAnimating = false;
 
     }
 
@@ -68,9 +183,7 @@ public class MapActivity extends Activity implements DataApi.DataListener, Googl
      * Ask the mobile app for the map Bitmap
      */
     private void requestMap() {
-        for (Node node : mNodes) {
-            Wearable.MessageApi.sendMessage(mGoogleApiClient, node.getId(), SharedConstants.Wearable.REQUEST_MAP, null);
-        }
+        WearUtils.sendMessage(mGoogleApiClient, mNodes, SharedConstants.Wearable.REQUEST_MAP, null);
     }
 
     @Override
@@ -91,16 +204,12 @@ public class MapActivity extends Activity implements DataApi.DataListener, Googl
      * Get the map image currently synced to the DataApi
      */
     public void getMapImage() {
-        Wearable.DataApi.getDataItems(mGoogleApiClient).setResultCallback(new ResultCallback<DataItemBuffer>() {
+        WearUtils.getSyncedItems(mGoogleApiClient, SharedConstants.Wearable.REQUEST_MAP, new WearUtils.GetDataListener() {
             @Override
-            public void onResult(DataItemBuffer dataItems) {
-                for (DataItem dataItem : dataItems) {
-                    if (dataItem.getUri().getPath().equals(SharedConstants.Wearable.REQUEST_MAP)) {
-                        DataMapItem dataMapItem = DataMapItem.fromDataItem(dataItem);
-                        loadBitmapFromAsset(dataMapItem.getDataMap().getAsset("map"));
-                    }
+            public void onDataReceived(List<DataMap> dataMaps) {
+                for (DataMap dataMap : dataMaps) {
+                    loadBitmapFromAsset(dataMap.getAsset("map"));
                 }
-                dataItems.release();
             }
         });
     }
@@ -108,12 +217,9 @@ public class MapActivity extends Activity implements DataApi.DataListener, Googl
     @Override
     public void onDataChanged(DataEventBuffer dataEvents) {
 
-        for (DataEvent event : dataEvents) {
-            if (event.getDataItem().getUri().getPath().equals(SharedConstants.Wearable.REQUEST_MAP)) {
-                Logd("Map Asset received");
-                DataMapItem dataMapItem = DataMapItem.fromDataItem(event.getDataItem());
-                loadBitmapFromAsset(dataMapItem.getDataMap().getAsset("map"));
-            }
+        List<DataMap> dataMaps = WearUtils.getDataMaps(dataEvents, SharedConstants.Wearable.REQUEST_MAP);
+        for (DataMap dataMap : dataMaps) {
+            loadBitmapFromAsset(dataMap.getAsset("map"));
         }
 
     }
@@ -135,29 +241,30 @@ public class MapActivity extends Activity implements DataApi.DataListener, Googl
                 final Bitmap mapBitmap = BitmapFactory.decodeStream(assetInputStream);
 
                 mMapGrid = chunkMap(GRID_SIZE_X, GRID_SIZE_Y, mapBitmap);
-                mAdapter = new Adapter(getFragmentManager());
-                mGridPager.setAdapter(mAdapter);
-                mAdapter.notifyDataSetChanged();
-                mGridPager.setOnPageChangeListener(new GridViewPager.OnPageChangeListener() {
-                    @Override
-                    public void onPageScrolled(int i, int i2, float v, float v2, int i3, int i4) {
-
-                    }
-
-                    @Override
-                    public void onPageSelected(int row, int col) {
-                        mCurrentRow = row;
-                        mCurrentCol = col;
-                    }
-
-                    @Override
-                    public void onPageScrollStateChanged(int i) {
-
-                    }
-                });
+                onMapReceived();
 
             }
         });
+    }
+
+    private void onMapReceived() {
+
+        mImageViews[0].setImageBitmap(getBitmapAt(mCurrentCol, mCurrentRow));
+
+        getWindow().getDecorView().findViewById(android.R.id.content).setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                mGestureDetector.onTouchEvent(event);
+                return true;
+            }
+        });
+    }
+
+    private Bitmap getBitmapAt(int x, int y) {
+        x = Math.min(GRID_SIZE_X - 1, Math.max(0, x));
+        y = Math.min(GRID_SIZE_Y - 1, Math.max(0, y));
+        Log.d("D", String.format("map at: (%d, %d)", x, y));
+        return mMapGrid[x][y];
     }
 
     /**
@@ -167,8 +274,8 @@ public class MapActivity extends Activity implements DataApi.DataListener, Googl
         int w = bitmap.getWidth() / numX;
         int h = bitmap.getHeight() / numY;
         Bitmap[][] grid = new Bitmap[numX][numY];
-        for (int x = 0; x < numY; x++) {
-            for (int y = 0; y < numY; y++) {
+        for (int y = 0; y < numY; y++) {
+            for (int x = 0; x < numX; x++) {
                 grid[x][y] = Bitmap.createBitmap(bitmap, w * x, h * y, w, h);
             }
         }
@@ -223,9 +330,5 @@ public class MapActivity extends Activity implements DataApi.DataListener, Googl
             return GRID_SIZE_X;
         }
 
-
-
     }
-
-
 }
