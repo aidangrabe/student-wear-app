@@ -97,8 +97,9 @@ public class WearUtils {
 
     public static void sendMessage(GoogleApiClient client, Node node, String path, String message,
                                    ResultCallback<MessageApi.SendMessageResult> callback) {
+        byte[] messageBytes = message == null ? null : message.getBytes();
         PendingResult<MessageApi.SendMessageResult> result = Wearable.MessageApi.sendMessage(client,
-                node.getId(), path, message.getBytes());
+                node.getId(), path, messageBytes);
         if (callback != null) {
             result.setResultCallback(callback);
         }
