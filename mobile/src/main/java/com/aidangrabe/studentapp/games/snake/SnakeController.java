@@ -19,6 +19,7 @@ public class SnakeController {
     private Timer mTimer;
     private Snake[] mSnakes;
     private GameListener mListener;
+    private boolean mGameOver;
 
     // the dimensions of the playing area. This should be set by the view displaying the game
     private int mHeight, mWidth;
@@ -31,10 +32,10 @@ public class SnakeController {
 
     // the colors for each Snake
     private final int[] mSnakeColors = new int[] {
-            Color.BLUE,
-            Color.GREEN,
-            Color.MAGENTA,
-            Color.YELLOW
+            Color.parseColor("#009688"),
+            Color.parseColor("#6D4C41"),
+            Color.parseColor("#2196F3"),
+            Color.parseColor("#607D8B"),
     };
 
     // the game logic timer task
@@ -83,6 +84,7 @@ public class SnakeController {
         mStarted = false;
         mWidth = 0;
         mHeight = 0;
+        mGameOver = false;
 
     }
 
@@ -202,6 +204,10 @@ public class SnakeController {
      */
     public void checkGameOver() {
 
+        if (mGameOver) {
+            return;
+        }
+
         int numPlayersAlive = 0;
         Snake winningSnake = null;
 
@@ -210,6 +216,7 @@ public class SnakeController {
             // single player
             if (mSnakes.length == 1 && !snake.isAlive()) {
                 mListener.onGameOver(snake);
+                mGameOver = true;
                 return;
             }
             // multi-player
@@ -222,6 +229,7 @@ public class SnakeController {
 
         if (numPlayersAlive == 1) {
             mListener.onGameOver(winningSnake);
+            mGameOver = true;
         }
 
     }
