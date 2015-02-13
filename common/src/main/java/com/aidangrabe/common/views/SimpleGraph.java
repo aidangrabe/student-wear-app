@@ -1,12 +1,16 @@
 package com.aidangrabe.common.views;
 
+import android.animation.Animator;
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
+import android.view.animation.DecelerateInterpolator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +26,7 @@ public class SimpleGraph extends View {
     private List<Float> mValues;
     private Paint mPaint, mPointPaint, mFillPaint;
     private Path mPath;
+    private List<Animator> mAnimations;
 
     public SimpleGraph(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -70,7 +75,6 @@ public class SimpleGraph extends View {
         mPath.lineTo(mWidth, mHeight - mHeight * mValues.get(mValues.size() - 1));
 
         canvas.drawPath(mPath, mPaint);
-//        canvas.drawPath(mPath, mFillPaint);
 
         i = 0;
         for (float value : mValues) {
@@ -78,6 +82,28 @@ public class SimpleGraph extends View {
             i++;
         }
 
+    }
+
+    public void animateValues() {
+        mAnimations = new ArrayList<>();
+        for (int i = 0; i < mValues.size(); i++) {
+            final float value = mValues.get(i);
+            final int index = i;
+            ValueAnimator anim = ValueAnimator.ofFloat(.5f, value);
+            anim.setStartDelay(500 + (100 * i));
+            anim.setDuration(1500);
+            anim.setInterpolator(new DecelerateInterpolator(3f));
+            anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                @Override
+                public void onAnimationUpdate(ValueAnimator animation) {
+                    mValues.set(index, (float) animation.getAnimatedValue());
+                    invalidate();
+                }
+            });
+            mValues.set(i, .5f);
+            anim.start();
+            mAnimations.add(anim);
+        }
     }
 
     @Override

@@ -114,7 +114,8 @@ public class ModuleResultsActivity extends ActionBarActivity implements NewResul
         for (Result result : results) {
             mGraph.addValue(result.getGrade());
         }
-        mGraph.invalidate();
+
+        mGraph.animateValues();
 
     }
 
