@@ -8,7 +8,6 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 
@@ -65,10 +64,15 @@ public class SimpleGraph extends View {
         }
 
         float deltaX = mWidth / (float) mValues.size();
+        boolean isFirst = true;
         mPath.reset();
 
         int i = 0;
         for (float value : mValues) {
+            if (isFirst) {
+                mPath.moveTo(deltaX * i, mHeight - mHeight * value);
+                isFirst = false;
+            }
             mPath.lineTo(deltaX * i, mHeight - mHeight * value);
             i++;
         }
