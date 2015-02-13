@@ -33,6 +33,7 @@ public class ResultFragment extends Fragment implements DataApi.DataListener {
     private TextView mTitleText;
     private Module mModule;
     private GoogleApiClient mGoogleApiClient;
+    private boolean mModulesDisplayed;
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
@@ -44,7 +45,9 @@ public class ResultFragment extends Fragment implements DataApi.DataListener {
             mTitleText.setText(mModule.getName());
         }
 
-        getModuleResults();
+        mModulesDisplayed = false;
+
+//        getModuleResults();
 
     }
 
@@ -73,7 +76,7 @@ public class ResultFragment extends Fragment implements DataApi.DataListener {
                     for (Result result : results) {
                         mGraph.addValue(result.getGrade());
                     }
-                    mGraph.invalidate();
+                    mGraph.animateValues();
                 }
             }
         });
@@ -94,6 +97,15 @@ public class ResultFragment extends Fragment implements DataApi.DataListener {
 
     @Override
     public void onDataChanged(DataEventBuffer dataEvents) {
+
+    }
+
+    public void onSelected() {
+
+        if (!mModulesDisplayed) {
+            getModuleResults();
+            mModulesDisplayed = true;
+        }
 
     }
 

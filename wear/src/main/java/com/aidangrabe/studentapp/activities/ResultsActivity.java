@@ -37,6 +37,7 @@ public class ResultsActivity extends Activity implements GoogleApiClient.Connect
     private List<Module> mModules;
     private GoogleApiClient mGoogleApiClient;
     private List<Node> mNodes;
+    private ResultFragment mFragments[];
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +51,22 @@ public class ResultsActivity extends Activity implements GoogleApiClient.Connect
         mAdapter = new Adapter(getFragmentManager());
 
         mGridPager = (GridViewPager) findViewById(R.id.grid_pager);
+        mGridPager.setOnPageChangeListener(new GridViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int i, int i2, float v, float v2, int i3, int i4) {
+
+            }
+
+            @Override
+            public void onPageSelected(int row, int col) {
+                mFragments[row].onSelected();
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int i) {
+
+            }
+        });
         mGridPager.setAdapter(mAdapter);
 
     }
@@ -87,7 +104,11 @@ public class ResultsActivity extends Activity implements GoogleApiClient.Connect
                 for (DataMap dataMap : dataMaps) {
                     if (dataMap.containsKey("modules")) {
                         mModules = WearUtils.listFromDataMap("modules", dataMap, Module.CREATOR);
+                        mFragments = new ResultFragment[mModules.size()];
                         mAdapter.notifyDataSetChanged();
+                        if (mFragments.length > 0) {
+                            mFragments[0].onSelected();
+                        }
                     }
                 }
             }
@@ -149,9 +170,12 @@ public class ResultsActivity extends Activity implements GoogleApiClient.Connect
             Bundle args = new Bundle();
             args.putParcelable(ResultFragment.ARG_MODULE, mModules.get(row));
             fragment.setArguments(args);
+            mFragments[row] = fragment;
 
             return fragment;
         }
+
+
     }
 
 }
