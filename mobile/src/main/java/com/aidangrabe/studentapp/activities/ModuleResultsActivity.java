@@ -179,6 +179,9 @@ public class ModuleResultsActivity extends ActionBarActivity implements NewResul
 
         // delete the long clicked result
         final Result result = (Result) mListView.getItemAtPosition(position);
+        if (result == null) {
+            return false;
+        }
         mConfirmationDialog = new AlertDialog.Builder(this).setMessage("Are you sure you want to delete this result?")
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     @Override
