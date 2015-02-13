@@ -34,7 +34,8 @@
 
         <!-- games -->
         <activity android:name=".activities.games.GameMenuActivity" />
-        <activity android:name=".activities.games.SnakeActivity" />
+        <activity android:name=".activities.games.SnakeActivity" android:screenOrientation="landscape"
+            android:configChanges="orientation|keyboardHidden" />
 
         <!-- services -->
         <service android:name=".wearable.DataLayerListenerService"

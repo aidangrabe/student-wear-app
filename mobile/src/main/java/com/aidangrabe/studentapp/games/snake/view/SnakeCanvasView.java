@@ -9,10 +9,8 @@ import android.graphics.Rect;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.AttributeSet;
-import android.view.MotionEvent;
 import android.view.View;
 
-import com.aidangrabe.studentapp.games.snake.Food;
 import com.aidangrabe.studentapp.games.snake.Snake;
 import com.aidangrabe.studentapp.games.snake.SnakeController;
 
@@ -79,10 +77,13 @@ public class SnakeCanvasView extends View {
         }
         // show waiting for players message
         else {
+            mTextPaint.setTextSize(32);
             canvas.drawText("Waiting for players...", mWidth / 2, mHeight / 2, mTextPaint);
+            mTextPaint.setTextSize(16);
             canvas.drawText(String.format("Num Players: %d", mNumPlayers), mWidth / 2, mHeight / 2 + 30, mTextPaint);
             if (mNumPlayers > 0) {
-                canvas.drawText("TOUCH TO START", mWidth / 2, mHeight / 2 + 70, mTextPaint);
+                mTextPaint.setTextSize(32);
+                canvas.drawText("TOUCH TO START", mWidth / 2, mHeight / 2 + 100, mTextPaint);
             }
         }
 
