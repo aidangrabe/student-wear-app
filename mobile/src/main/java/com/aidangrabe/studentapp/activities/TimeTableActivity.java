@@ -47,13 +47,6 @@ public class TimeTableActivity extends ActionBarActivity {
 
         createIndex();
 
-        Collections.sort(mDaysToShow, new Comparator<Integer>() {
-            @Override
-            public int compare(Integer lhs, Integer rhs) {
-                return lhs - rhs;
-            }
-        });
-
         mViewPager = (ViewPager) findViewById(R.id.view_pager);
         mPagerAdapter = new TimeTablePagerAdapter(getSupportFragmentManager());
         mViewPager.setAdapter(mPagerAdapter);
@@ -159,6 +152,14 @@ public class TimeTableActivity extends ActionBarActivity {
     private void reloadTimetable() {
         getLectures();
         createIndex();
+
+        Collections.sort(mDaysToShow, new Comparator<Integer>() {
+            @Override
+            public int compare(Integer lhs, Integer rhs) {
+                return lhs - rhs;
+            }
+        });
+
         mPagerAdapter.notifyDataSetChanged();
     }
 
