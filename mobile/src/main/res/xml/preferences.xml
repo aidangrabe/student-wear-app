@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+        android:title="Notifications"
+        android:key="pref_notifs">
+
+        <CheckBoxPreference
+            android:key="pref_notif_news"
+            android:title="News Notifications"
+            android:summary="Show a notification when a new news article is posted"
+            android:defaultValue="true" />
+        
+        <EditTextPreference
+            android:key="pref_news_poll"
+            android:title="News Check Frequency"
+            android:summary="Poll every x hours for news articles"
+            android:defaultValue="2"
+            android:dialogTitle="Poll every x hours"/>
+
+        <CheckBoxPreference
+            android:key="pref_notif_timetable"
+            android:title="Timetable Notifications"
+            android:summary="Show a notification before a lecture is about to start"
+            android:defaultValue="true" />
+
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

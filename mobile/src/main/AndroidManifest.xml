@@ -32,6 +32,9 @@
         <activity android:name=".activities.NewsActivity" />
         <activity android:name=".activities.NewsArticleActivity" />
 
+        <!-- settings -->
+        <activity android:name=".activities.SettingsActivity" />
+
         <!-- games -->
         <activity android:name=".activities.games.GameMenuActivity" />
         <activity android:name=".activities.games.SnakeActivity" android:screenOrientation="landscape"

@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.aidangrabe.studentapp.activities.SettingsActivity;
 import com.aidangrabe.studentapp.fragments.MainMenuFragment;
 import com.aidangrabe.studentapp.services.NewsDownloaderService;
 import com.aidangrabe.studentapp.services.TimeTableService;
@@ -106,6 +107,8 @@ public class MainActivity extends ActionBarActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            Intent intent = new Intent(this, SettingsActivity.class);
+            startActivity(intent);
             return true;
         }
 
