@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import com.aidangrabe.common.SharedConstants;
 import com.aidangrabe.common.model.Module;
+import com.aidangrabe.common.util.MyAnimations;
 import com.aidangrabe.common.util.WearUtils;
 import com.aidangrabe.studentapp.R;
 import com.aidangrabe.studentapp.fragments.base.MenuFragment;
@@ -104,6 +105,7 @@ public class ModulesFragment extends MenuFragment implements NewModuleDialogFrag
                 onFabNewModuleClicked();
             }
         });
+        MyAnimations.animateFab(getActivity(), fab);
 
         fab.attachToListView(getListView());
 

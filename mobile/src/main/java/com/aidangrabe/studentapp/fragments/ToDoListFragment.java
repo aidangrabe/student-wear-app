@@ -23,6 +23,7 @@ import com.aidangrabe.common.SharedConstants;
 import com.aidangrabe.common.adapters.ToDoListAdapter;
 import com.aidangrabe.common.model.todolist.ToDoItem;
 import com.aidangrabe.common.model.todolist.ToDoItemManager;
+import com.aidangrabe.common.util.MyAnimations;
 import com.aidangrabe.common.wearable.WearableFragment;
 import com.aidangrabe.studentapp.R;
 import com.google.android.gms.wearable.DataEvent;
@@ -86,6 +87,7 @@ public class ToDoListFragment extends WearableFragment implements AdapterView.On
 
         FloatingActionButton fab = (FloatingActionButton) v.findViewById(R.id.fab);
         fab.setOnClickListener(mNewToDoItemClickListener);
+        MyAnimations.animateFab(getActivity(), fab);
 
         fab.attachToListView(mListView);
 

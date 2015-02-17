@@ -16,6 +16,7 @@ import android.widget.Toast;
 import com.aidangrabe.common.SharedConstants;
 import com.aidangrabe.common.model.Module;
 import com.aidangrabe.common.model.Result;
+import com.aidangrabe.common.util.MyAnimations;
 import com.aidangrabe.common.util.WearUtils;
 import com.aidangrabe.common.views.SimpleGraph;
 import com.aidangrabe.studentapp.R;
@@ -135,6 +136,7 @@ public class ModuleResultsActivity extends ActionBarActivity implements NewResul
                 mNewResultDialog.show(getFragmentManager(), "fragment");
             }
         });
+        MyAnimations.animateFab(this, fab);
 
     }
 

@@ -14,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.aidangrabe.common.util.MyAnimations;
 import com.aidangrabe.studentapp.R;
 import com.aidangrabe.studentapp.fragments.TimeTableFragment;
 import com.aidangrabe.studentapp.models.Lecture;
@@ -106,6 +107,7 @@ public class TimeTableActivity extends ActionBarActivity {
         View view = LayoutInflater.from(TimeTableActivity.this)
                 .inflate(R.layout.fab_new_layout, viewGroup, true);
         FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab);
+        MyAnimations.animateFab(this, fab);
 
         // get the day the user is currently viewing
 
