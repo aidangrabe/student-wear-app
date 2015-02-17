@@ -1,9 +1,12 @@
 package com.aidangrabe.studentapp.activities;
 
+import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 
 import com.aidangrabe.common.activities.FragContainerActivity;
+import com.aidangrabe.studentapp.R;
 import com.aidangrabe.studentapp.fragments.NewsArticleFragment;
 
 /**
@@ -13,6 +16,7 @@ import com.aidangrabe.studentapp.fragments.NewsArticleFragment;
 public class NewsArticleActivity extends FragContainerActivity {
 
     public static final String EXTRA_ARTICLE_URL = "article_url";
+    public static final String EXTRA_COLOR = "color";
 
     private String mUrl;
     private NewsArticleFragment mFrag;
@@ -30,6 +34,12 @@ public class NewsArticleActivity extends FragContainerActivity {
         mUrl = inState == null
                 ? extras.getString(EXTRA_ARTICLE_URL)
                 : inState.getString(EXTRA_ARTICLE_URL);
+
+        int color = extras.getInt(EXTRA_COLOR, getResources().getColor(R.color.primary));
+        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(color));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().setStatusBarColor(color);
+        }
 
     }
 

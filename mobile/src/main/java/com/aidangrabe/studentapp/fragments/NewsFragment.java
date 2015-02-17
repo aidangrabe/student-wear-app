@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.graphics.Palette;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -110,11 +111,24 @@ public class NewsFragment extends Fragment implements View.OnClickListener {
     public void onClick(View v) {
 
         int position = mRecyclerView.getChildPosition(v);
-        Article article = mArticles.get(position);
+        final Article article = mArticles.get(position);
 
-        Intent intent = new Intent(getActivity(), NewsArticleActivity.class);
-        intent.putExtra(NewsArticleActivity.EXTRA_ARTICLE_URL, article.getLink());
-        startActivity(intent);
+        Palette.generateAsync(article.getImage(),
+                new Palette.PaletteAsyncListener() {
+                    @Override
+                    public void onGenerated(Palette palette) {
+                        Palette.Swatch vibrant =
+                                palette.getVibrantSwatch();
+                        Intent intent = new Intent(getActivity(), NewsArticleActivity.class);
+                        if (vibrant != null) {
+                            intent.putExtra(NewsArticleActivity.EXTRA_COLOR, vibrant.getRgb());
+                        }
+                        intent.putExtra(NewsArticleActivity.EXTRA_ARTICLE_URL, article.getLink());
+                        startActivity(intent);
+                    }
+                });
+
+
 
     }
 
