@@ -113,24 +113,32 @@ public class NewsFragment extends Fragment implements View.OnClickListener {
         int position = mRecyclerView.getChildPosition(v);
         final Article article = mArticles.get(position);
 
+        if (article.getImage() == null) {
+            startNewsArticleActivity(article, null);
+            return;
+        }
+
+        // if we have an image, get the color palette and start the news activity then
         Palette.generateAsync(article.getImage(),
                 new Palette.PaletteAsyncListener() {
                     @Override
                     public void onGenerated(Palette palette) {
                         Palette.Swatch vibrant =
                                 palette.getVibrantSwatch();
-                        Intent intent = new Intent(getActivity(), NewsArticleActivity.class);
-                        if (vibrant != null) {
-                            intent.putExtra(NewsArticleActivity.EXTRA_COLOR, vibrant.getRgb());
-                        }
-                        intent.putExtra(NewsArticleActivity.EXTRA_ARTICLE_URL, article.getLink());
-                        intent.putExtra(NewsArticleActivity.EXTRA_ARTICLE_TITLE, article.getTitle());
-                        startActivity(intent);
+                        startNewsArticleActivity(article, vibrant.getRgb());
                     }
                 });
 
+    }
 
-
+    private void startNewsArticleActivity(Article article, Integer color) {
+        Intent intent = new Intent(getActivity(), NewsArticleActivity.class);
+        if (color != null) {
+            intent.putExtra(NewsArticleActivity.EXTRA_COLOR, color);
+        }
+        intent.putExtra(NewsArticleActivity.EXTRA_ARTICLE_URL, article.getLink());
+        intent.putExtra(NewsArticleActivity.EXTRA_ARTICLE_TITLE, article.getTitle());
+        startActivity(intent);
     }
 
     @Override
