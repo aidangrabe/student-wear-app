@@ -124,6 +124,7 @@ public class NewsFragment extends Fragment implements View.OnClickListener {
                             intent.putExtra(NewsArticleActivity.EXTRA_COLOR, vibrant.getRgb());
                         }
                         intent.putExtra(NewsArticleActivity.EXTRA_ARTICLE_URL, article.getLink());
+                        intent.putExtra(NewsArticleActivity.EXTRA_ARTICLE_TITLE, article.getTitle());
                         startActivity(intent);
                     }
                 });
