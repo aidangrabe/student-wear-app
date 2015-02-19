@@ -21,6 +21,7 @@
         <string name="menu_news_description">Keep up to date with the latest stories from your college</string>
 
     <!-- Games -->
+    <string name="games_title">Games</string>
     <string name="game_menu_snake">Snake</string>
         <string name="game_menu_snake_description">Multi-player Snake game over Bluetooth</string>
 

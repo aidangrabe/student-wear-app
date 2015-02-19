@@ -21,7 +21,7 @@ public class GameMenuActivity extends ActionBarActivity {
 
         setContentView(R.layout.activity_main);
 
-        setTitle(getResources().getString(R.string.modules_title));
+        setTitle(getResources().getString(R.string.games_title));
 
         // try find the fragment first
         Fragment frag = getSupportFragmentManager().findFragmentByTag(FRAG_TAG);
