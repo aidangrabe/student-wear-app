@@ -1,7 +1,6 @@
 package com.aidangrabe.common.games.minesweeper;
 
 import android.graphics.Point;
-import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -69,7 +68,7 @@ public class MineSweeperController {
         inActiveTiles.add(current);
         affectedTiles.add(current);
         for (Point neighbour : board.getNeighbours(x, y)) {
-            if (!board.isBomb(neighbour.x, neighbour.y)) {
+            if (!board.isBomb(neighbour.x, neighbour.y) && board.getBombProximity(current.x, current.y) < 1) {
                 mineNeighbours(neighbour.x, neighbour.y);
             }
         }

@@ -15,7 +15,7 @@ public class MineSweeperActivity extends Activity implements MineSweeperButtonVi
     // the size of the board
     private static final int BOARD_COLS = 5;
     private static final int BOARD_ROWS = 5;
-    
+
     private static final int NUM_BOMBS = 3;
 
     private MineSweeperController game;
@@ -53,6 +53,11 @@ public class MineSweeperActivity extends Activity implements MineSweeperButtonVi
 
     @Override
     public void onBombProximityUpdated(int x, int y, int touchingBombs) {
-        mGameView.getButton(x, y).setText(Integer.toString(touchingBombs));
+        if (touchingBombs == 0) {
+            // no need to show 0 if no bombs nearby
+            mGameView.getButton(x, y).setText("");
+        } else {
+            mGameView.getButton(x, y).setText(Integer.toString(touchingBombs));
+        }
     }
 }
