@@ -12,6 +12,12 @@ import com.aidangrabe.common.games.minesweeper.MineSweeperController;
  */
 public class MineSweeperActivity extends Activity implements MineSweeperButtonView.GameClickListener, MineSweeperController.MineSweeperListener {
 
+    // the size of the board
+    private static final int BOARD_COLS = 5;
+    private static final int BOARD_ROWS = 5;
+    
+    private static final int NUM_BOMBS = 3;
+
     private MineSweeperController game;
     private MineSweeperButtonView mGameView;
 
@@ -19,11 +25,11 @@ public class MineSweeperActivity extends Activity implements MineSweeperButtonVi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        game = new MineSweeperController(4, 4, 3);
+        game = new MineSweeperController(BOARD_COLS, BOARD_ROWS, NUM_BOMBS);
         game.setListener(this);
 
         mGameView = new MineSweeperButtonView(this);
-        mGameView.setGameSize(4, 4);
+        mGameView.setGameSize(BOARD_COLS, BOARD_ROWS);
         mGameView.setGameClickListener(this);
 
         setContentView(mGameView);
