@@ -65,6 +65,7 @@ public class WearUtils {
         new AsyncTask<Void, Void, List<Node>>() {
             @Override
             protected List<Node> doInBackground(Void... params) {
+                ensureConnected(client);
                 NodeApi.GetConnectedNodesResult result = Wearable.NodeApi.getConnectedNodes(client).await();
                 return result.getNodes();
             }
@@ -95,13 +96,40 @@ public class WearUtils {
         sendMessage(client, node, path, message, null);
     }
 
-    public static void sendMessage(GoogleApiClient client, Node node, String path, String message,
-                                   ResultCallback<MessageApi.SendMessageResult> callback) {
-        byte[] messageBytes = message == null ? null : message.getBytes();
-        PendingResult<MessageApi.SendMessageResult> result = Wearable.MessageApi.sendMessage(client,
-                node.getId(), path, messageBytes);
-        if (callback != null) {
-            result.setResultCallback(callback);
+    /**
+     * Send a message using Android Wear's MessageApi to a given Node using a given path
+     * @param client the GoogleApiClient to use to send the message
+     * @param node the destination Node for the message
+     * @param path the path component of the URI the message will use
+     * @param message the message to send
+     * @param callback the method that will be called when the message has been sent/failed
+     */
+    public static void sendMessage(final GoogleApiClient client, final Node node, final String path,
+                                   final String message,
+                                   final ResultCallback<MessageApi.SendMessageResult> callback) {
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... params) {
+                ensureConnected(client);
+                byte[] messageBytes = message == null ? null : message.getBytes();
+                PendingResult<MessageApi.SendMessageResult> result = Wearable.MessageApi.sendMessage(client,
+                        node.getId(), path, messageBytes);
+                if (callback != null) {
+                    result.setResultCallback(callback);
+                }
+                return null;
+            }
+        }.execute();
+    }
+
+    /**
+     * Ensures that the given client is connected
+     * NOTE: this method must not be run on the UI thread
+     * @param client the GoogleApiClient that should be connected
+     */
+    private static void ensureConnected(GoogleApiClient client) {
+        if (!client.isConnected()) {
+            client.blockingConnect();
         }
     }
 
@@ -111,10 +139,7 @@ public class WearUtils {
 
             @Override
             protected Void doInBackground(Void... params) {
-
-                if (!client.isConnected()) {
-                    client.blockingConnect();
-                }
+                ensureConnected(client);
 
                 PutDataMapRequest putDataMapRequest = PutDataMapRequest.create(path);
                 putDataMapRequest.getDataMap().putAll(dataMap);
@@ -136,6 +161,7 @@ public class WearUtils {
 
             @Override
             protected List<DataMap> doInBackground(Void... params) {
+                ensureConnected(client);
 
                 List<DataMap> dataMaps = new ArrayList<>();
                 DataItemBuffer result =  Wearable.DataApi.getDataItems(client).await();
