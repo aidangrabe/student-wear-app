@@ -25,16 +25,27 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.melnykov.fab.FloatingActionButton;
 
 import java.text.SimpleDateFormat;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
 /**
  * Created by aidan on 03/02/15.
- *
+ * This Activity displays the results for a given module
  */
 public class ModuleResultsActivity extends ActionBarActivity implements NewResultDialogFragment.OnSaveListener, AdapterView.OnItemLongClickListener {
 
+    // argument/extras keys
     public static final String ARG_MODULE_ID = "module_id";
+
+    // multipliers for sorting
+    private static final int ORDER_ASC = 1;
+    private static final int ORDER_DESC = -1;
+
+    // order for the results to be listed
+    // asc = oldest first, desc = newest first
+    private static final int RESULT_ORDER = ORDER_ASC;
 
     private ArrayAdapter<Result> mAdapter;
     private Module mModule;
@@ -44,17 +55,21 @@ public class ModuleResultsActivity extends ActionBarActivity implements NewResul
     private SimpleDateFormat mDateFormat;
     private AlertDialog mConfirmationDialog;
 
+    // for sorting the results
+    private final Comparator<Result> mResultComparator = new Comparator<Result>() {
+        @Override
+        public int compare(Result lhs, Result rhs) {
+            return (int) (rhs.getCreateTime() - lhs.getCreateTime() * RESULT_ORDER);
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_module_results);
 
-        Bundle args = getIntent().getExtras();
-        if (args != null) {
-            long moduleId = args.getLong(ARG_MODULE_ID, -1);
-            mModule = Module.findById(Module.class, moduleId);
-        }
+        parseArgs();
 
         // error out if no Module was found
         if (mModule == null) {
@@ -66,6 +81,7 @@ public class ModuleResultsActivity extends ActionBarActivity implements NewResul
         mDateFormat = new SimpleDateFormat("MMM d");
         final Date date = new Date();
 
+        // create the list's adapter
         mAdapter = new ArrayAdapter<Result>(this, android.R.layout.simple_list_item_1) {
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
@@ -75,9 +91,10 @@ public class ModuleResultsActivity extends ActionBarActivity implements NewResul
 
                 Result result = getItem(position);
                 date.setTime(result.getCreateTime());
-                ((TextView) convertView.findViewById(R.id.date_text)).setText(mDateFormat.format(date));
-                ((TextView) convertView.findViewById(R.id.grade_text)).setText(String.format("%.0f%%", result.getGrade() * 100));
-
+                ((TextView) convertView.findViewById(R.id.date_text)).setText(
+                        mDateFormat.format(date));
+                ((TextView) convertView.findViewById(R.id.grade_text)).setText(
+                        String.format("%.0f%%", result.getGrade() * 100));
 
                 return convertView;
 
@@ -88,6 +105,17 @@ public class ModuleResultsActivity extends ActionBarActivity implements NewResul
         getResults();
 
         addFabToView((ViewGroup) getWindow().getDecorView().findViewById(android.R.id.content));
+
+    }
+
+    // parse the arguments for this Activity
+    private void parseArgs() {
+
+        Bundle args = getIntent().getExtras();
+        if (args != null) {
+            long moduleId = args.getLong(ARG_MODULE_ID, -1);
+            mModule = Module.findById(Module.class, moduleId);
+        }
 
     }
 
@@ -106,6 +134,8 @@ public class ModuleResultsActivity extends ActionBarActivity implements NewResul
     private void getResults() {
 
         List<Result> results = mModule.listAllResults();
+
+        Collections.sort(results, mResultComparator);
 
         mAdapter.clear();
         mAdapter.addAll(results);
@@ -144,6 +174,7 @@ public class ModuleResultsActivity extends ActionBarActivity implements NewResul
     protected void onDestroy() {
         super.onDestroy();
 
+        // make sure the dialogs are properly dismissed to prevent leaking views
         if (mNewResultDialog != null) {
             mNewResultDialog.dismiss();
         }
