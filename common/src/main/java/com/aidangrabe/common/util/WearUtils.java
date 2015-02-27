@@ -60,6 +60,11 @@ public class WearUtils {
         return client;
     }
 
+    /**
+     * Get all nodes connected to a given GoogleApiClient, excluding the local node
+     * @param client the GoogleApiClient to get the nodes of
+     * @param nodeListener the callback for when the nodes are available
+     */
     public static void getNodes(final GoogleApiClient client, final NodeListener nodeListener) {
 
         new AsyncTask<Void, Void, List<Node>>() {
