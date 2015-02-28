@@ -21,6 +21,34 @@ public class LevelMenuActivity extends MenuActivity {
             + "OOOOO"
             + "XOOOX";
 
+    private static final String LEVEL_2 =
+              "XOXOX"
+            + "OOOOO"
+            + "XOOOX"
+            + "OOOOO"
+            + "XOXOX";
+
+    private static final String LEVEL_3 =
+              "OXOXO"
+            + "OOOOO"
+            + "OXXXO"
+            + "OOOOO"
+            + "OXOXO";
+
+    private static final String LEVEL_4 =
+              "OOXOO"
+            + "OXOXO"
+            + "OOXOO"
+            + "XOOOX"
+            + "OOXOO";
+
+    private static final String LEVEL_5 =
+              "XXOXX"
+            + "OOOOO"
+            + "OXOXO"
+            + "OXXXO"
+            + "XXOXX";
+
     @Override
     public List<MenuItem> onCreateMenu() {
 
@@ -39,7 +67,17 @@ public class LevelMenuActivity extends MenuActivity {
     @Override
     protected void onIntentCreated(MenuItem item, Intent intent) {
 
-        intent.putExtra(LightsOutActivity.ARG_LEVEL, LEVEL_1);
+        String levelCode = LEVEL_1;
+        if (item.getTitle().equals("Level 2")) {
+            levelCode = LEVEL_2;
+        } else if (item.getTitle().equals("Level 3")) {
+            levelCode = LEVEL_3;
+        } else if (item.getTitle().equals("Level 4")) {
+            levelCode = LEVEL_4;
+        } else if (item.getTitle().equals("Level 5")) {
+            levelCode = LEVEL_5;
+        }
+        intent.putExtra(LightsOutActivity.ARG_LEVEL, levelCode);
 
     }
 }
