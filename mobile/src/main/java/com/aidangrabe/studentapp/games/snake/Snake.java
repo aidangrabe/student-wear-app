@@ -33,7 +33,7 @@ public class Snake {
     private int mBodySize;
     private ArrayList<BodyPart> mBodyParts;
 
-    private Dir mCurrentDir;
+    private Dir mCurrentDir, mNextDir;
 
     private int mColor;
 
@@ -69,6 +69,7 @@ public class Snake {
         mBodyParts = new ArrayList<>();
         mPartsToRemove = new ArrayList<>();
         mCurrentDir = Dir.RIGHT;
+        mNextDir = Dir.RIGHT;
         mColor = 0;
         alive = true;
 
@@ -115,7 +116,10 @@ public class Snake {
      * Move the Snake in it's current direction
      */
     public void move() {
+
+        mCurrentDir = mNextDir;
         move(mCurrentDir);
+
     }
 
     /**
@@ -209,7 +213,7 @@ public class Snake {
         // don't allow the Snake to move in the opposite direction
         Dir wrongDirection = OPPOSITE_DIRECTIONS.get(mCurrentDir);
         if (newDirection != wrongDirection) {
-            mCurrentDir = newDirection;
+            mNextDir = newDirection;
         }
 
     }
