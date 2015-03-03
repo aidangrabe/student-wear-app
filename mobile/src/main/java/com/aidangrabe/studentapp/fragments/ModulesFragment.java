@@ -131,17 +131,6 @@ public class ModulesFragment extends MenuFragment implements NewModuleDialogFrag
 
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-
-        // make sure we dismiss the Dialogs
-        if (mNewModuleDialog != null) {
-            mNewModuleDialog.dismiss();
-        }
-
-    }
-
     private void getAllModules() {
 
         mModules.clear();
