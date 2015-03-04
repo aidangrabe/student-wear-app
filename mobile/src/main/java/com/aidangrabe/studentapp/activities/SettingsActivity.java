@@ -2,16 +2,16 @@ package com.aidangrabe.studentapp.activities;
 
 import android.os.Bundle;
 import android.preference.PreferenceFragment;
-import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 
+import com.aidangrabe.common.activities.BaseMobileActivity;
 import com.aidangrabe.studentapp.R;
 
 /**
  * Created by aidan on 15/02/15.
  * This Activity displays the apps settings
  */
-public class SettingsActivity extends ActionBarActivity {
+public class SettingsActivity extends BaseMobileActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

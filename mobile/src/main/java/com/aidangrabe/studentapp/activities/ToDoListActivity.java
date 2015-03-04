@@ -4,12 +4,12 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.aidangrabe.common.SharedConstants;
+import com.aidangrabe.common.activities.BaseMobileActivity;
 import com.aidangrabe.common.model.todolist.ToDoItem;
 import com.aidangrabe.common.model.todolist.ToDoItemManager;
 import com.aidangrabe.studentapp.R;
@@ -24,7 +24,7 @@ import static android.util.Log.d;
  * Created by aidan on 09/01/15.
  * Activity to show current ToDoList items
  */
-public class ToDoListActivity extends ActionBarActivity {
+public class ToDoListActivity extends BaseMobileActivity {
 
     private static final String TAG_FRAGMENT = "ToDoListFragment";
     private ToDoListFragment mFragment;
@@ -64,8 +64,9 @@ public class ToDoListActivity extends ActionBarActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
-        if (item.getTitle().equals("Remove complete")) {
+        if (item.getTitle() != null && item.getTitle().equals("Remove complete")) {
             removeComplete();
+            return true;
         }
 
         return super.onOptionsItemSelected(item);

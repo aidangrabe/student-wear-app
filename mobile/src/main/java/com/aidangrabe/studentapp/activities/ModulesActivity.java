@@ -2,8 +2,8 @@ package com.aidangrabe.studentapp.activities;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.ActionBarActivity;
 
+import com.aidangrabe.common.activities.BaseMobileActivity;
 import com.aidangrabe.studentapp.R;
 import com.aidangrabe.studentapp.fragments.ModulesFragment;
 
@@ -11,7 +11,7 @@ import com.aidangrabe.studentapp.fragments.ModulesFragment;
  * Created by aidan on 31/01/15.
  *
  */
-public class ModulesActivity extends ActionBarActivity {
+public class ModulesActivity extends BaseMobileActivity {
 
     public static final String FRAG_TAG = "modules-fragment";
 

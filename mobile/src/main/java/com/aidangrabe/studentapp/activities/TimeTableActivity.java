@@ -8,12 +8,12 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.PagerTabStrip;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.aidangrabe.common.activities.BaseMobileActivity;
 import com.aidangrabe.common.util.MyAnimations;
 import com.aidangrabe.studentapp.R;
 import com.aidangrabe.studentapp.fragments.TimeTableFragment;
@@ -30,7 +30,7 @@ import java.util.List;
  * Created by aidan on 08/01/15.
  * Activity that shows the user's time table
  */
-public class TimeTableActivity extends ActionBarActivity {
+public class TimeTableActivity extends BaseMobileActivity {
 
     private FragmentPagerAdapter mPagerAdapter;
     private ViewPager mViewPager;

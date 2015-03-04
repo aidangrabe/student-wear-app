@@ -2,8 +2,8 @@ package com.aidangrabe.studentapp.activities;
 
 import android.app.Fragment;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
 
+import com.aidangrabe.common.activities.BaseMobileActivity;
 import com.aidangrabe.studentapp.R;
 import com.aidangrabe.studentapp.fragments.NewClassFragment;
 
@@ -11,7 +11,7 @@ import com.aidangrabe.studentapp.fragments.NewClassFragment;
  * Created by aidan on 07/01/15.
  *
  */
-public class NewClassActivity extends ActionBarActivity {
+public class NewClassActivity extends BaseMobileActivity {
 
     public static final String ARG_DEFAULT_DAY = "default-day";
 

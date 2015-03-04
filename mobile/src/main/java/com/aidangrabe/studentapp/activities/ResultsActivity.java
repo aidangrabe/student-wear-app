@@ -2,7 +2,6 @@ package com.aidangrabe.studentapp.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,16 +10,16 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.aidangrabe.common.activities.BaseMobileActivity;
 import com.aidangrabe.common.model.Module;
 import com.aidangrabe.common.views.ProgressBar;
 import com.aidangrabe.studentapp.R;
-import com.melnykov.fab.FloatingActionButton;
 
 /**
  * Created by aidan on 02/02/15.
  *
  */
-public class ResultsActivity extends ActionBarActivity implements AdapterView.OnItemClickListener {
+public class ResultsActivity extends BaseMobileActivity implements AdapterView.OnItemClickListener {
 
     private ArrayAdapter<Module> mAdapter;
     private ListView mListView;

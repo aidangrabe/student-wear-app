@@ -2,7 +2,6 @@ package com.aidangrabe.common.activities;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.ActionBarActivity;
 
 import com.aidangrabe.common.R;
 
@@ -10,7 +9,7 @@ import com.aidangrabe.common.R;
  * Created by aidan on 05/02/15.
  * This is a simple Activity that contains one Fragment
  */
-public abstract class FragContainerActivity extends ActionBarActivity {
+public abstract class FragContainerActivity extends BaseMobileActivity {
 
     public static final String FRAG_TAG = "main-fragment";
     private Fragment mFragment;

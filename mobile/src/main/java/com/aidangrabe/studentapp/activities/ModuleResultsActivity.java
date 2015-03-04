@@ -3,7 +3,6 @@ package com.aidangrabe.studentapp.activities;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +13,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.aidangrabe.common.SharedConstants;
+import com.aidangrabe.common.activities.BaseMobileActivity;
 import com.aidangrabe.common.model.Module;
 import com.aidangrabe.common.model.Result;
 import com.aidangrabe.common.util.MyAnimations;
@@ -34,7 +34,7 @@ import java.util.List;
  * Created by aidan on 03/02/15.
  * This Activity displays the results for a given module
  */
-public class ModuleResultsActivity extends ActionBarActivity implements NewResultDialogFragment.OnSaveListener, AdapterView.OnItemLongClickListener {
+public class ModuleResultsActivity extends BaseMobileActivity implements NewResultDialogFragment.OnSaveListener, AdapterView.OnItemLongClickListener {
 
     // argument/extras keys
     public static final String ARG_MODULE_ID = "module_id";
