@@ -88,6 +88,9 @@ public class NewsFragment extends Fragment implements View.OnClickListener {
         mRecyclerView.setAdapter(mAdapter);
 
         setupLoadingView();
+        if (savedInstanceState != null) {
+            setLoading(false);
+        }
 
         return view;
 
