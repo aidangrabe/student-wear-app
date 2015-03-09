@@ -23,6 +23,7 @@ import com.aidangrabe.common.news.ArticleFetcher;
 import com.aidangrabe.common.news.UccArticleFetcher;
 import com.aidangrabe.common.util.ColorUtil;
 import com.aidangrabe.common.util.MyVolley;
+import com.aidangrabe.common.util.TimeUtil;
 import com.aidangrabe.studentapp.R;
 import com.aidangrabe.studentapp.activities.NewsArticleActivity;
 import com.android.volley.Response;
@@ -168,10 +169,11 @@ public class NewsFragment extends Fragment implements View.OnClickListener {
 
             Article article = mArticles.get(position);
 
-            mDate.setTime(article.getPublishTime());
+//            mDate.setTime(article.getPublishTime());
+            String deltaTime = TimeUtil.getDeltaTime(mDate, new Date(article.getPublishTime()));
 
             holder.titleTextView.setText(article.getTitle());
-            holder.summaryTextView.setText(mDateFormat.format(mDate));
+            holder.summaryTextView.setText(deltaTime);
 
             // only animate if we're scrolling down
             if (position > mLastLoadedPosition) {
