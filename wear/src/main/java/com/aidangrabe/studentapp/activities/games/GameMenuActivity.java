@@ -3,7 +3,7 @@ package com.aidangrabe.studentapp.activities.games;
 import com.aidangrabe.studentapp.R;
 import com.aidangrabe.studentapp.activities.MenuActivity;
 import com.aidangrabe.studentapp.activities.games.lightsout.LevelMenuActivity;
-import com.aidangrabe.studentapp.activities.games.lightsout.LightsOutActivity;
+import com.aidangrabe.studentapp.activities.games.minesweeper.MineSweeperActivity;
 
 import java.util.ArrayList;
 import java.util.List;
