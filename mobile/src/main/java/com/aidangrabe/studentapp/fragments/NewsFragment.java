@@ -21,6 +21,7 @@ import android.widget.TextView;
 import com.aidangrabe.common.model.Article;
 import com.aidangrabe.common.news.ArticleFetcher;
 import com.aidangrabe.common.news.UccArticleFetcher;
+import com.aidangrabe.common.util.ColorUtil;
 import com.aidangrabe.common.util.MyVolley;
 import com.aidangrabe.studentapp.R;
 import com.aidangrabe.studentapp.activities.NewsArticleActivity;
@@ -116,28 +117,25 @@ public class NewsFragment extends Fragment implements View.OnClickListener {
         int position = mRecyclerView.getChildPosition(v);
         final Article article = mArticles.get(position);
 
-        if (article.getImage() == null) {
-            startNewsArticleActivity(article, null);
-            return;
-        }
+        //set the default colours for the new activity
+        int actionBarColor = getResources().getColor(R.color.primary);
+        int statusBarColor = getResources().getColor(R.color.primary_dark);
 
-        // if we have an image, get the color palette and start the news activity then
-        Palette.generateAsync(article.getImage(),
-                new Palette.PaletteAsyncListener() {
-                    @Override
-                    public void onGenerated(Palette palette) {
-                        Palette.Swatch vibrant =
-                                palette.getVibrantSwatch();
-                        startNewsArticleActivity(article, vibrant.getRgb());
-                    }
-                });
+        if (article.getImage() != null) {
+            // if we have an image, get the color palette and start the news activity then
+            Palette palette = Palette.generate(article.getImage());
+            actionBarColor = palette.getLightMutedColor(actionBarColor);
+            statusBarColor = ColorUtil.darken(actionBarColor, .2f);
+        }
+        startNewsArticleActivity(article, actionBarColor, statusBarColor);
 
     }
 
-    private void startNewsArticleActivity(Article article, Integer color) {
+    private void startNewsArticleActivity(Article article, Integer color, Integer statusBarColor) {
         Intent intent = new Intent(getActivity(), NewsArticleActivity.class);
         if (color != null) {
             intent.putExtra(NewsArticleActivity.EXTRA_COLOR, color);
+            intent.putExtra(NewsArticleActivity.EXTRA_STATUSBAR_COLOR, statusBarColor);
         }
         intent.putExtra(NewsArticleActivity.EXTRA_ARTICLE_URL, article.getLink());
         intent.putExtra(NewsArticleActivity.EXTRA_ARTICLE_TITLE, article.getTitle());

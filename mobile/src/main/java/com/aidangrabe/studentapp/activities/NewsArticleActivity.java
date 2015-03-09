@@ -19,6 +19,7 @@ public class NewsArticleActivity extends FragContainerActivity {
     public static final String EXTRA_ARTICLE_URL = "article_url";
     public static final String EXTRA_ARTICLE_TITLE = "article_title";
     public static final String EXTRA_COLOR = "color";
+    public static final String EXTRA_STATUSBAR_COLOR = "statusBarColor";
 
     private String mUrl;
     private NewsArticleFragment mFrag;
@@ -43,10 +44,14 @@ public class NewsArticleActivity extends FragContainerActivity {
         String title = extras.getString(EXTRA_ARTICLE_TITLE);
         getSupportActionBar().setTitle(title);
 
+        // get the bar colours from the extras
         int color = extras.getInt(EXTRA_COLOR, getResources().getColor(R.color.primary));
+        int statusBarColor = extras.getInt(EXTRA_STATUSBAR_COLOR, getResources().getColor(R.color.primary_dark));
+
         getSupportActionBar().setBackgroundDrawable(new ColorDrawable(color));
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            getWindow().setStatusBarColor(color);
+            getWindow().setStatusBarColor(statusBarColor);
         }
 
     }
