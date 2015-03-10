@@ -1,25 +1,16 @@
 package com.aidangrabe.studentapp.activities;
 
 import android.app.Activity;
-import android.app.Fragment;
-import android.app.FragmentManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.support.wearable.view.FragmentGridPagerAdapter;
-import android.util.Log;
 import android.view.GestureDetector;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.LinearInterpolator;
-import android.view.animation.TranslateAnimation;
-import android.widget.ImageView;
 
 import com.aidangrabe.common.SharedConstants;
 import com.aidangrabe.common.util.WearUtils;
 import com.aidangrabe.studentapp.R;
-import com.aidangrabe.studentapp.fragments.MapFragment;
+import com.aidangrabe.studentapp.views.BitmapRegionView;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.wearable.Asset;
@@ -47,122 +38,8 @@ public class MapActivity extends Activity implements DataApi.DataListener, Googl
 
     private GoogleApiClient mGoogleApiClient;
     private Collection<Node> mNodes;
-    private Bitmap[][] mMapGrid;
-    private int mCurrentRow, mCurrentCol;
+    private BitmapRegionView mBitmapRegionView;
     private GestureDetector mGestureDetector;
-    private ImageView[] mImageViews;
-    private View mRootView;
-    private boolean mAnimating;
-
-    private GestureDetector.OnGestureListener mGestureListener = new GestureDetector.SimpleOnGestureListener() {
-        @Override
-        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-
-            int newRow = mCurrentRow;
-            int newCol = mCurrentCol;
-
-            if (Math.abs(velocityY) > Math.abs(velocityX)) {
-                newRow += velocityY > 0
-                        ? -1 : 1;
-                Log.d("D", "New row: " + mCurrentRow + " -> " + newRow);
-            } else {
-                newCol += velocityX > 0
-                        ? -1 : 1;
-                Log.d("D", "New col: " + mCurrentCol + " -> " + newCol);
-            }
-
-            animateImage(newCol, newRow);
-
-            return true;
-        }
-
-        @Override
-        public void onLongPress(MotionEvent e) {
-
-            finish();
-
-            super.onLongPress(e);
-        }
-    };
-
-    private void animateImage(final int x, final int y) {
-
-        // don't animate if we're already animating, or if there is no change in x/y
-        if (mAnimating || (x == mCurrentCol && y == mCurrentRow)) {
-            return;
-        }
-
-        Log.d("D", "Animating!");
-
-        int destX = 0;
-        int destY = 0;
-        int destX2 = 0;
-        int destY2 = 0;
-        if (x != mCurrentCol) {
-            destX = x > mCurrentCol ? -320 : 640;
-            destX2 = x > mCurrentCol ? 640 : -320;
-        }
-        if (y != mCurrentRow) {
-            destY = y > mCurrentRow ? -320 : 640;
-            destY2 = y > mCurrentRow ? 640 : -320;
-        }
-
-        TranslateAnimation anim1 = new TranslateAnimation(0, destX, 0, destY);
-        anim1.setDuration(200);
-        anim1.setInterpolator(new LinearInterpolator());
-        anim1.setAnimationListener(new Animation.AnimationListener() {
-            @Override
-            public void onAnimationStart(Animation animation) {
-                mAnimating = true;
-            }
-
-            @Override
-            public void onAnimationEnd(Animation animation) {
-                mImageViews[0].setX(0);
-                mImageViews[0].setImageBitmap(getBitmapAt(x, y));
-                mCurrentCol = getX(x);
-                mCurrentRow = getY(y);
-                mAnimating = false;
-            }
-
-            @Override
-            public void onAnimationRepeat(Animation animation) {
-
-            }
-        });
-
-        TranslateAnimation anim2 = new TranslateAnimation(destX2, 0, destY2, 0);
-        anim2.setDuration(200);
-        anim2.setInterpolator(new LinearInterpolator());
-        anim2.setAnimationListener(new Animation.AnimationListener() {
-            @Override
-            public void onAnimationStart(Animation animation) {
-                mImageViews[1].setImageBitmap(getBitmapAt(x, y));
-            }
-
-            @Override
-            public void onAnimationEnd(Animation animation) {
-
-            }
-
-            @Override
-            public void onAnimationRepeat(Animation animation) {
-
-            }
-        });
-
-        mImageViews[0].startAnimation(anim1);
-        mImageViews[1].startAnimation(anim2);
-
-    }
-
-    private int getX(int x) {
-        return Math.min(GRID_SIZE_X - 1, Math.max(0, x));
-    }
-
-    private int getY(int y) {
-        return Math.min(GRID_SIZE_Y - 1, Math.max(0, y));
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -170,20 +47,17 @@ public class MapActivity extends Activity implements DataApi.DataListener, Googl
 
         setContentView(R.layout.activity_map);
 
-        mRootView = findViewById(R.id.frame_layout);
+        mBitmapRegionView = (BitmapRegionView) findViewById(R.id.bitmap_region_view);
+        mBitmapRegionView.setLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                finish();
+                return false;
+            }
+        });
 
-        mImageViews = new ImageView[2];
-        mImageViews[0] = (ImageView) findViewById(R.id.image_view);
-        mImageViews[1] = (ImageView) findViewById(R.id.image_view2);
-
-        mCurrentRow = GRID_SIZE_X / 2;
-        mCurrentCol = GRID_SIZE_Y / 2;
-
-        mGestureDetector = new GestureDetector(this, mGestureListener);
         mGoogleApiClient = WearUtils.makeClient(this, this, null);
         mNodes = new HashSet<>();
-
-        mAnimating = false;
 
     }
 
@@ -248,46 +122,16 @@ public class MapActivity extends Activity implements DataApi.DataListener, Googl
                 InputStream assetInputStream = getFdForAssetResult.getInputStream();
                 final Bitmap mapBitmap = BitmapFactory.decodeStream(assetInputStream);
 
-                mMapGrid = chunkMap(GRID_SIZE_X, GRID_SIZE_Y, mapBitmap);
-                onMapReceived();
+                onMapReceived(mapBitmap);
 
             }
         });
     }
 
-    private void onMapReceived() {
+    private void onMapReceived(Bitmap bitmap) {
 
-        mImageViews[0].setImageBitmap(getBitmapAt(mCurrentCol, mCurrentRow));
+        mBitmapRegionView.init(this, bitmap, 3, 3);
 
-        getWindow().getDecorView().findViewById(android.R.id.content).setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                mGestureDetector.onTouchEvent(event);
-                return true;
-            }
-        });
-    }
-
-    private Bitmap getBitmapAt(int x, int y) {
-        x = Math.min(GRID_SIZE_X - 1, Math.max(0, x));
-        y = Math.min(GRID_SIZE_Y - 1, Math.max(0, y));
-        Log.d("D", String.format("map at: (%d, %d)", x, y));
-        return mMapGrid[x][y];
-    }
-
-    /**
-     * Split the given map into <numX>x<numY> grid
-     */
-    private Bitmap[][] chunkMap(int numX, int numY, Bitmap bitmap) {
-        int w = bitmap.getWidth() / numX;
-        int h = bitmap.getHeight() / numY;
-        Bitmap[][] grid = new Bitmap[numX][numY];
-        for (int y = 0; y < numY; y++) {
-            for (int x = 0; x < numX; x++) {
-                grid[x][y] = Bitmap.createBitmap(bitmap, w * x, h * y, w, h);
-            }
-        }
-        return grid;
     }
 
     @Override
@@ -311,32 +155,4 @@ public class MapActivity extends Activity implements DataApi.DataListener, Googl
         getMapImage();
     }
 
-    private void Logd(String message) {
-        Log.d("D", message);
-    }
-
-    private class Adapter extends FragmentGridPagerAdapter {
-
-        public Adapter(FragmentManager fm) {
-            super(fm);
-        }
-
-        @Override
-        public Fragment getFragment(int row, int col) {
-            MapFragment frag = new MapFragment();
-            frag.setBitmap(mMapGrid[row][col]);
-            return frag;
-        }
-
-        @Override
-        public int getRowCount() {
-            return GRID_SIZE_Y;
-        }
-
-        @Override
-        public int getColumnCount(int row) {
-            return GRID_SIZE_X;
-        }
-
-    }
 }

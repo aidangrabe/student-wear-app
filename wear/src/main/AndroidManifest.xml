@@ -30,7 +30,7 @@
         <activity android:name=".activities.FindMyPhoneActivity" />
         <activity android:name=".activities.games.GameMenuActivity" />
         <activity android:name=".activities.games.DirectionalControllerActivity" />
-        <activity android:name=".activities.MapActivity" />
+        <activity android:name=".activities.MapActivity" android:theme="@style/NoSwipeBack" />
         <!-- Lights Out -->
         <activity android:name=".activities.games.lightsout.LightsOutActivity" />
         <activity android:name=".activities.games.lightsout.LevelMenuActivity" />
