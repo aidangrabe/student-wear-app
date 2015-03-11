@@ -4,7 +4,7 @@ import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.view.GestureDetector;
+import android.support.wearable.view.DismissOverlayView;
 import android.view.View;
 
 import com.aidangrabe.common.SharedConstants;
@@ -33,13 +33,10 @@ import java.util.List;
  */
 public class MapActivity extends Activity implements DataApi.DataListener, GoogleApiClient.ConnectionCallbacks {
 
-    private static final int GRID_SIZE_X = 3;
-    private static final int GRID_SIZE_Y = 3;
-
     private GoogleApiClient mGoogleApiClient;
     private Collection<Node> mNodes;
     private BitmapRegionView mBitmapRegionView;
-    private GestureDetector mGestureDetector;
+    private DismissOverlayView mDismissOverlay;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,10 +48,14 @@ public class MapActivity extends Activity implements DataApi.DataListener, Googl
         mBitmapRegionView.setLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                finish();
+                mDismissOverlay.show();
                 return false;
             }
         });
+
+        mDismissOverlay = (DismissOverlayView) findViewById(R.id.dismiss_overlay);
+        mDismissOverlay.setIntroText("Long press to exit");
+        mDismissOverlay.showIntroIfNecessary();
 
         mGoogleApiClient = WearUtils.makeClient(this, this, null);
         mNodes = new HashSet<>();
