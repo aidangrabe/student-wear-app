@@ -33,6 +33,7 @@ import java.util.List;
  */
 public class WearUtils {
 
+    // Listeners
     public interface NodeListener {
         public void onNodesConnected(List<Node> nodes);
     }
@@ -45,6 +46,13 @@ public class WearUtils {
         public void onUriBuilt(Uri uri);
     }
 
+    /**
+     * Create a simple GoogleApiClient with connection callbacks
+     * @param context the context to create this client with
+     * @param connectionCallbacks the callbacks for when connection events occur. null for no callbacks
+     * @param onConnectionFailedListener the callback for when connection fails. null for no callbacks
+     * @return
+     */
     public static GoogleApiClient makeClient(Context context,
                                              GoogleApiClient.ConnectionCallbacks connectionCallbacks,
                                              GoogleApiClient.OnConnectionFailedListener onConnectionFailedListener) {
@@ -160,6 +168,12 @@ public class WearUtils {
         getSyncedItems(client, null, getDataListener);
     }
 
+    /**
+     * Get items that are synced in the DataLayer storage
+     * @param client the GoogleApiClient to use
+     * @param path the path of the items you want to retrieve
+     * @param getDataListener the callback for when the DataMaps have been retrieved
+     */
     public static void getSyncedItems(final GoogleApiClient client, final String path, final GetDataListener getDataListener) {
 
         new AsyncTask<Void, Void, List<DataMap>>() {
@@ -221,6 +235,13 @@ public class WearUtils {
 
     }
 
+    /**
+     * Convert a list to a DataMap
+     * @param key the key in the DataMap for this list
+     * @param list the List to convert
+     * @param <T> All elements in the List must be Parcelable
+     * @return a DataMap containing the List
+     */
     public static <T extends Parcelable> DataMap listToDataMap(String key, List<T> list) {
 
         Parcel parcel = Parcel.obtain();
@@ -233,6 +254,14 @@ public class WearUtils {
 
     }
 
+    /**
+     * Retrieve a List from a DataMap
+     * @param key the key for the List in the DataMap
+     * @param dataMap the DataMap to retrieve the List from
+     * @param creator the Creator that manages creating the List
+     * @param <T> all elements of the List should be Parcelable
+     * @return the List that was in the DataMap
+     */
     public static <T extends Parcelable> List<T> listFromDataMap(String key, DataMap dataMap, Parcelable.Creator<T> creator) {
 
         List<T> list = new ArrayList<>();
@@ -252,6 +281,12 @@ public class WearUtils {
         return getDataMaps(dataEvents, null);
     }
 
+    /**
+     * Get data maps from a given DataEventBuffer
+     * @param dataEvents the DataEventBuffer to get the DataMaps from
+     * @param path the path of the DataMaps to get
+     * @return a List of DataMaps
+     */
     public static List<DataMap> getDataMaps(DataEventBuffer dataEvents, String path) {
 
         List<DataMap> dataMaps = new ArrayList<>();
